@@ -4,6 +4,10 @@ An online FREE investment club and study group built upon the philosophy of "Thi
 This work is copyrighted (C) 2020 by Rightside Two.0. 
 This work has also been published with GNU General Public License v3.0 software license with a copy of it found in this repo.
 A non-profit incorporated in the beautiful and sunny southern Arizona area.
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+To download or clone & get started running 'python rightside.py'
+
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
