@@ -12,6 +12,6 @@ There is a rightside to money I have found.
 Rental real estate makes this quite obvious.
 There is a paying side and collecting side.
 It's not rocket science, which is all-together not that difficult anyway.
-The more of these that one can claim too will have the greatest income.
+The more of these rental checks that one can lay claim to, will have the greatest income.
 This is straight forward.
 This is the Rightside Two.0.
