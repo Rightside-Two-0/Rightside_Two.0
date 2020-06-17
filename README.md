@@ -19,4 +19,8 @@ There is a paying side and collecting side.
 It's not rocket science, which is all-together not that difficult anyway.
 The more of these rental checks that one can lay claim to, will have the greatest income.
 This is straight forward.
+This software will help analyze the deal.
+This software will help promote the deal.
+This software will help raise the necessary funds to close the deal.
+This software will help you get rich!
 This is the Rightside Two.0.
