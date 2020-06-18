@@ -208,12 +208,6 @@ class MainWindow(QtWidgets.QMainWindow):
                                self.sum_passive += float(i[keys])
        except Exception:
            traceback.print_exc()
-   def analyze_it(self):
-       try:
-           analysis.show()
-           analysis.move(313,150)
-       except Exception as e:
-           traceback.print_exc()
 app = QtWidgets.QApplication(sys.argv)
 window = MainWindow()
 window.show()
