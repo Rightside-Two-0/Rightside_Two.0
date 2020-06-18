@@ -51,8 +51,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.load_opps()
         #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         #connect button actions
-        self.analyze = self.findChild(QtWidgets.QPushButton, 'analyze_button')
-        self.analyze.clicked.connect(self.analyze_it)
+        self.analyze = self.findChild(QtWidgets.QPushButton, 'analyze_Button')
+        # self.analyze.clicked.connect(self.analyze_it)
 
         #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         #add up passive incomes
