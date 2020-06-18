@@ -29,6 +29,11 @@ class MainWindow(QtWidgets.QMainWindow):
         super(MainWindow, self).__init__()
         # self.setupUi(self)
         uic.loadUi('financial.ui', self)
+        self.sum_passive = 0.0
+        self.sum_salaries = 0.0
+        self.sum_expenses = 0.0
+        self.sum_assets = 0.0
+        self.sum_debts = 0.0
         self.income = self.findChild(QtWidgets.QTreeView, 'income_view')
         self.expenses = self.findChild(QtWidgets.QTreeView, 'expenses_view')
         self.assets = self.findChild(QtWidgets.QTreeView, 'assets_view')
@@ -44,6 +49,23 @@ class MainWindow(QtWidgets.QMainWindow):
         self.load_assets()
         self.load_debts()
         self.load_opps()
+        #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        #connect button actions
+        self.analyze = self.findChild(QtWidgets.QPushButton, 'analyze_button')
+        self.analyze.clicked.connect(self.analyze_it)
+
+        #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        #add up passive incomes
+        self.total_passive = self.findChild(QtWidgets.QLabel, 'total_passive')
+        self.total_passive.setText(str(self.sum_passive))
+        self.total_income = self.findChild(QtWidgets.QLabel, 'total_income')
+        self.total_income.setText(str(self.sum_salaries+self.sum_passive))
+        self.total_expenses = self.findChild(QtWidgets.QLabel, 'total_expenses')
+        self.total_expenses.setText(str(self.sum_expenses))
+        self.total_cashflow = self.findChild(QtWidgets.QLabel, 'total_cashflow')
+        self.total_cashflow.setText(str((self.sum_salaries+self.sum_passive)-self.sum_expenses))
+
+
 
     def set_model_income(self):
         self.income.setModel(QtGui.QStandardItemModel(self))
@@ -166,29 +188,32 @@ class MainWindow(QtWidgets.QMainWindow):
                 content = json.load(f)
                 for item in content['Expenses']:
                     key = list(item.keys())[0]
-                    if isinstance(item[key], list):
-                        for i in item[key]:
-                            keys = list(i.keys())[0]
-                            self.addItem_Expenses(keys, str(i[keys]))
-                    else:
-                        self.addItem_Expenses(key, str(item[key]))
+                    self.addItem_Expenses(key, str(item[key]))
+                    self.sum_expenses += float(item[key])
         except Exception:
             traceback.print_exc()
     def load(self):
        try:
-           with open('data.db', 'r') as f:
+           with open('income.db', 'r') as f:
                content = json.load(f)
                for item in content['Income']:
                    key = list(item.keys())[0]
+                   if key == 'Salary/Wages':
+                       self.sum_salaries += float(item[key])
                    if isinstance(item[key], list):
                        for i in item[key]:
                            keys = list(i.keys())[0]
                            self.addItem_income(keys, str(i[keys]))
-                   else:
-                       self.addItem_income(key, str(item[key]))
+                           if keys != 'Salary/Wages':
+                               self.sum_passive += float(i[keys])
        except Exception:
            traceback.print_exc()
-
+   def analyze_it(self):
+       try:
+           analysis.show()
+           analysis.move(313,150)
+       except Exception as e:
+           traceback.print_exc()
 app = QtWidgets.QApplication(sys.argv)
 window = MainWindow()
 window.show()
