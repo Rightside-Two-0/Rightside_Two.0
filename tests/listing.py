@@ -29,35 +29,109 @@ class MainWindow(QtWidgets.QMainWindow):
         super(MainWindow, self).__init__()
         # self.setupUi(self)
         uic.loadUi('financial.ui', self)
-        # self.income = self.findChild(QtWidget.ListView, 'income_view')
-        # self.expenses = self.findChild(QtWidget.ListView, 'expenses_view')
-        # # self.assets = ListView(self)
-        # # self.liabilities = ListView(self)
-        # # self.opportunities = ListView(self)
-        # self.load()
-        # self.load_exp()
-        # self.load_assets()
-        # self.load_debts()
-        # layout_left = QtWidgets.QVBoxLayout(self)
-        # layout_right = QtWidgets.QVBoxLayout(self)
-        # horizontal = QtWidgets.QHBoxLayout(self)
-        # horizontal_2 = QtWidgets.QHBoxLayout(self)
-        # horizontal_3 = QtWidgets.QHBoxLayout(self)
-        # horizontal.addWidget(self.income)
-        # horizontal.addWidget(self.opportunities)
-        # horizontal_2.addWidget(self.expenses)
-        # horizontal_2.addWidget(self.opportunities)
-        # horizontal_3.addWidget(self.assets)
-        # horizontal_3.addWidget(self.liabilities)
-        # layout_left.addLayout(horizontal)
-        # layout_left.addLayout(horizontal_2)
-        # layout_left.addLayout(horizontal_3)
+        self.income = self.findChild(QtWidgets.QTreeView, 'income_view')
+        self.expenses = self.findChild(QtWidgets.QTreeView, 'expenses_view')
+        self.assets = self.findChild(QtWidgets.QTreeView, 'assets_view')
+        self.liabilities = self.findChild(QtWidgets.QTreeView, 'liabilities_view')
+        self.opportunities = self.findChild(QtWidgets.QTreeView, 'opportunity_view')
+        self.set_model_income()
+        self.set_model_expenses()
+        self.set_model_assets()
+        self.set_model_liabilities()
+        self.set_model_opportunities()
+        self.load()
+        self.load_exp()
+        self.load_assets()
+        self.load_debts()
+        self.load_opps()
 
-    def addItem(self, key, value):
+    def set_model_income(self):
+        self.income.setModel(QtGui.QStandardItemModel(self))
+        self.income.model().setColumnCount(2)
+        self.income.setRootIsDecorated(False)
+        self.income.setAllColumnsShowFocus(True)
+        self.income.setSelectionBehavior(
+            QtWidgets.QAbstractItemView.SelectRows)
+        self.income.setHeaderHidden(True)
+        self.income.header().setStretchLastSection(False)
+        self.income.header().setSectionResizeMode(
+            0, QtWidgets.QHeaderView.Stretch)
+        self.income.header().setSectionResizeMode(
+            1, QtWidgets.QHeaderView.ResizeToContents)
+    def set_model_expenses(self):
+        self.expenses.setModel(QtGui.QStandardItemModel(self))
+        self.expenses.model().setColumnCount(2)
+        self.expenses.setRootIsDecorated(False)
+        self.expenses.setAllColumnsShowFocus(True)
+        self.expenses.setSelectionBehavior(
+            QtWidgets.QAbstractItemView.SelectRows)
+        self.expenses.setHeaderHidden(True)
+        self.expenses.header().setStretchLastSection(False)
+        self.expenses.header().setSectionResizeMode(
+            0, QtWidgets.QHeaderView.Stretch)
+        self.expenses.header().setSectionResizeMode(
+            1, QtWidgets.QHeaderView.ResizeToContents)
+    def set_model_assets(self):
+        self.assets.setModel(QtGui.QStandardItemModel(self))
+        self.assets.model().setColumnCount(2)
+        self.assets.setRootIsDecorated(False)
+        self.assets.setAllColumnsShowFocus(True)
+        self.assets.setSelectionBehavior(
+            QtWidgets.QAbstractItemView.SelectRows)
+        self.assets.setHeaderHidden(True)
+        self.assets.header().setStretchLastSection(False)
+        self.assets.header().setSectionResizeMode(
+            0, QtWidgets.QHeaderView.Stretch)
+        self.assets.header().setSectionResizeMode(
+            1, QtWidgets.QHeaderView.ResizeToContents)
+    def set_model_liabilities(self):
+        self.liabilities.setModel(QtGui.QStandardItemModel(self))
+        self.liabilities.model().setColumnCount(2)
+        self.liabilities.setRootIsDecorated(False)
+        self.liabilities.setAllColumnsShowFocus(True)
+        self.liabilities.setSelectionBehavior(
+            QtWidgets.QAbstractItemView.SelectRows)
+        self.liabilities.setHeaderHidden(True)
+        self.liabilities.header().setStretchLastSection(False)
+        self.liabilities.header().setSectionResizeMode(
+            0, QtWidgets.QHeaderView.Stretch)
+        self.liabilities.header().setSectionResizeMode(
+            1, QtWidgets.QHeaderView.ResizeToContents)
+    def set_model_opportunities(self):
+        self.opportunities.setModel(QtGui.QStandardItemModel(self))
+        self.opportunities.model().setColumnCount(2)
+        self.opportunities.setRootIsDecorated(False)
+        self.opportunities.setAllColumnsShowFocus(True)
+        self.opportunities.setSelectionBehavior(
+            QtWidgets.QAbstractItemView.SelectRows)
+        self.opportunities.setHeaderHidden(True)
+        self.opportunities.header().setStretchLastSection(False)
+        self.opportunities.header().setSectionResizeMode(
+            0, QtWidgets.QHeaderView.Stretch)
+        self.opportunities.header().setSectionResizeMode(
+            1, QtWidgets.QHeaderView.ResizeToContents)
+    def addItem_income(self, key, value):
         first = QtGui.QStandardItem(key)
         second = QtGui.QStandardItem(value)
         second.setTextAlignment(QtCore.Qt.AlignRight)
         self.income.model().appendRow([first, second])
+    def addItem_Expenses(self, key, value):
+        first = QtGui.QStandardItem(key)
+        second = QtGui.QStandardItem(value)
+        second.setTextAlignment(QtCore.Qt.AlignRight)
+        self.expenses.model().appendRow([first, second])
+    def addItem_Assets(self, key, value):
+        first = QtGui.QStandardItem(key)
+        second = QtGui.QStandardItem(value)
+        second.setTextAlignment(QtCore.Qt.AlignRight)
+        self.assets.model().appendRow([first, second])
+    def addItem_Liabilities(self,key, value):
+        first = QtGui.QStandardItem(key)
+        second = QtGui.QStandardItem(value)
+        second.setTextAlignment(QtCore.Qt.AlignRight)
+        self.liabilities.model().appendRow([first, second])
+    def load_opps(self):
+        pass
     def load_debts(self):
         try:
             with open('liabilities.db', 'r') as f:
@@ -67,9 +141,9 @@ class MainWindow(QtWidgets.QMainWindow):
                     if isinstance(item[key], list):
                         for i in item[key]:
                             keys = list(i.keys())[0]
-                            self.liabilities.addItem(keys, str(i[keys]))
+                            self.addItem_Liabilities(keys, str(i[keys]))
                     else:
-                        self.liabilities.addItem(key, str(item[key]))
+                        self.addItem_Liabilities(key, str(item[key]))
         except Exception:
             traceback.print_exc()
     def load_assets(self):
@@ -81,11 +155,9 @@ class MainWindow(QtWidgets.QMainWindow):
                     if isinstance(item[key], list):
                         for i in item[key]:
                             keys = list(i.keys())[0]
-                            self.assets.addItem(keys, str(i[keys]))
-                            if isinstance(i, list):
-                                keys = list(i[keys], list)
+                            self.addItem_Assets(keys, str(i[keys]))
                     else:
-                        self.assets.addItem(key, str(item[key]))
+                        self.addItem_Assets(key, str(item[key]))
         except Exception:
             traceback.print_exc()
     def load_exp(self):
@@ -97,9 +169,9 @@ class MainWindow(QtWidgets.QMainWindow):
                     if isinstance(item[key], list):
                         for i in item[key]:
                             keys = list(i.keys())[0]
-                            self.expenses.addItem(keys, str(i[keys]))
+                            self.addItem_Expenses(keys, str(i[keys]))
                     else:
-                        self.expenses.addItem(key, str(item[key]))
+                        self.addItem_Expenses(key, str(item[key]))
         except Exception:
             traceback.print_exc()
     def load(self):
@@ -111,9 +183,9 @@ class MainWindow(QtWidgets.QMainWindow):
                    if isinstance(item[key], list):
                        for i in item[key]:
                            keys = list(i.keys())[0]
-                           self.income.addItem(keys, str(i[keys]))
+                           self.addItem_income(keys, str(i[keys]))
                    else:
-                       self.income.addItem(key, str(item[key]))
+                       self.addItem_income(key, str(item[key]))
        except Exception:
            traceback.print_exc()
 

@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1060</width>
-    <height>878</height>
+    <height>896</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -20,8 +20,8 @@
    <widget class="QLineEdit" name="total_passive">
     <property name="geometry">
      <rect>
-      <x>550</x>
-      <y>40</y>
+      <x>520</x>
+      <y>0</y>
       <width>151</width>
       <height>41</height>
      </rect>
@@ -39,8 +39,8 @@
    <widget class="QLineEdit" name="cash_flow">
     <property name="geometry">
      <rect>
-      <x>550</x>
-      <y>440</y>
+      <x>520</x>
+      <y>430</y>
       <width>151</width>
       <height>41</height>
      </rect>
@@ -55,8 +55,8 @@
    <widget class="QLineEdit" name="total_income">
     <property name="geometry">
      <rect>
-      <x>550</x>
-      <y>190</y>
+      <x>520</x>
+      <y>180</y>
       <width>151</width>
       <height>41</height>
      </rect>
@@ -71,8 +71,8 @@
    <widget class="QLineEdit" name="total_expenses">
     <property name="geometry">
      <rect>
-      <x>550</x>
-      <y>370</y>
+      <x>520</x>
+      <y>360</y>
       <width>151</width>
       <height>41</height>
      </rect>
@@ -84,24 +84,11 @@
      <string/>
     </property>
    </widget>
-   <widget class="QPushButton" name="addButton">
-    <property name="geometry">
-     <rect>
-      <x>720</x>
-      <y>500</y>
-      <width>99</width>
-      <height>27</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Add</string>
-    </property>
-   </widget>
    <widget class="QPushButton" name="analyzeButton">
     <property name="geometry">
      <rect>
-      <x>830</x>
-      <y>500</y>
+      <x>360</x>
+      <y>380</y>
       <width>99</width>
       <height>27</height>
      </rect>
@@ -110,21 +97,11 @@
      <string>Analyze</string>
     </property>
    </widget>
-   <widget class="QTreeView" name="income_view">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>10</y>
-      <width>341</width>
-      <height>231</height>
-     </rect>
-    </property>
-   </widget>
    <widget class="QTreeView" name="expenses_view">
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>250</y>
+      <y>240</y>
       <width>341</width>
       <height>231</height>
      </rect>
@@ -134,7 +111,7 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>490</y>
+      <y>480</y>
       <width>341</width>
       <height>361</height>
      </rect>
@@ -144,7 +121,7 @@
     <property name="geometry">
      <rect>
       <x>360</x>
-      <y>490</y>
+      <y>480</y>
       <width>341</width>
       <height>361</height>
      </rect>
@@ -154,14 +131,139 @@
     <property name="geometry">
      <rect>
       <x>710</x>
-      <y>10</y>
+      <y>0</y>
       <width>341</width>
       <height>471</height>
      </rect>
     </property>
    </widget>
+   <widget class="QProgressBar" name="goal_percent">
+    <property name="geometry">
+     <rect>
+      <x>680</x>
+      <y>0</y>
+      <width>21</width>
+      <height>471</height>
+     </rect>
+    </property>
+    <property name="value">
+     <number>24</number>
+    </property>
+    <property name="orientation">
+     <enum>Qt::Vertical</enum>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="add_transaction">
+    <property name="geometry">
+     <rect>
+      <x>360</x>
+      <y>420</y>
+      <width>111</width>
+      <height>51</height>
+     </rect>
+    </property>
+    <property name="toolTip">
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;New Transaction&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    </property>
+    <property name="text">
+     <string>
+</string>
+    </property>
+    <property name="icon">
+     <iconset>
+      <normaloff>../assets/100_bill.jpeg</normaloff>
+      <normalon>../assets/100_bill.jpeg</normalon>
+      <disabledoff>../assets/100_bill.jpeg</disabledoff>
+      <disabledon>../assets/100_bill.jpeg</disabledon>
+      <activeoff>../assets/100_bill.jpeg</activeoff>
+      <activeon>../assets/100_bill.jpeg</activeon>
+      <selectedoff>../assets/100_bill.jpeg</selectedoff>
+      <selectedon>../assets/100_bill.jpeg</selectedon>../assets/100_bill.jpeg</iconset>
+    </property>
+    <property name="iconSize">
+     <size>
+      <width>108</width>
+      <height>78</height>
+     </size>
+    </property>
+   </widget>
+   <widget class="QTreeView" name="income_view">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>10</y>
+      <width>341</width>
+      <height>221</height>
+     </rect>
+    </property>
+   </widget>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
+  <widget class="QMenuBar" name="menuBar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>1060</width>
+     <height>25</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuFile">
+    <property name="title">
+     <string>File</string>
+    </property>
+    <addaction name="actionNew_Account"/>
+    <addaction name="actionRemove_Account"/>
+   </widget>
+   <widget class="QMenu" name="menuEdit">
+    <property name="title">
+     <string>Edit</string>
+    </property>
+    <addaction name="actionIncome"/>
+    <addaction name="actionExpense"/>
+    <addaction name="actionAsset"/>
+    <addaction name="actionLiability"/>
+    <addaction name="separator"/>
+    <addaction name="actionTransaction"/>
+   </widget>
+   <addaction name="menuFile"/>
+   <addaction name="menuEdit"/>
+  </widget>
+  <action name="actionIncome">
+   <property name="text">
+    <string>Income</string>
+   </property>
+  </action>
+  <action name="actionExpense">
+   <property name="text">
+    <string>Expense</string>
+   </property>
+  </action>
+  <action name="actionAsset">
+   <property name="text">
+    <string>Asset</string>
+   </property>
+  </action>
+  <action name="actionLiability">
+   <property name="text">
+    <string>Liability</string>
+   </property>
+  </action>
+  <action name="actionTransaction">
+   <property name="text">
+    <string>Transaction</string>
+   </property>
+  </action>
+  <action name="actionNew_Account">
+   <property name="text">
+    <string>New Account</string>
+   </property>
+  </action>
+  <action name="actionRemove_Account">
+   <property name="text">
+    <string>Remove Account</string>
+   </property>
+  </action>
  </widget>
  <resources/>
  <connections/>
