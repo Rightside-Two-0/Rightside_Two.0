@@ -1,0 +1,34 @@
+{
+  "Liabilities": [
+    {
+      "Home Mortgage": 0.0
+    },
+    {
+      "School loans": 19500.00
+    },
+    {
+      " Car loan": 675.0
+    },
+    {
+      "Credit cards": 425.0
+    },
+    {
+      "Retail Debt": 160.0
+    },
+    {
+      "Real Estate": [
+        {
+          "Property #1": 0.0
+        }
+      ]
+    },
+    {
+      "Businesses": [
+        {
+          "Business #1": 0.0,
+          "Business #2": 0.0
+        }
+      ]
+    }
+  ]
+}

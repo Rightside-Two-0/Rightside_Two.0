@@ -1,0 +1,33 @@
+{
+  "Assets": [
+    {
+      "Savings": 6500.0,
+      "Checking": 1100.0
+    },
+    {
+      "Stocks": 0.0,
+      "Mutual Funds": 0.0,
+      "Certificates of Deposit": 0.0
+    },
+    {
+      "Real Estate": [
+        {
+          "Home": 0.0
+        },
+        {
+          "Property #1": 0.0
+        }
+      ]
+    },
+    {
+      "Businesses": [
+        {
+          "Business #1": 0.0
+        },
+        {
+          "Business #2": 0.0
+        }
+      ]
+    }
+  ]
+}
