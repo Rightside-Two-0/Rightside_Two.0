@@ -5,9 +5,7 @@ from PyQt5.QtWidgets import QInputDialog, QLineEdit
 from PyQt5.QtCore import Qt, QUrl
 import traceback
 
-Ui_MainWindow, QtBaseClass = uic.loadUiType('guis/financial.ui')
-ledger_view, QtBaseClass = uic.loadUiType('guis/ledger.ui')
-analysis_view, QtBaseClass = uic.loadUiType('guis/analysis.ui')
+Ui_MainWindow, QtBaseClass = uic.loadUiType('financial.ui')
 class ListView(QtWidgets.QTreeView):
     def __init__(self, *args, **kwargs):
         super(ListView, self).__init__(*args, **kwargs)
@@ -29,29 +27,11 @@ class ListView(QtWidgets.QTreeView):
         second = QtGui.QStandardItem(value)
         second.setTextAlignment(QtCore.Qt.AlignRight)
         self.model().appendRow([first, second])
-class Ledger(QtWidgets.QWidget, ledger_view):
-    def __init__(self):
-        super(Ledger, self).__init__()
-        self.setupUi(self)
-        self.hide()
-class Analysis(QtWidgets.QWidget, analysis_view):
-    def __init__(self):
-        super(Analysis, self).__init__()
-        self.setupUi(self)
-        self.hide()
-        self.getURLButton.clicked.connect(self.add)
-    def add(self):
-        try:
-            self.webView.load(QUrl(self.urlBox.text()))
-        except Exception as e:
-            traceback.print_exc()
 class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     def __init__(self):
         try:
             super(MainWindow, self).__init__()
             self.setupUi(self)
-            incomeView = Ui_MainWindow.findChild(QTreeView, 'income_view')
-            #~~This needs to be fixed immediately here...~~~~
             self.income_view = ListView(self)
             self.expenses_view = ListView(self)
             self.assets_view = ListView(self)
@@ -64,8 +44,9 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.load('expenses')
         self.load('assets')
         self.load('liabilities')
-        self.add_transaction.clicked.connect(self.addTransaction)
+        self.addButton.clicked.connect(self.addTransaction)
         self.analyzeButton.clicked.connect(self.analyze)
+
 
     def addTransaction(self):
         try:
@@ -89,18 +70,19 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     def load(self, data):
        try:
            if data == 'income':
-                with open(f'data/{data}.db', 'r') as f:
+                with open(f'{data}.db', 'r') as f:
                    content = json.load(f)
                    for item in content['Income']:
                        key = list(item.keys())[0]
                        if isinstance(item[key], list):
                            for i in item[key]:
+
                                keys = list(i.keys())[0]
                                self.income_view.addItem(keys, str(i[keys]))
                        else:
                            self.income_view.addItem(key, str(item[key]))
            elif data == 'expenses':
-                with open(f'data/{data}.db', 'r') as f:
+                with open(f'{data}.db', 'r') as f:
                    content = json.load(f)
                    for item in content['Expenses']:
                        key = list(item.keys())[0]
@@ -111,7 +93,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                        else:
                            self.expenses_view.addItem(key, str(item[key]))
            elif data == 'assets':
-                with open(f'data/{data}.db', 'r') as f:
+                with open(f'{data}.db', 'r') as f:
                    content = json.load(f)
                    for item in content['Assets']:
                        key = list(item.keys())[0]
@@ -122,7 +104,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                        else:
                            self.assets_view.addItem(key, str(item[key]))
            elif data == 'liabilities':
-                with open(f'data/{data}.db', 'r') as f:
+                with open(f'{data}.db', 'r') as f:
                    content = json.load(f)
                    for item in content['Liabilities']:
                        key = list(item.keys())[0]
@@ -137,7 +119,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
        except Exception:
            traceback.print_exc()
     def save(self, data):
-        with open(f'data/{data}.db', 'w') as file:
+        with open(f'{data}.db', 'w') as file:
             if data == 'income':
                 content = json.dump(self.income_model.income, file)
             elif data == 'expenses':
@@ -152,8 +134,6 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
 app = QtWidgets.QApplication(sys.argv)
 window = MainWindow()
-ledger = Ledger()
-analysis = Analysis()
 window.move(300,100)
 window.show()
 app.exec_()

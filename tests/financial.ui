@@ -21,7 +21,7 @@
     <property name="geometry">
      <rect>
       <x>520</x>
-      <y>30</y>
+      <y>0</y>
       <width>151</width>
       <height>41</height>
      </rect>
@@ -95,16 +95,6 @@
     </property>
     <property name="text">
      <string>Analyze</string>
-    </property>
-   </widget>
-   <widget class="QTreeView" name="income_view">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>0</y>
-      <width>341</width>
-      <height>231</height>
-     </rect>
     </property>
    </widget>
    <widget class="QTreeView" name="expenses_view">
@@ -195,6 +185,16 @@
       <width>108</width>
       <height>78</height>
      </size>
+    </property>
+   </widget>
+   <widget class="QTreeView" name="income_view">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>10</y>
+      <width>341</width>
+      <height>221</height>
+     </rect>
     </property>
    </widget>
   </widget>
