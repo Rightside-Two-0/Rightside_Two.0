@@ -20,7 +20,7 @@
    <bool>true</bool>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <widget class="QPushButton" name="analyze_Button">
+   <widget class="QPushButton" name="analyze_button">
     <property name="geometry">
      <rect>
       <x>360</x>

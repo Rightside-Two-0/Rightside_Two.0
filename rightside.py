@@ -27,13 +27,15 @@ class MainWindow(QtWidgets.QMainWindow):
     def __init__(self):
         try:
             super(MainWindow, self).__init__()
-            # self.setupUi(self)
             uic.loadUi('guis/financial.ui', self)
             self.sum_passive = 0.0
             self.sum_salaries = 0.0
             self.sum_expenses = 0.0
             self.sum_assets = 0.0
             self.sum_debts = 0.0
+            #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+            #setting popup action to add new account to ledger to or from accoutns
+            self.new_account = self.findChild(QtWidgets.QAction, 'account_mentu_item')
             self.income = self.findChild(QtWidgets.QTreeView, 'income_view')
             self.expenses = self.findChild(QtWidgets.QTreeView, 'expenses_view')
             self.assets = self.findChild(QtWidgets.QTreeView, 'assets_view')
@@ -51,9 +53,10 @@ class MainWindow(QtWidgets.QMainWindow):
             self.load_opps()
             #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             #connect button actions
-            self.analyze_it = self.findChild(QtWidgets.QPushButton, 'analyze_Button')
-            # self.analyze_it.clicked.connect(self.analyze_it)
-
+            self.analyze_it = self.findChild(QtWidgets.QPushButton, 'analyze_button')
+            self.analyze_it.clicked.connect(self.analyze)
+            self.add_transaction = self.findChild(QtWidgets.QPushButton, 'add_transaction')
+            self.add_transaction.clicked.connect(self.addTransaction)
             #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             #add up passive incomes
             self.total_passive = self.findChild(QtWidgets.QLabel, 'total_passive')
@@ -64,7 +67,9 @@ class MainWindow(QtWidgets.QMainWindow):
             self.total_expenses.setText(str(self.sum_expenses))
             self.total_cashflow = self.findChild(QtWidgets.QLabel, 'total_cashflow')
             self.total_cashflow.setText(str((self.sum_salaries+self.sum_passive)-self.sum_expenses))
-
+            self.goal_percent = self.findChild(QtWidgets.QProgressBar, 'goal_percent')
+            self.percent = self.sum_passive/self.sum_expenses*100
+            self.goal_percent.setValue(int(self.percent))
         except Exception:
             traceback.print_exc()
 
@@ -213,13 +218,16 @@ class MainWindow(QtWidgets.QMainWindow):
                        if isinstance(item[key], list):
                             for i in item[key]:
                                 keys = list(i.keys())[0]
-                                print(i[keys])
                                 self.addItem_income(keys, str(i[keys]))
                                 if keys != 'Salary/Wages':
                                     self.sum_passive += float(i[keys])
 
        except Exception:
            traceback.print_exc()
+    def get_new_account(self):
+        text, ok = QInputDialog.getText(self, 'Input Dialog', 'Enter Account:')
+        if text and text != '':
+            return text
 
     def addTransaction(self):
         try:
@@ -248,6 +256,8 @@ class MainWindow(QtWidgets.QMainWindow):
             elif data == 'liabilities':
                 content = json.dump(self.liability_model.liabilities, file)
             elif data == 'opportunities':
+                content = json.dump(self.opps_model.opportunities, file)
+            elif data == 'ledger':
                 content = json.dump(self.opps_model.opportunities, file)
 
 
