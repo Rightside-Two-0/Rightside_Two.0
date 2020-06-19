@@ -150,6 +150,9 @@
     <property name="toolTip">
      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:18pt;&quot;&gt;Income&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
     </property>
+    <property name="whatsThis">
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&amp;quot;The rich look for and build betworks, everyone else looks for work&amp;quot; -- Robert Kiyosaki&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    </property>
    </widget>
    <widget class="QLabel" name="total_passive">
     <property name="geometry">
@@ -299,7 +302,7 @@
     <property name="title">
      <string>File</string>
     </property>
-    <addaction name="actionNew_Account"/>
+    <addaction name="account_menut_item"/>
     <addaction name="actionRemove_Account"/>
    </widget>
    <widget class="QMenu" name="menuEdit">
@@ -341,7 +344,7 @@
     <string>Transaction</string>
    </property>
   </action>
-  <action name="actionNew_Account">
+  <action name="account_menut_item">
    <property name="text">
     <string>New Account</string>
    </property>

@@ -5,13 +5,99 @@ from PyQt5.QtWidgets import QInputDialog, QLineEdit
 from PyQt5.QtCore import Qt, QUrl
 import traceback
 
-ledger_view, QtBaseClass = uic.loadUiType('guis/ledger.ui')
 analysis_view, QtBaseClass = uic.loadUiType('guis/analysis.ui')
-class Ledger(QtWidgets.QWidget, ledger_view):
+class Ledger(QtWidgets.QWidget):
     def __init__(self):
         super(Ledger, self).__init__()
-        self.setupUi(self)
+        uic.loadUi('guis/ledger.ui', self)
+        #set from_accounts = list of expenses read in
+        self.date = self.findChild(QtWidgets.QDateEdit, 'date_box')
+        self.to_accounts = self.load_to_accounts()
+        self.from_accounts = self.load_from_accounts()
+        self.to_account = self.findChild(QtWidgets.QComboBox, 'to_account')
+        self.from_account = self.findChild(QtWidgets.QComboBox, 'from_account')
+        self.to_account.addItems(self.to_accounts)
+        self.from_account.addItems(self.from_accounts)
+        self.amount = self.findChild(QtWidgets.QLineEdit, 'amount_box')
+        self.notes = self.findChild(QtWidgets.QLineEdit, 'notes_box')
+        self.display_table = self.findChild(QtWidgets.QTableView, 'transaction_view')
+        self.add_button = self.findChild(QtWidgets.QPushButton, 'add_button')
+        self.add_button.clicked.connect(self.add)
+        self.set_table_model()
+        self.read_in_table()
         self.hide()
+    def add(self):
+        tmp = self.date.date()
+        date_ = tmp.toPyDate()
+        from_ = self.from_account.getComboSelection()
+        to_ = self.to_account.getComboSelection()
+        amount_ = self.amount.getText()
+        notes_ = self.notes.getText()
+        
+        self.addItem(date, from_, to_, amount_, notes_)
+    def addItem(self, date, from_a, to_a, amount, notes):
+        date_ = QtGui.QStandardItem(date)
+        from_ = QtGui.QStandardItem(from_a)
+        to_ = QtGui.QStandardItem(to_a)
+        amount_ = QtGui.QStandardItem(amount)
+        notes_ = QtGui.QStandardItem(notes)
+        date_.setTextAlignment(QtCore.Qt.AlignRight)
+        from_.setTextAlignment(QtCore.Qt.AlignRight)
+        to_.setTextAlignment(QtCore.Qt.AlignRight)
+        amount_.setTextAlignment(QtCore.Qt.AlignRight)
+        notes_.setTextAlignment(QtCore.Qt.AlignRight)
+        self.display_table.model().appendRow([date_, from_, to_, amount_, notes_])
+    def set_table_model(self):
+        self.display_table.setModel(QtGui.QStandardItemModel(self))
+        self.display_table.model().setColumnCount(5)
+        self.display_table.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
+    def read_in_table(self):
+        try:
+            content = []
+            date_, to_, from_, amount_, notes_ = '', '', '', '', ''
+            with open('data/ledger.db', 'r') as ledger:
+                content = json.load(ledger)
+                details = []
+                for item in content['Ledger']:
+                    key = list(item.keys())[0]
+                    details.append(key)
+                    details.append(item[key])
+                    accounts = []
+                    if isinstance(item[key], list):
+                        for i in item[key]:
+                            keys = list(i.keys())[0]
+                            accounts.append(keys)
+                            accounts.append(i[keys])
+                        date_ = accounts[1]
+                        from_ = accounts[3]
+                        to_ = accounts[5]
+                        amount_ = str(accounts[7])
+                        notes_ = accounts[9]
+                    self.addItem(date_, from_, to_, amount_, notes_)
+        except Exception:
+            traceback.print_exc()
+    def load_to_accounts(self):
+        try:
+            with open('data/expenses.db', 'r') as f:
+                content = json.load(f)
+                accounts = []
+                for item in content['Expenses']:
+                    key = list(item.keys())[0]
+                    accounts.append(key)
+                return accounts
+        except Exception:
+            traceback.print_exc()
+    def load_from_accounts(self):
+        try:
+            with open('data/assets.db', 'r') as f:
+                content = json.load(f)
+                accounts = []
+                for item in content['Assets']:
+                    key = list(item.keys())[0]
+                    accounts.append(key)
+                return accounts
+        except Exception:
+            traceback.print_exc()
 class Analysis(QtWidgets.QWidget, analysis_view):
     def __init__(self):
         super(Analysis, self).__init__()
