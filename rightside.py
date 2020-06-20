@@ -152,10 +152,12 @@ class Analysis(QtWidgets.QWidget):
         self.open_rightside()
         #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         self.hide()
-        self.getURLButton.clicked.connect(self.add)
-    def add(self):
+        self.getURLButton.clicked.connect(self.view_deal)
+    def view_deal(self):
         try:
             self.webView.load(QUrl(self.urlBox.text()))
+            #~~~~~~~~~~start~~analysis~~~~~~~~~~~~
+            
         except Exception as e:
             traceback.print_exc()
     def c_rightside(self):
@@ -176,7 +178,7 @@ class Analysis(QtWidgets.QWidget):
             print("In this cell we have: ", value)
     def open_rightside(self):
         self.rightside_tab.check_change = False
-        url = '/home/tetrapro/projects/python/Rightside_Two.0/rightside.csv'
+        url = '/home/tetrapro/projects/python/Rightside_Two.0/deals/rightside.csv'
         with open(url, newline='') as csv_file:
             self.rightside_tab.setRowCount(0)
             self.rightside_tab.setColumnCount(10)
@@ -186,13 +188,13 @@ class Analysis(QtWidgets.QWidget):
                 self.rightside_tab.insertRow(row)
                 if len(row_data) > 10:
                     self.rightside_tab.setColumnCount(len(row_data))
-                for column, stuff in enumerate(row_data):
-                    item = QTableWidgetItem(stuff)
+                for column, content in enumerate(row_data):
+                    item = QTableWidgetItem(stucontentff)
                     self.rightside_tab.setItem(row, column, item)
         self.rightside_tab.check_change = True
     def open_sheet(self):
         self.current_tab.check_change = False
-        url = '/home/tetrapro/projects/python/Rightside_Two.0/current.csv'
+        url = '/home/tetrapro/projects/python/Rightside_Two.0/deals/current.csv'
         with open(url, newline='') as csv_file:
             self.current_tab.setRowCount(0)
             self.current_tab.setColumnCount(10)
@@ -202,8 +204,8 @@ class Analysis(QtWidgets.QWidget):
                 self.current_tab.insertRow(row)
                 if len(row_data) > 10:
                     self.current_tab.setColumnCount(len(row_data))
-                for column, stuff in enumerate(row_data):
-                    item = QTableWidgetItem(stuff)
+                for column, content in enumerate(row_data):
+                    item = QTableWidgetItem(content)
                     self.current_tab.setItem(row, column, item)
         self.current_tab.check_change = True
     def save_sheet(self):
