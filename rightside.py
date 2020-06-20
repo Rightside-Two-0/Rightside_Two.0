@@ -105,7 +105,7 @@ class Ledger(QtWidgets.QWidget):
                         date_ = accounts[1]
                         from_ = accounts[3]
                         to_ = accounts[5]
-                        amount_ = str(accounts[7])
+                        amount_ = accounts[7]
                         notes_ = accounts[9]
                     self.addItem_parms(date_, from_, to_, amount_, notes_)
         except Exception:
@@ -307,15 +307,19 @@ class MainWindow(QtWidgets.QMainWindow):
         try:
             with open('data/small_opps.db', 'r') as f:
                 content = json.load(f)
+                head_cost = []
                 for item in content['Opportunities']:
                     key = list(item.keys())[0]
                     if isinstance(item[key], list):
                         for i in item[key]:
                             keys = list(i.keys())[0]
+                            head_cost.append(keys)
                             self.addItem_Opps(keys, str(i[keys]))
                     else:
                         if key != 'Notes':
                             self.addItem_Opps(key, str(item[key]))
+                            head_cost.append(key)
+                print(head_cost)
         except Exception:
             traceback.print_exc()
     def load_debts(self):
