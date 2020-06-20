@@ -49,7 +49,7 @@
     </rect>
    </property>
    <property name="currentIndex">
-    <number>0</number>
+    <number>1</number>
    </property>
    <widget class="QWidget" name="opp_tab">
     <attribute name="title">
@@ -85,17 +85,37 @@
       </rect>
      </property>
      <property name="currentIndex">
-      <number>0</number>
+      <number>1</number>
      </property>
      <widget class="QWidget" name="current_tab">
       <attribute name="title">
        <string>Current</string>
       </attribute>
+      <widget class="QTableWidget" name="table_current">
+       <property name="geometry">
+        <rect>
+         <x>0</x>
+         <y>0</y>
+         <width>1021</width>
+         <height>701</height>
+        </rect>
+       </property>
+      </widget>
      </widget>
      <widget class="QWidget" name="rightside_tab_2">
       <attribute name="title">
        <string>Rightside</string>
       </attribute>
+      <widget class="QTableWidget" name="table_rightside">
+       <property name="geometry">
+        <rect>
+         <x>0</x>
+         <y>0</y>
+         <width>1021</width>
+         <height>701</height>
+        </rect>
+       </property>
+      </widget>
      </widget>
     </widget>
    </widget>

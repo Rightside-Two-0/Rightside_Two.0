@@ -24,7 +24,7 @@
     <property name="geometry">
      <rect>
       <x>360</x>
-      <y>370</y>
+      <y>220</y>
       <width>99</width>
       <height>27</height>
      </rect>
@@ -95,28 +95,16 @@
     <property name="geometry">
      <rect>
       <x>360</x>
-      <y>410</y>
-      <width>141</width>
-      <height>61</height>
+      <y>250</y>
+      <width>101</width>
+      <height>31</height>
      </rect>
     </property>
     <property name="toolTip">
      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;New Transaction&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
     </property>
     <property name="text">
-     <string>
-</string>
-    </property>
-    <property name="icon">
-     <iconset>
-      <normaloff>../assets/100_bill.jpeg</normaloff>
-      <normalon>../assets/100_bill.jpeg</normalon>
-      <disabledoff>../assets/100_bill.jpeg</disabledoff>
-      <disabledon>../assets/100_bill.jpeg</disabledon>
-      <activeoff>../assets/100_bill.jpeg</activeoff>
-      <activeon>../assets/100_bill.jpeg</activeon>
-      <selectedoff>../assets/100_bill.jpeg</selectedoff>
-      <selectedon>../assets/100_bill.jpeg</selectedon>../assets/100_bill.jpeg</iconset>
+     <string>Transaction</string>
     </property>
     <property name="iconSize">
      <size>
@@ -175,7 +163,7 @@
     <property name="geometry">
      <rect>
       <x>520</x>
-      <y>190</y>
+      <y>170</y>
       <width>141</width>
       <height>41</height>
      </rect>
@@ -322,7 +310,7 @@
       <x>710</x>
       <y>480</y>
       <width>341</width>
-      <height>41</height>
+      <height>51</height>
      </rect>
     </property>
     <property name="font">
@@ -359,25 +347,51 @@ p, li { white-space: pre-wrap; }
      <rect>
       <x>710</x>
       <y>690</y>
-      <width>121</width>
-      <height>41</height>
+      <width>131</width>
+      <height>61</height>
      </rect>
     </property>
+    <property name="toolTip">
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Buy Now!&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    </property>
     <property name="text">
-     <string>Offer to Buy</string>
+     <string/>
+    </property>
+    <property name="icon">
+     <iconset>
+      <normaloff>../assets/100_bill.jpeg</normaloff>../assets/100_bill.jpeg</iconset>
+    </property>
+    <property name="iconSize">
+     <size>
+      <width>133</width>
+      <height>67</height>
+     </size>
     </property>
    </widget>
    <widget class="QPushButton" name="sell_button">
     <property name="geometry">
      <rect>
-      <x>928</x>
+      <x>980</x>
       <y>690</y>
-      <width>121</width>
-      <height>41</height>
+      <width>71</width>
+      <height>61</height>
      </rect>
     </property>
+    <property name="toolTip">
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Sell to Another&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    </property>
     <property name="text">
-     <string>Sell to Another</string>
+     <string/>
+    </property>
+    <property name="icon">
+     <iconset>
+      <normaloff>../assets/transfer-4x.png</normaloff>../assets/transfer-4x.png</iconset>
+    </property>
+    <property name="iconSize">
+     <size>
+      <width>64</width>
+      <height>64</height>
+     </size>
     </property>
    </widget>
    <widget class="QLabel" name="cost">
@@ -519,6 +533,126 @@ p, li { white-space: pre-wrap; }
     </property>
     <property name="orientation">
      <enum>Qt::Horizontal</enum>
+    </property>
+   </widget>
+   <widget class="QLabel" name="total_passive_2">
+    <property name="geometry">
+     <rect>
+      <x>370</x>
+      <y>10</y>
+      <width>141</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>15</pointsize>
+     </font>
+    </property>
+    <property name="toolTip">
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Total Passive Income&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    </property>
+    <property name="layoutDirection">
+     <enum>Qt::RightToLeft</enum>
+    </property>
+    <property name="text">
+     <string>Passive: </string>
+    </property>
+    <property name="textFormat">
+     <enum>Qt::RichText</enum>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="total_passive_3">
+    <property name="geometry">
+     <rect>
+      <x>370</x>
+      <y>170</y>
+      <width>141</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>15</pointsize>
+     </font>
+    </property>
+    <property name="toolTip">
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Total Passive Income&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    </property>
+    <property name="layoutDirection">
+     <enum>Qt::RightToLeft</enum>
+    </property>
+    <property name="text">
+     <string>Total Income: </string>
+    </property>
+    <property name="textFormat">
+     <enum>Qt::RichText</enum>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="total_passive_4">
+    <property name="geometry">
+     <rect>
+      <x>360</x>
+      <y>330</y>
+      <width>151</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>15</pointsize>
+     </font>
+    </property>
+    <property name="toolTip">
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Total Passive Income&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    </property>
+    <property name="layoutDirection">
+     <enum>Qt::RightToLeft</enum>
+    </property>
+    <property name="text">
+     <string>Total Expenses:</string>
+    </property>
+    <property name="textFormat">
+     <enum>Qt::RichText</enum>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="total_passive_5">
+    <property name="geometry">
+     <rect>
+      <x>370</x>
+      <y>420</y>
+      <width>141</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>15</pointsize>
+     </font>
+    </property>
+    <property name="toolTip">
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Total Passive Income&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    </property>
+    <property name="layoutDirection">
+     <enum>Qt::RightToLeft</enum>
+    </property>
+    <property name="text">
+     <string>Cash flow:</string>
+    </property>
+    <property name="textFormat">
+     <enum>Qt::RichText</enum>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
     </property>
    </widget>
   </widget>

@@ -1,23 +1,23 @@
 {
   "Ledger": [
     {
-      "1" : [
+      "Date": "10/10/2020"
+    },
+    {
+      "Details": [
         {
-          "Date": "1/11/2020"
+          "from_account": "Savings"
         },
         {
-          "from_account" : "Checking"
+          "to_account": "Mortgage/Rent"
         },
         {
-          "to_account" : "Mortgage/Rent"
-        },
-        {
-          "amount" : 1300
-        },
-        {
-          "Notes": "Rent"
+          "amount": "1300"
         }
       ]
+    },
+    {
+      "Notes": "Rent"
     }
   ]
 }

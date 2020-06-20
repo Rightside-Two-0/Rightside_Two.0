@@ -80,7 +80,7 @@ class Ledger(QtWidgets.QWidget):
         # self.to_account.setItemText('')
         self.amount.setText('')
         self.notes.setText('')
-        self.save()
+        # self.save()
     def set_table_model(self):
         self.display_table.setColumnCount(5)
         self.display_table.setHorizontalHeaderLabels(['Date','From','To','Amount','Notes'])
@@ -133,9 +133,9 @@ class Ledger(QtWidgets.QWidget):
         except Exception:
             traceback.print_exc()
     def save(self):
-        with open(f'data/{data}.db', 'w') as file:
-            if data == 'income':
-                content = json.dump(self.ledger, file)
+        pass
+        # with open('data/ledger.db', 'w') as file:
+            # content = json.dump(self.ledger, file)
 
 class Analysis(QtWidgets.QWidget, analysis_view):
     def __init__(self):
