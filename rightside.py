@@ -1,11 +1,10 @@
-import sys
-import json
+import sys, os
+import json, csv
 from PyQt5 import QtCore, QtGui, QtWidgets, uic
-from PyQt5.QtWidgets import QInputDialog, QLineEdit, QVBoxLayout, QTableWidgetItem
+from PyQt5.QtWidgets import QInputDialog, QLineEdit, QVBoxLayout, QTableWidgetItem, QFileDialog
 from PyQt5.QtCore import Qt, QUrl
 import traceback
 
-analysis_view, QtBaseClass = uic.loadUiType('guis/analysis.ui')
 class Ledger(QtWidgets.QWidget):
     def __init__(self):
         super(Ledger, self).__init__()
@@ -94,20 +93,22 @@ class Ledger(QtWidgets.QWidget):
                 details = []
                 for item in content['Ledger']:
                     key = list(item.keys())[0]
-                    details.append(key)
-                    details.append(item[key])
+                    if key != 'Details':
+                        details.append(item[key])
                     accounts = []
                     if isinstance(item[key], list):
                         for i in item[key]:
                             keys = list(i.keys())[0]
-                            accounts.append(keys)
-                            accounts.append(i[keys])
-                        date_ = accounts[1]
-                        from_ = accounts[3]
-                        to_ = accounts[5]
-                        amount_ = accounts[7]
-                        notes_ = accounts[9]
-                    self.addItem_parms(date_, from_, to_, amount_, notes_)
+                            details.append(i[keys])
+                    else:
+                        if key == 'Notes':
+                            details.append(item[key])
+                date_ = details[0]
+                from_ = details[1]
+                to_ = details[2]
+                amount_ = details[3]
+                notes_ = details[4]
+            self.addItem_parms(date_, from_, to_, amount_, notes_)
         except Exception:
             traceback.print_exc()
     def load_to_accounts(self):
@@ -136,11 +137,20 @@ class Ledger(QtWidgets.QWidget):
         pass
         # with open('data/ledger.db', 'w') as file:
             # content = json.dump(self.ledger, file)
-
-class Analysis(QtWidgets.QWidget, analysis_view):
+class Analysis(QtWidgets.QWidget):
     def __init__(self):
         super(Analysis, self).__init__()
-        self.setupUi(self)
+        uic.loadUi('guis/analysis.ui', self)
+        self.current_tab = self.findChild(QtWidgets.QTableWidget, 'table_current')
+        self.rightside_tab = self.findChild(QtWidgets.QTableWidget, 'table_rightside')
+        self.current_tab.check_change = True
+        self.rightside_tab.check_change = True
+        self.current_tab.cellChanged.connect(self.c_current)
+        self.rightside_tab.cellChanged.connect(self.c_rightside)
+        #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        self.open_sheet()
+        self.open_rightside()
+        #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         self.hide()
         self.getURLButton.clicked.connect(self.add)
     def add(self):
@@ -148,6 +158,68 @@ class Analysis(QtWidgets.QWidget, analysis_view):
             self.webView.load(QUrl(self.urlBox.text()))
         except Exception as e:
             traceback.print_exc()
+    def c_rightside(self):
+        if self.current_tab.check_change:
+            row = self.rightside_tab.currentRow()
+            col = self.rightside_tab.currentColumn()
+            value = self.rightside_tab.item(row, col)
+            value = value.text()
+            print("The current cell is ", row, ", ", col)
+            print("In this cell we have: ", value)
+    def c_current(self):
+        if self.current_tab.check_change:
+            row = self.currentRow()
+            col = self.currentColumn()
+            value = self.item(row, col)
+            value = value.text()
+            print("The current cell is ", row, ", ", col)
+            print("In this cell we have: ", value)
+    def open_rightside(self):
+        self.rightside_tab.check_change = False
+        url = '/home/tetrapro/projects/python/Rightside_Two.0/rightside.csv'
+        with open(url, newline='') as csv_file:
+            self.rightside_tab.setRowCount(0)
+            self.rightside_tab.setColumnCount(10)
+            my_file = csv.reader(csv_file, delimiter=',', quotechar='|')
+            for row_data in my_file:
+                row = self.rightside_tab.rowCount()
+                self.rightside_tab.insertRow(row)
+                if len(row_data) > 10:
+                    self.rightside_tab.setColumnCount(len(row_data))
+                for column, stuff in enumerate(row_data):
+                    item = QTableWidgetItem(stuff)
+                    self.rightside_tab.setItem(row, column, item)
+        self.rightside_tab.check_change = True
+    def open_sheet(self):
+        self.current_tab.check_change = False
+        url = '/home/tetrapro/projects/python/Rightside_Two.0/current.csv'
+        with open(url, newline='') as csv_file:
+            self.current_tab.setRowCount(0)
+            self.current_tab.setColumnCount(10)
+            my_file = csv.reader(csv_file, delimiter=',', quotechar='|')
+            for row_data in my_file:
+                row = self.current_tab.rowCount()
+                self.current_tab.insertRow(row)
+                if len(row_data) > 10:
+                    self.current_tab.setColumnCount(len(row_data))
+                for column, stuff in enumerate(row_data):
+                    item = QTableWidgetItem(stuff)
+                    self.current_tab.setItem(row, column, item)
+        self.current_tab.check_change = True
+    def save_sheet(self):
+        path = QFileDialog.getOpenFileName(self, 'Save CSV', os.getenv('/home/tetrapro/projects/python/Rightside_Two.0'), 'CSV(*.csv)')
+        if path[0] != '':
+            with open(path[0], 'w') as csv_file:
+                writer = csv.writer(csv_file, dialect='excel')
+                for row in range(self.current_tab.rowCount()):
+                    row_data = []
+                    for column in range(self.current_tab.columnCount()):
+                        item = self.current_tab.item(row, column)
+                        if item is not None:
+                            row_data.append(item.next())
+                        else:
+                            row_data.append('')
+                    writer.writerow(row_data)
 class MainWindow(QtWidgets.QMainWindow):
     def __init__(self):
         try:
@@ -197,6 +269,8 @@ class MainWindow(QtWidgets.QMainWindow):
             self.goal_percent = self.findChild(QtWidgets.QProgressBar, 'goal_percent')
             self.percent = self.sum_passive/self.sum_expenses*100
             self.goal_percent.setValue(int(self.percent))
+            #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
         except Exception:
             traceback.print_exc()
 
@@ -319,7 +393,6 @@ class MainWindow(QtWidgets.QMainWindow):
                         if key != 'Notes':
                             self.addItem_Opps(key, str(item[key]))
                             head_cost.append(key)
-                print(head_cost)
         except Exception:
             traceback.print_exc()
     def load_debts(self):
@@ -396,7 +469,6 @@ class MainWindow(QtWidgets.QMainWindow):
             #~~~~write~~~to~~~file
             with open('data/opportunities.db', 'w') as file:
                 json.dump(account, file)
-
     def addTransaction(self):
         try:
             ledger.show()
