@@ -1,7 +1,7 @@
 import sys
 import json
 from PyQt5 import QtCore, QtGui, QtWidgets, uic
-from PyQt5.QtWidgets import QInputDialog, QLineEdit
+from PyQt5.QtWidgets import QInputDialog, QLineEdit, QVBoxLayout, QTableWidgetItem
 from PyQt5.QtCore import Qt, QUrl
 import traceback
 
@@ -22,34 +22,68 @@ class Ledger(QtWidgets.QWidget):
         self.notes = self.findChild(QtWidgets.QLineEdit, 'notes_box')
         self.display_table = self.findChild(QtWidgets.QTableView, 'transaction_view')
         self.add_button = self.findChild(QtWidgets.QPushButton, 'add_button')
-        self.add_button.clicked.connect(self.add)
+        self.add_button.clicked.connect(self.addItem)
         self.set_table_model()
         self.read_in_table()
         self.hide()
-    def add(self):
-        tmp = self.date.date()
-        date_ = tmp.toPyDate()
-        from_ = self.from_account.getComboSelection()
-        to_ = self.to_account.getComboSelection()
-        amount_ = self.amount.getText()
-        notes_ = self.notes.getText()
-        
-        self.addItem(date, from_, to_, amount_, notes_)
-    def addItem(self, date, from_a, to_a, amount, notes):
-        date_ = QtGui.QStandardItem(date)
-        from_ = QtGui.QStandardItem(from_a)
-        to_ = QtGui.QStandardItem(to_a)
-        amount_ = QtGui.QStandardItem(amount)
-        notes_ = QtGui.QStandardItem(notes)
-        date_.setTextAlignment(QtCore.Qt.AlignRight)
-        from_.setTextAlignment(QtCore.Qt.AlignRight)
-        to_.setTextAlignment(QtCore.Qt.AlignRight)
-        amount_.setTextAlignment(QtCore.Qt.AlignRight)
-        notes_.setTextAlignment(QtCore.Qt.AlignRight)
-        self.display_table.model().appendRow([date_, from_, to_, amount_, notes_])
+    # def add(self):
+    #     tmp = self.date.date()
+    #     date_ = tmp.toPyDate()
+    #     from_ = self.from_account.getComboSelection()
+    #     to_ = self.to_account.getComboSelection()
+    #     amount_ = self.amount.getText()
+    #     notes_ = self.notes.getText()
+    #     row = self.display_table.rowCount()
+    #     self.display_table.setRowCount(row+1)
+    #     row_data = [date_, from_, to_, amount_, notes_]
+    #     col = 0
+    #     for item in row_data:
+    #         cell = QTableWidgetIttem(str(item))
+    #         self.display_table.setItem(row, col, cell)
+    #         col += 1
+    #     self.addItem(date, from_, to_, amount_, notes_)
+    def addItem_parms(self, date_of, from_, to_, amount_, notes_):
+        row = self.display_table.rowCount()
+        self.display_table.setRowCount(row+1)
+        row_data = []
+        row_data.append(date_of)
+        row_data.append(from_)
+        row_data.append(to_)
+        row_data.append(amount_)
+        row_data.append(notes_)
+        col = 0
+        for item in row_data:
+            cell = QTableWidgetItem(str(item))
+            self.display_table.setItem(row, col, cell)
+            col += 1
+    def addItem(self):
+        date_ = self.date.date().toPyDate()
+        from_ = self.from_account.currentText()
+        to_ = self.to_account.currentText()
+        amount_ = self.amount.text()
+        notes_ = self.notes.text()
+        row = self.display_table.rowCount()
+        self.display_table.setRowCount(row+1)
+        row_data = []
+        row_data.append(date_)
+        row_data.append(from_)
+        row_data.append(to_)
+        row_data.append(amount_)
+        row_data.append(notes_)
+        col = 0
+        for item in row_data:
+            cell = QTableWidgetItem(str(item))
+            self.display_table.setItem(row, col, cell)
+            col += 1
+        # self.date.setDate()
+        # self.from_account.setItemText('')
+        # self.to_account.setItemText('')
+        self.amount.setText('')
+        self.notes.setText('')
+        self.save()
     def set_table_model(self):
-        self.display_table.setModel(QtGui.QStandardItemModel(self))
-        self.display_table.model().setColumnCount(5)
+        self.display_table.setColumnCount(5)
+        self.display_table.setHorizontalHeaderLabels(['Date','From','To','Amount','Notes'])
         self.display_table.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
     def read_in_table(self):
         try:
@@ -73,7 +107,7 @@ class Ledger(QtWidgets.QWidget):
                         to_ = accounts[5]
                         amount_ = str(accounts[7])
                         notes_ = accounts[9]
-                    self.addItem(date_, from_, to_, amount_, notes_)
+                    self.addItem_parms(date_, from_, to_, amount_, notes_)
         except Exception:
             traceback.print_exc()
     def load_to_accounts(self):
@@ -98,6 +132,11 @@ class Ledger(QtWidgets.QWidget):
                 return accounts
         except Exception:
             traceback.print_exc()
+    def save(self):
+        with open(f'data/{data}.db', 'w') as file:
+            if data == 'income':
+                content = json.dump(self.ledger, file)
+
 class Analysis(QtWidgets.QWidget, analysis_view):
     def __init__(self):
         super(Analysis, self).__init__()
@@ -114,6 +153,7 @@ class MainWindow(QtWidgets.QMainWindow):
         try:
             super(MainWindow, self).__init__()
             uic.loadUi('guis/financial.ui', self)
+            #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             self.sum_passive = 0.0
             self.sum_salaries = 0.0
             self.sum_expenses = 0.0
@@ -126,7 +166,8 @@ class MainWindow(QtWidgets.QMainWindow):
             self.expenses = self.findChild(QtWidgets.QTreeView, 'expenses_view')
             self.assets = self.findChild(QtWidgets.QTreeView, 'assets_view')
             self.liabilities = self.findChild(QtWidgets.QTreeView, 'liabilities_view')
-            self.opportunities = self.findChild(QtWidgets.QTreeView, 'opportunity_view')
+            self.opp_small = self.findChild(QtWidgets.QTreeView, 'opportunity_small')
+            self.opp_big = self.findChild(QtWidgets.QTreeView, 'opportunity_big')
             self.set_model_income()
             self.set_model_expenses()
             self.set_model_assets()
@@ -136,7 +177,7 @@ class MainWindow(QtWidgets.QMainWindow):
             self.load_exp()
             self.load_assets()
             self.load_debts()
-            self.load_opps()
+            self.load_small_opps()
             #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             #connect button actions
             self.analyze_it = self.findChild(QtWidgets.QPushButton, 'analyze_button')
@@ -212,17 +253,30 @@ class MainWindow(QtWidgets.QMainWindow):
         self.liabilities.header().setSectionResizeMode(
             1, QtWidgets.QHeaderView.ResizeToContents)
     def set_model_opportunities(self):
-        self.opportunities.setModel(QtGui.QStandardItemModel(self))
-        self.opportunities.model().setColumnCount(2)
-        self.opportunities.setRootIsDecorated(False)
-        self.opportunities.setAllColumnsShowFocus(True)
-        self.opportunities.setSelectionBehavior(
+        self.opp_small.setModel(QtGui.QStandardItemModel(self))
+        self.opp_small.model().setColumnCount(2)
+        self.opp_small.setRootIsDecorated(False)
+        self.opp_small.setAllColumnsShowFocus(True)
+        self.opp_small.setSelectionBehavior(
             QtWidgets.QAbstractItemView.SelectRows)
-        self.opportunities.setHeaderHidden(True)
-        self.opportunities.header().setStretchLastSection(False)
-        self.opportunities.header().setSectionResizeMode(
+        self.opp_small.setHeaderHidden(True)
+        self.opp_small.header().setStretchLastSection(False)
+        self.opp_small.header().setSectionResizeMode(
             0, QtWidgets.QHeaderView.Stretch)
-        self.opportunities.header().setSectionResizeMode(
+        self.opp_small.header().setSectionResizeMode(
+            1, QtWidgets.QHeaderView.ResizeToContents)
+        #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        self.opp_big.setModel(QtGui.QStandardItemModel(self))
+        self.opp_big.model().setColumnCount(2)
+        self.opp_big.setRootIsDecorated(False)
+        self.opp_big.setAllColumnsShowFocus(True)
+        self.opp_big.setSelectionBehavior(
+            QtWidgets.QAbstractItemView.SelectRows)
+        self.opp_big.setHeaderHidden(True)
+        self.opp_big.header().setStretchLastSection(False)
+        self.opp_big.header().setSectionResizeMode(
+            0, QtWidgets.QHeaderView.Stretch)
+        self.opp_big.header().setSectionResizeMode(
             1, QtWidgets.QHeaderView.ResizeToContents)
     def addItem_income(self, key, value):
         first = QtGui.QStandardItem(key)
@@ -239,13 +293,31 @@ class MainWindow(QtWidgets.QMainWindow):
         second = QtGui.QStandardItem(value)
         second.setTextAlignment(QtCore.Qt.AlignRight)
         self.assets.model().appendRow([first, second])
-    def addItem_Liabilities(self,key, value):
+    def addItem_Liabilities(self, key, value):
         first = QtGui.QStandardItem(key)
         second = QtGui.QStandardItem(value)
         second.setTextAlignment(QtCore.Qt.AlignRight)
         self.liabilities.model().appendRow([first, second])
-    def load_opps(self):
-        pass
+    def addItem_Opps(self, key , value):
+        first = QtGui.QStandardItem(key)
+        second = QtGui.QStandardItem(value)
+        second.setTextAlignment(QtCore.Qt.AlignRight)
+        self.opp_small.model().appendRow([first, second])
+    def load_small_opps(self):
+        try:
+            with open('data/small_opps.db', 'r') as f:
+                content = json.load(f)
+                for item in content['Opportunities']:
+                    key = list(item.keys())[0]
+                    if isinstance(item[key], list):
+                        for i in item[key]:
+                            keys = list(i.keys())[0]
+                            self.addItem_Opps(keys, str(i[keys]))
+                    else:
+                        if key != 'Notes':
+                            self.addItem_Opps(key, str(item[key]))
+        except Exception:
+            traceback.print_exc()
     def load_debts(self):
         try:
             with open('data/liabilities.db', 'r') as f:
@@ -314,6 +386,12 @@ class MainWindow(QtWidgets.QMainWindow):
         text, ok = QInputDialog.getText(self, 'Input Dialog', 'Enter Account:')
         if text and text != '':
             return text
+    def add_account(self):
+        account, ok = QInputDialog.getText(self, 'Add New Account', 'Enter the name of new Account: ')
+        if ok:
+            #~~~~write~~~to~~~file
+            with open('data/opportunities.db', 'w') as file:
+                json.dump(account, file)
 
     def addTransaction(self):
         try:

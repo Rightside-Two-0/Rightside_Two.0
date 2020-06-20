@@ -1,0 +1,26 @@
+{
+  "Opportunities": [
+    {
+      "Heading": "House for Sale -- 3/2"
+    },
+    {
+      "Details": [
+        {
+          "Cost": "50000"
+        },
+        {
+          "Down": "0"
+        },
+        {
+          "Mortgage": "50000"
+        },
+        {
+          "Cash Flow": "800" 
+        }
+      ]
+    },
+    {
+      "Notes": "3/2 hose in older area offered by Highway Department.  Market has crashed. NO bids at least week's auction."
+    }
+  ]
+}
