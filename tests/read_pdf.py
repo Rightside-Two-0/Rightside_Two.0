@@ -7,6 +7,7 @@
 # # print(df.head())
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# https://medium.com/@umerfarooq_26378/python-for-pdf-ef0fac2808b0
 import PyPDF2
 
 pdf_file = open('north_.pdf', 'rb')

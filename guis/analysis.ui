@@ -25,6 +25,12 @@
    <property name="toolTip">
     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;URL source&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
    </property>
+   <property name="inputMask">
+    <string>URL for Offering</string>
+   </property>
+   <property name="text">
+    <string>URL for Offering</string>
+   </property>
   </widget>
   <widget class="QPushButton" name="getURLButton">
    <property name="geometry">
@@ -49,7 +55,7 @@
     </rect>
    </property>
    <property name="currentIndex">
-    <number>1</number>
+    <number>0</number>
    </property>
    <widget class="QWidget" name="opp_tab">
     <attribute name="title">
@@ -85,7 +91,7 @@
       </rect>
      </property>
      <property name="currentIndex">
-      <number>1</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="current_tab">
       <attribute name="title">
@@ -99,6 +105,9 @@
          <width>1021</width>
          <height>701</height>
         </rect>
+       </property>
+       <property name="sizeAdjustPolicy">
+        <enum>QAbstractScrollArea::AdjustToContentsOnFirstShow</enum>
        </property>
       </widget>
      </widget>

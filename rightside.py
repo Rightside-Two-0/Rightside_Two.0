@@ -157,7 +157,7 @@ class Analysis(QtWidgets.QWidget):
         try:
             self.webView.load(QUrl(self.urlBox.text()))
             #~~~~~~~~~~start~~analysis~~~~~~~~~~~~
-            
+
         except Exception as e:
             traceback.print_exc()
     def c_rightside(self):
@@ -165,9 +165,9 @@ class Analysis(QtWidgets.QWidget):
             row = self.rightside_tab.currentRow()
             col = self.rightside_tab.currentColumn()
             value = self.rightside_tab.item(row, col)
-            value = value.text()
-            print("The current cell is ", row, ", ", col)
-            print("In this cell we have: ", value)
+            # value = value.text()
+            # print("The current cell is ", row, ", ", col)
+            # print("In this cell we have: ", value)
     def c_current(self):
         if self.current_tab.check_change:
             row = self.currentRow()
@@ -189,7 +189,7 @@ class Analysis(QtWidgets.QWidget):
                 if len(row_data) > 10:
                     self.rightside_tab.setColumnCount(len(row_data))
                 for column, content in enumerate(row_data):
-                    item = QTableWidgetItem(stucontentff)
+                    item = QTableWidgetItem(content)
                     self.rightside_tab.setItem(row, column, item)
         self.rightside_tab.check_change = True
     def open_sheet(self):
