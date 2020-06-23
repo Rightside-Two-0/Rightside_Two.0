@@ -64,18 +64,17 @@ class Ledger(QtWidgets.QWidget):
         to_ = self.to_account.currentText()
         amount_ = self.amount.text()
         notes_ = self.notes.text()
-
-        #~~~TASK~~ONE~~1)~~~~~~~~~~~~~~~~~~~>
-        print(str(date_)+' '+from_+' '+to_+' '+amount_+' '+notes_)
         try:
             headers = {"content-type": "application/json"}
-            data = '''{
-                "date": "2020-06-22",
-                "from_account": "Checking",
-                "to_account": "Other",
-                "amount": "17.00",
-                "notes": "Smoke shop"
-            }'''
+            dict = {
+                "date": f'{date_}',
+                "from_account": f'{from_}',
+                "to_account": f'{to_}',
+                "amount": f'{amount_}',
+                "notes": f'{notes_}'
+            }
+            data = json.dumps(dict)
+            print(data)
             url = 'http://localhost:8000/api/ledger/'
             response = requests.post(url, data=data, headers=headers)
             #~~~~~GET~~~~~
@@ -100,7 +99,6 @@ class Ledger(QtWidgets.QWidget):
                 cell = QTableWidgetItem(str(item))
                 self.display_table.setItem(row, col, cell)
                 col += 1
-
         except Exception:
             traceback.print_exc()
         # # self.date.setDate()
@@ -129,6 +127,7 @@ class Ledger(QtWidgets.QWidget):
             traceback.print_exc()
     def load_to_accounts(self):
         try:
+            #~~~TASK~~ONE~~1)~~~~~~~~~~~~~~~~~~~>
             with open('data/expenses.db', 'r') as f:
                 content = json.load(f)
                 accounts = []
@@ -149,10 +148,6 @@ class Ledger(QtWidgets.QWidget):
                 return accounts
         except Exception:
             traceback.print_exc()
-    def save(self):
-        pass
-        # with open('data/ledger.db', 'w') as file:
-            # content = json.dump(self.ledger, file)
 class Analysis(QtWidgets.QWidget):
     def __init__(self):
         super(Analysis, self).__init__()
@@ -241,13 +236,14 @@ class Analysis(QtWidgets.QWidget):
                             row_data.append('')
                     writer.writerow(row_data)
     def find_data(self):
+        #~~~TASK~~TWO~~2)~~~~~~~~~~~~~~~~~~~>
         #~~bs4~~download~OM~~~~~~~~>
-        url = 'https://www.crexi.com/properties/369439/iowa-1326-e-9th-street?marketingDocument=download'
+        url = self.urlBox.geext()
         response = requests.get(url)
         with open('pdf_OM.pdf', 'wr') as pdf:
             pdf.write(response.content)
         #~~~scan~~for~text~~~~~~~~~>
-        pdf_name = 'pdf_OM.pdf'
+        pdf_name = ''
         pdf_file = open(pdf_name, 'rb')
         pdf_reader = PyPDF2.PdfFileReader(pdf_file)
         for i in range(pdf_reader.numPages):
