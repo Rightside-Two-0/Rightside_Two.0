@@ -5,6 +5,7 @@ from PyQt5.QtWidgets import QInputDialog, QLineEdit, QVBoxLayout, QTableWidgetIt
 from PyQt5.QtCore import Qt, QUrl
 import traceback
 import requests
+# import PyPDF2
 
 class Ledger(QtWidgets.QWidget):
     def __init__(self):
@@ -63,6 +64,9 @@ class Ledger(QtWidgets.QWidget):
         to_ = self.to_account.currentText()
         amount_ = self.amount.text()
         notes_ = self.notes.text()
+
+        #~~~TASK~~ONE~~1)~~~~~~~~~~~~~~~~~~~>
+        print(str(date_)+' '+from_+' '+to_+' '+amount_+' '+notes_)
         try:
             headers = {"content-type": "application/json"}
             data = '''{
@@ -155,10 +159,12 @@ class Analysis(QtWidgets.QWidget):
         uic.loadUi('guis/analysis.ui', self)
         self.current_tab = self.findChild(QtWidgets.QTableWidget, 'table_current')
         self.rightside_tab = self.findChild(QtWidgets.QTableWidget, 'table_rightside')
+        self.url_OM = self.findChild(QtWidgets.QLineEdit, 'urlBox')
         self.current_tab.check_change = True
         self.rightside_tab.check_change = True
         self.current_tab.cellChanged.connect(self.c_current)
         self.rightside_tab.cellChanged.connect(self.c_rightside)
+
         #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         self.open_sheet()
         self.open_rightside()
@@ -169,7 +175,7 @@ class Analysis(QtWidgets.QWidget):
         try:
             self.webView.load(QUrl(self.urlBox.text()))
             #~~~~~~~~~~start~~analysis~~~~~~~~~~~~
-
+            self.find_data()
         except Exception as e:
             traceback.print_exc()
     def c_rightside(self):
@@ -234,6 +240,19 @@ class Analysis(QtWidgets.QWidget):
                         else:
                             row_data.append('')
                     writer.writerow(row_data)
+    def find_data(self):
+        #~~bs4~~download~OM~~~~~~~~>
+        url = 'https://www.crexi.com/properties/369439/iowa-1326-e-9th-street?marketingDocument=download'
+        response = requests.get(url)
+        with open('pdf_OM.pdf', 'wr') as pdf:
+            pdf.write(response.content)
+        #~~~scan~~for~text~~~~~~~~~>
+        pdf_name = 'pdf_OM.pdf'
+        pdf_file = open(pdf_name, 'rb')
+        pdf_reader = PyPDF2.PdfFileReader(pdf_file)
+        for i in range(pdf_reader.numPages):
+            page = pdf_reader.getPage(i)
+            print(page.extractText())
 class MainWindow(QtWidgets.QMainWindow):
     def __init__(self):
         try:
