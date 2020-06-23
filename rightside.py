@@ -149,7 +149,6 @@ class Ledger(QtWidgets.QWidget):
         pass
         # with open('data/ledger.db', 'w') as file:
             # content = json.dump(self.ledger, file)
-
 class Analysis(QtWidgets.QWidget):
     def __init__(self):
         super(Analysis, self).__init__()
