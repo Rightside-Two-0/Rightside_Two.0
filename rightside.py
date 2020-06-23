@@ -1,11 +1,11 @@
-import sys
-import json
+import sys, os
+import json, csv
 from PyQt5 import QtCore, QtGui, QtWidgets, uic
-from PyQt5.QtWidgets import QInputDialog, QLineEdit, QVBoxLayout, QTableWidgetItem
+from PyQt5.QtWidgets import QInputDialog, QLineEdit, QVBoxLayout, QTableWidgetItem, QFileDialog
 from PyQt5.QtCore import Qt, QUrl
 import traceback
+import requests
 
-analysis_view, QtBaseClass = uic.loadUiType('guis/analysis.ui')
 class Ledger(QtWidgets.QWidget):
     def __init__(self):
         super(Ledger, self).__init__()
@@ -57,57 +57,70 @@ class Ledger(QtWidgets.QWidget):
             self.display_table.setItem(row, col, cell)
             col += 1
     def addItem(self):
+        #~~~~POST~~~~~
         date_ = self.date.date().toPyDate()
         from_ = self.from_account.currentText()
         to_ = self.to_account.currentText()
         amount_ = self.amount.text()
         notes_ = self.notes.text()
-        row = self.display_table.rowCount()
-        self.display_table.setRowCount(row+1)
-        row_data = []
-        row_data.append(date_)
-        row_data.append(from_)
-        row_data.append(to_)
-        row_data.append(amount_)
-        row_data.append(notes_)
-        col = 0
-        for item in row_data:
-            cell = QTableWidgetItem(str(item))
-            self.display_table.setItem(row, col, cell)
-            col += 1
-        # self.date.setDate()
-        # self.from_account.setItemText('')
-        # self.to_account.setItemText('')
+        try:
+            headers = {"content-type": "application/json"}
+            data = '''{
+                "date": "2020-06-22",
+                "from_account": "Checking",
+                "to_account": "Other",
+                "amount": "17.00",
+                "notes": "Smoke shop"
+            }'''
+            url = 'http://localhost:8000/api/ledger/'
+            response = requests.post(url, data=data, headers=headers)
+            #~~~~~GET~~~~~
+            response2 = requests.get(url)
+            json_response = list(response2.json())
+            for item in json_response:
+                date_of = item['date']
+                from_ = item['from_account']
+                to_ = item['to_account']
+                amount_ = item['amount']
+                notes_ = item['notes']
+            row = self.display_table.rowCount()
+            self.display_table.setRowCount(row+1)
+            row_data = []
+            row_data.append(date_of)
+            row_data.append(from_)
+            row_data.append(to_)
+            row_data.append(amount_)
+            row_data.append(notes_)
+            col = 0
+            for item in row_data:
+                cell = QTableWidgetItem(str(item))
+                self.display_table.setItem(row, col, cell)
+                col += 1
+
+        except Exception:
+            traceback.print_exc()
+        # # self.date.setDate()
+        # # self.from_account.setItemText('')
+        # # self.to_account.setItemText('')
         self.amount.setText('')
         self.notes.setText('')
-        # self.save()
+        # # self.save()
     def set_table_model(self):
         self.display_table.setColumnCount(5)
         self.display_table.setHorizontalHeaderLabels(['Date','From','To','Amount','Notes'])
         self.display_table.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
     def read_in_table(self):
         try:
-            content = []
             date_, to_, from_, amount_, notes_ = '', '', '', '', ''
-            with open('data/ledger.db', 'r') as ledger:
-                content = json.load(ledger)
-                details = []
-                for item in content['Ledger']:
-                    key = list(item.keys())[0]
-                    details.append(key)
-                    details.append(item[key])
-                    accounts = []
-                    if isinstance(item[key], list):
-                        for i in item[key]:
-                            keys = list(i.keys())[0]
-                            accounts.append(keys)
-                            accounts.append(i[keys])
-                        date_ = accounts[1]
-                        from_ = accounts[3]
-                        to_ = accounts[5]
-                        amount_ = str(accounts[7])
-                        notes_ = accounts[9]
-                    self.addItem_parms(date_, from_, to_, amount_, notes_)
+            url = 'http://localhost:8000/api/ledger/'
+            response = requests.get(url)
+            for item in list(response.json()):
+                date_ = item['date']
+                from_ = item['from_account']
+                to_ = item['to_account']
+                amount_ = item['amount']
+                notes_ = item['notes']
+                self.addItem_parms(date_, from_, to_, amount_, notes_)
         except Exception:
             traceback.print_exc()
     def load_to_accounts(self):
@@ -136,18 +149,91 @@ class Ledger(QtWidgets.QWidget):
         pass
         # with open('data/ledger.db', 'w') as file:
             # content = json.dump(self.ledger, file)
-
-class Analysis(QtWidgets.QWidget, analysis_view):
+class Analysis(QtWidgets.QWidget):
     def __init__(self):
         super(Analysis, self).__init__()
-        self.setupUi(self)
+        uic.loadUi('guis/analysis.ui', self)
+        self.current_tab = self.findChild(QtWidgets.QTableWidget, 'table_current')
+        self.rightside_tab = self.findChild(QtWidgets.QTableWidget, 'table_rightside')
+        self.current_tab.check_change = True
+        self.rightside_tab.check_change = True
+        self.current_tab.cellChanged.connect(self.c_current)
+        self.rightside_tab.cellChanged.connect(self.c_rightside)
+        #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        self.open_sheet()
+        self.open_rightside()
+        #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         self.hide()
-        self.getURLButton.clicked.connect(self.add)
-    def add(self):
+        self.getURLButton.clicked.connect(self.view_deal)
+    def view_deal(self):
         try:
             self.webView.load(QUrl(self.urlBox.text()))
+            #~~~~~~~~~~start~~analysis~~~~~~~~~~~~
+
         except Exception as e:
             traceback.print_exc()
+    def c_rightside(self):
+        if self.current_tab.check_change:
+            row = self.rightside_tab.currentRow()
+            col = self.rightside_tab.currentColumn()
+            value = self.rightside_tab.item(row, col)
+            # value = value.text()
+            # print("The current cell is ", row, ", ", col)
+            # print("In this cell we have: ", value)
+    def c_current(self):
+        if self.current_tab.check_change:
+            row = self.currentRow()
+            col = self.currentColumn()
+            value = self.item(row, col)
+            value = value.text()
+            print("The current cell is ", row, ", ", col)
+            print("In this cell we have: ", value)
+    def open_rightside(self):
+        self.rightside_tab.check_change = False
+        url = '/home/tetrapro/projects/python/Rightside_Two.0/deals/rightside.csv'
+        with open(url, newline='') as csv_file:
+            self.rightside_tab.setRowCount(0)
+            self.rightside_tab.setColumnCount(10)
+            my_file = csv.reader(csv_file, delimiter=',', quotechar='|')
+            for row_data in my_file:
+                row = self.rightside_tab.rowCount()
+                self.rightside_tab.insertRow(row)
+                if len(row_data) > 10:
+                    self.rightside_tab.setColumnCount(len(row_data))
+                for column, content in enumerate(row_data):
+                    item = QTableWidgetItem(content)
+                    self.rightside_tab.setItem(row, column, item)
+        self.rightside_tab.check_change = True
+    def open_sheet(self):
+        self.current_tab.check_change = False
+        url = '/home/tetrapro/projects/python/Rightside_Two.0/deals/current.csv'
+        with open(url, newline='') as csv_file:
+            self.current_tab.setRowCount(0)
+            self.current_tab.setColumnCount(10)
+            my_file = csv.reader(csv_file, delimiter=',', quotechar='|')
+            for row_data in my_file:
+                row = self.current_tab.rowCount()
+                self.current_tab.insertRow(row)
+                if len(row_data) > 10:
+                    self.current_tab.setColumnCount(len(row_data))
+                for column, content in enumerate(row_data):
+                    item = QTableWidgetItem(content)
+                    self.current_tab.setItem(row, column, item)
+        self.current_tab.check_change = True
+    def save_sheet(self):
+        path = QFileDialog.getOpenFileName(self, 'Save CSV', os.getenv('/home/tetrapro/projects/python/Rightside_Two.0'), 'CSV(*.csv)')
+        if path[0] != '':
+            with open(path[0], 'w') as csv_file:
+                writer = csv.writer(csv_file, dialect='excel')
+                for row in range(self.current_tab.rowCount()):
+                    row_data = []
+                    for column in range(self.current_tab.columnCount()):
+                        item = self.current_tab.item(row, column)
+                        if item is not None:
+                            row_data.append(item.next())
+                        else:
+                            row_data.append('')
+                    writer.writerow(row_data)
 class MainWindow(QtWidgets.QMainWindow):
     def __init__(self):
         try:
@@ -156,7 +242,7 @@ class MainWindow(QtWidgets.QMainWindow):
             #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             self.sum_passive = 0.0
             self.sum_salaries = 0.0
-            self.sum_expenses = 0.0
+            self.sum_expenses = 1.0
             self.sum_assets = 0.0
             self.sum_debts = 0.0
             #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -187,16 +273,17 @@ class MainWindow(QtWidgets.QMainWindow):
             #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             #add up passive incomes
             self.total_passive = self.findChild(QtWidgets.QLabel, 'total_passive')
-            self.total_passive.setText(str(self.sum_passive))
+            self.total_passive.setText('{0:.2f}'.format(self.sum_passive))
             self.total_income = self.findChild(QtWidgets.QLabel, 'total_income')
-            self.total_income.setText(str(self.sum_salaries+self.sum_passive))
             self.total_expenses = self.findChild(QtWidgets.QLabel, 'total_expenses')
-            self.total_expenses.setText(str(self.sum_expenses))
+            self.total_expenses.setText('{0:.2f}'.format(self.sum_expenses))
             self.total_cashflow = self.findChild(QtWidgets.QLabel, 'total_cashflow')
-            self.total_cashflow.setText(str((self.sum_salaries+self.sum_passive)-self.sum_expenses))
+            self.total_cashflow.setText('{0:.2f}'.format((self.sum_salaries+self.sum_passive)-self.sum_expenses))
             self.goal_percent = self.findChild(QtWidgets.QProgressBar, 'goal_percent')
             self.percent = self.sum_passive/self.sum_expenses*100
             self.goal_percent.setValue(int(self.percent))
+            #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
         except Exception:
             traceback.print_exc()
 
@@ -305,81 +392,48 @@ class MainWindow(QtWidgets.QMainWindow):
         self.opp_small.model().appendRow([first, second])
     def load_small_opps(self):
         try:
-            with open('data/small_opps.db', 'r') as f:
-                content = json.load(f)
-                for item in content['Opportunities']:
-                    key = list(item.keys())[0]
-                    if isinstance(item[key], list):
-                        for i in item[key]:
-                            keys = list(i.keys())[0]
-                            self.addItem_Opps(keys, str(i[keys]))
-                    else:
-                        if key != 'Notes':
-                            self.addItem_Opps(key, str(item[key]))
+            url = 'http://localhost:8000/api/opportunity/'
+            response = requests.get(url)
+            for item in list(response.json()):
+                self.addItem_Opps(item['heading'], item['description'])
         except Exception:
             traceback.print_exc()
     def load_debts(self):
         try:
-            with open('data/liabilities.db', 'r') as f:
-                content = json.load(f)
-                for item in content['Liabilities']:
-                    key = list(item.keys())[0]
-                    if isinstance(item[key], list):
-                        for i in item[key]:
-                            keys = list(i.keys())[0]
-                            self.addItem_Liabilities(keys, str(i[keys]))
-                    else:
-                        self.addItem_Liabilities(key, str(item[key]))
+            url = 'http://localhost:8000/api/liability/'
+            response = requests.get(url)
+            for item in list(response.json()):
+                self.addItem_Liabilities(item['source'], item['amount'])
         except Exception:
             traceback.print_exc()
     def load_assets(self):
         try:
-            with open('data/assets.db', 'r') as f:
-                content = json.load(f)
-                for item in content['Assets']:
-                    key = list(item.keys())[0]
-                    if isinstance(item[key], list):
-                        for i in item[key]:
-                            keys = list(i.keys())[0]
-                            self.addItem_Assets(keys, str(i[keys]))
-                    else:
-                        self.addItem_Assets(key, str(item[key]))
+            url = 'http://localhost:8000/api/asset/'
+            response = requests.get(url)
+            for item in list(response.json()):
+                self.addItem_Assets(item['source'], item['cost'])
         except Exception:
             traceback.print_exc()
     def load_exp(self):
         try:
-            with open('data/expenses.db', 'r') as f:
-                content = json.load(f)
-                for item in content['Expenses']:
-                    key = list(item.keys())[0]
-                    self.addItem_Expenses(key, str(item[key]))
-                    self.sum_expenses += float(item[key])
+            url = 'http://localhost:8000/api/expense/'
+            response = requests.get(url)
+            for item in list(response.json()):
+                self.addItem_Expenses(item['source'], item['amount'])
+                self.sum_expenses += float(item['amount'])
         except Exception:
             traceback.print_exc()
     def load(self):
        try:
-           with open('data/income.db', 'r') as f:
-               content = json.load(f)
-               for item in content['Income']:
-                   key = list(item.keys())[0]
-                   if key == 'Salary/Wages':
-                       self.sum_salaries += float(item[key])
-                       self.addItem_income(key, str(item[key]))
-                       if isinstance(item[key], list):
-                           for i in item[key]:
-                               keys = list(i.keys())[0]
-                               self.addItem_income(keys, str(i[keys]))
-                   if key != 'Salary/Wages':
-                       keys = list(item.keys())[0]
-                       if not isinstance(item[keys], list):
-                           self.addItem_income(keys, str(item[keys]))
-                       if isinstance(item[key], list):
-                            for i in item[key]:
-                                keys = list(i.keys())[0]
-                                self.addItem_income(keys, str(i[keys]))
-                                if keys != 'Salary/Wages':
-                                    self.sum_passive += float(i[keys])
-
+           url = 'http://localhost:8000/api/income/'
+           response = requests.get(url)
+           for item in list(response.json()):
+               self.addItem_income(item['source'], item['amount'])
+               if item['source'] == 'Salary/Wages':
+                   self.sum_salaries += float(item['amount'])
+               if item['source'] != 'Salary/Wages':
+                   self.sum_passive += float(item['amount'])
+           self.total_income.setText('{0:.2f}'.format(self.sum_salaries+self.sum_passive))
        except Exception:
            traceback.print_exc()
     def get_new_account(self):
@@ -392,7 +446,6 @@ class MainWindow(QtWidgets.QMainWindow):
             #~~~~write~~~to~~~file
             with open('data/opportunities.db', 'w') as file:
                 json.dump(account, file)
-
     def addTransaction(self):
         try:
             ledger.show()
@@ -423,8 +476,6 @@ class MainWindow(QtWidgets.QMainWindow):
                 content = json.dump(self.opps_model.opportunities, file)
             elif data == 'ledger':
                 content = json.dump(self.opps_model.opportunities, file)
-
-
 app = QtWidgets.QApplication(sys.argv)
 window = MainWindow()
 ledger = Ledger()
