@@ -22,6 +22,26 @@
      <height>41</height>
     </rect>
    </property>
+   <property name="dateTime">
+    <datetime>
+     <hour>0</hour>
+     <minute>0</minute>
+     <second>0</second>
+     <year>2020</year>
+     <month>6</month>
+     <day>24</day>
+    </datetime>
+   </property>
+   <property name="calendarPopup">
+    <bool>true</bool>
+   </property>
+   <property name="date">
+    <date>
+     <year>2020</year>
+     <month>6</month>
+     <day>24</day>
+    </date>
+   </property>
   </widget>
   <widget class="QLineEdit" name="amount_box">
    <property name="geometry">
@@ -84,6 +104,41 @@
      <height>41</height>
     </rect>
    </property>
+   <item>
+    <property name="text">
+     <string>Checking</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>Savings</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>Mutual Funds</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>Stocks</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>Bank CDs</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>Real Estate</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>Business</string>
+    </property>
+   </item>
   </widget>
   <widget class="QComboBox" name="to_account">
    <property name="geometry">
@@ -94,6 +149,71 @@
      <height>41</height>
     </rect>
    </property>
+   <item>
+    <property name="text">
+     <string>Mortgage/Rent</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>Utilities</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>Insurance</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>Vehicle</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>Food/Grocerices</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>Health/Wellness</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>Entertainment</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>Clothing</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>Furniture</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>Donations/Charity</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>Other</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>Fees/Fines</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>Taxes</string>
+    </property>
+   </item>
   </widget>
   <widget class="QTableWidget" name="transaction_view">
    <property name="geometry">
@@ -103,6 +223,15 @@
      <width>801</width>
      <height>181</height>
     </rect>
+   </property>
+   <property name="minimumSize">
+    <size>
+     <width>801</width>
+     <height>0</height>
+    </size>
+   </property>
+   <property name="autoFillBackground">
+    <bool>true</bool>
    </property>
    <property name="sizeAdjustPolicy">
     <enum>QAbstractScrollArea::AdjustToContents</enum>

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1060</width>
-    <height>895</height>
+    <width>1057</width>
+    <height>913</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -20,24 +20,11 @@
    <bool>true</bool>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <widget class="QPushButton" name="analyze_button">
-    <property name="geometry">
-     <rect>
-      <x>360</x>
-      <y>220</y>
-      <width>99</width>
-      <height>27</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Analyze</string>
-    </property>
-   </widget>
    <widget class="QTreeView" name="expenses_view">
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>220</y>
+      <y>260</y>
       <width>341</width>
       <height>251</height>
      </rect>
@@ -50,7 +37,7 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>480</y>
+      <y>520</y>
       <width>341</width>
       <height>361</height>
      </rect>
@@ -63,7 +50,7 @@
     <property name="geometry">
      <rect>
       <x>360</x>
-      <y>480</y>
+      <y>520</y>
       <width>341</width>
       <height>361</height>
      </rect>
@@ -76,7 +63,7 @@
     <property name="geometry">
      <rect>
       <x>680</x>
-      <y>0</y>
+      <y>40</y>
       <width>21</width>
       <height>471</height>
      </rect>
@@ -91,33 +78,11 @@
      <enum>Qt::Vertical</enum>
     </property>
    </widget>
-   <widget class="QPushButton" name="add_transaction">
-    <property name="geometry">
-     <rect>
-      <x>360</x>
-      <y>250</y>
-      <width>101</width>
-      <height>31</height>
-     </rect>
-    </property>
-    <property name="toolTip">
-     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;New Transaction&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-    </property>
-    <property name="text">
-     <string>Transaction</string>
-    </property>
-    <property name="iconSize">
-     <size>
-      <width>133</width>
-      <height>78</height>
-     </size>
-    </property>
-   </widget>
    <widget class="QTreeView" name="income_view">
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>0</y>
+      <y>40</y>
       <width>341</width>
       <height>211</height>
      </rect>
@@ -133,7 +98,7 @@
     <property name="geometry">
      <rect>
       <x>520</x>
-      <y>10</y>
+      <y>50</y>
       <width>141</width>
       <height>41</height>
      </rect>
@@ -163,7 +128,7 @@
     <property name="geometry">
      <rect>
       <x>520</x>
-      <y>170</y>
+      <y>210</y>
       <width>141</width>
       <height>41</height>
      </rect>
@@ -193,7 +158,7 @@
     <property name="geometry">
      <rect>
       <x>520</x>
-      <y>330</y>
+      <y>370</y>
       <width>141</width>
       <height>41</height>
      </rect>
@@ -223,7 +188,7 @@
     <property name="geometry">
      <rect>
       <x>520</x>
-      <y>420</y>
+      <y>470</y>
       <width>141</width>
       <height>41</height>
      </rect>
@@ -253,7 +218,7 @@
     <property name="geometry">
      <rect>
       <x>710</x>
-      <y>0</y>
+      <y>40</y>
       <width>341</width>
       <height>471</height>
      </rect>
@@ -308,7 +273,7 @@
     <property name="geometry">
      <rect>
       <x>710</x>
-      <y>480</y>
+      <y>520</y>
       <width>341</width>
       <height>51</height>
      </rect>
@@ -329,7 +294,7 @@
     <property name="geometry">
      <rect>
       <x>710</x>
-      <y>530</y>
+      <y>570</y>
       <width>341</width>
       <height>151</height>
      </rect>
@@ -346,7 +311,7 @@ p, li { white-space: pre-wrap; }
     <property name="geometry">
      <rect>
       <x>710</x>
-      <y>690</y>
+      <y>730</y>
       <width>131</width>
       <height>61</height>
      </rect>
@@ -372,7 +337,7 @@ p, li { white-space: pre-wrap; }
     <property name="geometry">
      <rect>
       <x>980</x>
-      <y>690</y>
+      <y>730</y>
       <width>71</width>
       <height>61</height>
      </rect>
@@ -398,7 +363,7 @@ p, li { white-space: pre-wrap; }
     <property name="geometry">
      <rect>
       <x>710</x>
-      <y>750</y>
+      <y>790</y>
       <width>41</width>
       <height>31</height>
      </rect>
@@ -414,7 +379,7 @@ p, li { white-space: pre-wrap; }
     <property name="geometry">
      <rect>
       <x>710</x>
-      <y>790</y>
+      <y>830</y>
       <width>51</width>
       <height>21</height>
      </rect>
@@ -430,7 +395,7 @@ p, li { white-space: pre-wrap; }
     <property name="geometry">
      <rect>
       <x>760</x>
-      <y>750</y>
+      <y>790</y>
       <width>71</width>
       <height>31</height>
      </rect>
@@ -446,7 +411,7 @@ p, li { white-space: pre-wrap; }
     <property name="geometry">
      <rect>
       <x>760</x>
-      <y>780</y>
+      <y>820</y>
       <width>71</width>
       <height>41</height>
      </rect>
@@ -462,7 +427,7 @@ p, li { white-space: pre-wrap; }
     <property name="geometry">
      <rect>
       <x>880</x>
-      <y>750</y>
+      <y>790</y>
       <width>91</width>
       <height>31</height>
      </rect>
@@ -478,7 +443,7 @@ p, li { white-space: pre-wrap; }
     <property name="geometry">
      <rect>
       <x>960</x>
-      <y>750</y>
+      <y>790</y>
       <width>91</width>
       <height>31</height>
      </rect>
@@ -494,7 +459,7 @@ p, li { white-space: pre-wrap; }
     <property name="geometry">
      <rect>
       <x>880</x>
-      <y>780</y>
+      <y>820</y>
       <width>91</width>
       <height>41</height>
      </rect>
@@ -510,7 +475,7 @@ p, li { white-space: pre-wrap; }
     <property name="geometry">
      <rect>
       <x>960</x>
-      <y>780</y>
+      <y>820</y>
       <width>91</width>
       <height>41</height>
      </rect>
@@ -526,7 +491,7 @@ p, li { white-space: pre-wrap; }
     <property name="geometry">
      <rect>
       <x>710</x>
-      <y>470</y>
+      <y>510</y>
       <width>341</width>
       <height>21</height>
      </rect>
@@ -539,7 +504,7 @@ p, li { white-space: pre-wrap; }
     <property name="geometry">
      <rect>
       <x>370</x>
-      <y>10</y>
+      <y>50</y>
       <width>141</width>
       <height>41</height>
      </rect>
@@ -569,7 +534,7 @@ p, li { white-space: pre-wrap; }
     <property name="geometry">
      <rect>
       <x>370</x>
-      <y>170</y>
+      <y>210</y>
       <width>141</width>
       <height>41</height>
      </rect>
@@ -599,7 +564,7 @@ p, li { white-space: pre-wrap; }
     <property name="geometry">
      <rect>
       <x>360</x>
-      <y>330</y>
+      <y>370</y>
       <width>151</width>
       <height>41</height>
      </rect>
@@ -629,7 +594,7 @@ p, li { white-space: pre-wrap; }
     <property name="geometry">
      <rect>
       <x>370</x>
-      <y>420</y>
+      <y>470</y>
       <width>141</width>
       <height>41</height>
      </rect>
@@ -659,7 +624,7 @@ p, li { white-space: pre-wrap; }
     <property name="geometry">
      <rect>
       <x>710</x>
-      <y>820</y>
+      <y>860</y>
       <width>341</width>
       <height>20</height>
      </rect>
@@ -671,38 +636,177 @@ p, li { white-space: pre-wrap; }
      <number>24</number>
     </property>
    </widget>
+   <widget class="QWidget" name="menu_bar" native="true">
+    <property name="geometry">
+     <rect>
+      <x>-10</x>
+      <y>0</y>
+      <width>1071</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <widget class="QPushButton" name="analyze_button">
+     <property name="geometry">
+      <rect>
+       <x>210</x>
+       <y>0</y>
+       <width>51</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="toolTip">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Analyze Property&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="icon">
+      <iconset>
+       <normaloff>../../../../icons/abacus.png</normaloff>../../../../icons/abacus.png</iconset>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="add_transaction">
+     <property name="geometry">
+      <rect>
+       <x>260</x>
+       <y>0</y>
+       <width>51</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="toolTip">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;New Transaction&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="icon">
+      <iconset>
+       <normaloff>../../../../icons/cheque--arrow.png</normaloff>../../../../icons/cheque--arrow.png</iconset>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="add_asset">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>0</y>
+       <width>51</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="toolTip">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Add Asset&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="icon">
+      <iconset>
+       <normaloff>../../../../icons/crown--plus.png</normaloff>../../../../icons/crown--plus.png</iconset>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="liquidate_asset">
+     <property name="geometry">
+      <rect>
+       <x>60</x>
+       <y>0</y>
+       <width>51</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="toolTip">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Liquidate Asset&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="icon">
+      <iconset>
+       <normaloff>../../../../icons/crown--minus.png</normaloff>../../../../icons/crown--minus.png</iconset>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="add_liability">
+     <property name="geometry">
+      <rect>
+       <x>110</x>
+       <y>0</y>
+       <width>51</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="toolTip">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Add Liability&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="icon">
+      <iconset>
+       <normaloff>../../../../icons/money--plus.png</normaloff>../../../../icons/money--plus.png</iconset>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="add_liability_2">
+     <property name="geometry">
+      <rect>
+       <x>160</x>
+       <y>0</y>
+       <width>51</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="toolTip">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Reduce Liability&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="icon">
+      <iconset>
+       <normaloff>../../../../icons/money--minus.png</normaloff>../../../../icons/money--minus.png</iconset>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_2">
+     <property name="geometry">
+      <rect>
+       <x>810</x>
+       <y>0</y>
+       <width>91</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>15</pointsize>
+      </font>
+     </property>
+     <property name="text">
+      <string>Networth: </string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="networth_label">
+     <property name="geometry">
+      <rect>
+       <x>900</x>
+       <y>0</y>
+       <width>151</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>15</pointsize>
+      </font>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+     </property>
+    </widget>
+   </widget>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
-  <widget class="QMenuBar" name="menuBar">
-   <property name="geometry">
-    <rect>
-     <x>0</x>
-     <y>0</y>
-     <width>1060</width>
-     <height>25</height>
-    </rect>
-   </property>
-   <widget class="QMenu" name="menuFile">
-    <property name="title">
-     <string>File</string>
-    </property>
-    <addaction name="account_menut_item"/>
-    <addaction name="actionRemove_Account"/>
-   </widget>
-   <widget class="QMenu" name="menuEdit">
-    <property name="title">
-     <string>Edit</string>
-    </property>
-    <addaction name="actionIncome"/>
-    <addaction name="actionExpense"/>
-    <addaction name="actionAsset"/>
-    <addaction name="actionLiability"/>
-    <addaction name="separator"/>
-    <addaction name="actionTransaction"/>
-   </widget>
-   <addaction name="menuFile"/>
-   <addaction name="menuEdit"/>
-  </widget>
   <action name="actionIncome">
    <property name="text">
     <string>Income</string>

@@ -13,12 +13,8 @@ class Ledger(QtWidgets.QWidget):
         uic.loadUi('guis/ledger.ui', self)
         #set from_accounts = list of expenses read in
         self.date = self.findChild(QtWidgets.QDateEdit, 'date_box')
-        self.to_accounts = self.load_to_accounts()
-        self.from_accounts = self.load_from_accounts()
         self.to_account = self.findChild(QtWidgets.QComboBox, 'to_account')
         self.from_account = self.findChild(QtWidgets.QComboBox, 'from_account')
-        self.to_account.addItems(self.to_accounts)
-        self.from_account.addItems(self.from_accounts)
         self.amount = self.findChild(QtWidgets.QLineEdit, 'amount_box')
         self.notes = self.findChild(QtWidgets.QLineEdit, 'notes_box')
         self.display_table = self.findChild(QtWidgets.QTableView, 'transaction_view')
@@ -74,7 +70,6 @@ class Ledger(QtWidgets.QWidget):
                 "notes": f'{notes_}'
             }
             data = json.dumps(dict)
-            print(data)
             url = 'http://localhost:8000/api/ledger/'
             response = requests.post(url, data=data, headers=headers)
             #~~~~~GET~~~~~
@@ -123,29 +118,6 @@ class Ledger(QtWidgets.QWidget):
                 amount_ = item['amount']
                 notes_ = item['notes']
                 self.addItem_parms(date_, from_, to_, amount_, notes_)
-        except Exception:
-            traceback.print_exc()
-    def load_to_accounts(self):
-        try:
-            #~~~TASK~~ONE~~1)~~~~~~~~~~~~~~~~~~~>
-            with open('data/expenses.db', 'r') as f:
-                content = json.load(f)
-                accounts = []
-                for item in content['Expenses']:
-                    key = list(item.keys())[0]
-                    accounts.append(key)
-                return accounts
-        except Exception:
-            traceback.print_exc()
-    def load_from_accounts(self):
-        try:
-            with open('data/assets.db', 'r') as f:
-                content = json.load(f)
-                accounts = []
-                for item in content['Assets']:
-                    key = list(item.keys())[0]
-                    accounts.append(key)
-                return accounts
         except Exception:
             traceback.print_exc()
 class Analysis(QtWidgets.QWidget):
@@ -249,6 +221,98 @@ class Analysis(QtWidgets.QWidget):
         for i in range(pdf_reader.numPages):
             page = pdf_reader.getPage(i)
             print(page.extractText())
+class Asset(QtWidgets.QWidget):
+    def __init__(self):
+        super(Asset, self).__init__()
+        uic.loadUi('guis/asset.ui', self)
+        self.type_in = self.findChild(QtWidgets.QLineEdit, 'type_input')
+        self.down_in = self.findChild(QtWidgets.QLineEdit, 'down_input')
+        self.cost_in = self.findChild(QtWidgets.QLineEdit, 'cost_input')
+        self.notes = self.findChild(QtWidgets.QLineEdit, 'notes_input')
+        self.cash_flow_in = self.findChild(QtWidgets.QLineEdit, 'cashflow_input')
+        self.ok_button = self.findChild(QtWidgets.QPushButton, 'ok_button')
+        self.cancel_button = self.findChild(QtWidgets.QPushButton, 'cancel_button')
+        self.ok_button.clicked.connect(self.ok)
+        self.cancel_button.clicked.connect(self.cancel)
+    def ok(self):
+        type = self.type_in.text()
+        down = self.down_in.text()
+        cost = self.cost_in.text()
+        note = self.notes.text()
+        cash_flow = self.cash_flow_in.text()
+        mortgage = float(cost) - float(down)
+        window.addItem_Assets(type, cost)
+        window.update_display()
+        #~~~~~~~save~to~~database~~~~~~>
+        try:
+            headers = {"content-type": "application/json"}
+            dict = {
+                "source" : f'{type}',
+                "down" : f'{down}',
+                "cost" : f'{cost}',
+                "notes" : f'{note}'
+            }
+            data = json.dumps(dict)
+            url = 'http://localhost:8000/api/asset/'
+            response = requests.post(url, data=data, headers=headers)
+            #~~~~~~update~income~as~well~~~~~>
+            url2 = 'http://localhost:8000/api/income/'
+            dict2 = {
+                "source": f'{type}',
+                "amount": f'{cash_flow}',
+                "notes": f'{note}',
+            }
+            data2 = json.dumps(dict2)
+            response2 = requests.post(url2, data=data2, headers=headers)
+            #~~~~~~~~~~~~~liability~~~~~~~~~~~>
+            #~~~~~~~~>
+            url3 = 'http://localhost:8000/api/liability/'
+            dict3 = {
+                "source" : f'{type}',
+                "amount" : f'{mortgage}',
+                "notes" : f'{note}'
+            }
+            data3 = json.dumps(dict3)
+            response3 = requests.get(url3, data=data3, headers=headers)
+        except Exception:
+            traceback.print_exc()
+        #~~~~~~~~~~clean~up~fields~~~~~>
+        type = self.type_in.setText('')
+        down = self.down_in.setText('')
+        cost = self.cost_in.setText('')
+        cash_flow = self.cash_flow_in.setText('')
+        self.hide()
+    def cancel(self):
+        self.hide()
+class SellAsset(QtWidgets.QWidget):
+    def __init__(self):
+        super(SellAsset, self).__init__()
+        uic.loadUi('guis/sell_asset.ui', self)
+        self.asset = self.findChild(QtWidgets.QComboBox, 'asset_combobox')
+        self.price = self.findChild(QtWidgets.QLineEdit, 'price_sold')
+        self.sell_button = self.findChild(QtWidgets.QPushButton, 'sell_button')
+        self.cancel_button = self.findChild(QtWidgets.QPushButton, 'cancel_button')
+        self.sell_button.clicked.connect(self.sell)
+        self.cancel_button.clicked.connect(self.cancel)
+        response = requests.get('http://localhost:8000/api/asset/')
+        content = []
+        for item in list(response.json()):
+            content.append(item['notes'])
+        self.asset.addItems(content)
+    def sell(self):
+        asset = self.asset.currentText()
+        price = self.price.text()
+        window.update_display()
+        #~~~~~~~save~to~~database~~~~~~>
+        #price minus mortgage
+        #remove assets
+        #remove sum_debts
+        #remove inocme
+        #~~~~~~~~~~clean~up~fields~~~~~>
+        self.price_sold.setText('')
+        self.hide()
+    def cancel(self):
+        self.hide()
 class MainWindow(QtWidgets.QMainWindow):
     def __init__(self):
         try:
@@ -281,6 +345,10 @@ class MainWindow(QtWidgets.QMainWindow):
             self.load_small_opps()
             #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             #connect button actions
+            self.asset = self.findChild(QtWidgets.QPushButton, 'add_asset')
+            self.asset.clicked.connect(self.addAsset)
+            self.sell_a_asset = self.findChild(QtWidgets.QPushButton, 'liquidate_asset')
+            self.sell_a_asset.clicked.connect(self.sellit)
             self.analyze_it = self.findChild(QtWidgets.QPushButton, 'analyze_button')
             self.analyze_it.clicked.connect(self.analyze)
             self.add_transaction = self.findChild(QtWidgets.QPushButton, 'add_transaction')
@@ -288,20 +356,34 @@ class MainWindow(QtWidgets.QMainWindow):
             #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             #add up passive incomes
             self.total_passive = self.findChild(QtWidgets.QLabel, 'total_passive')
-            self.total_passive.setText('{0:.2f}'.format(self.sum_passive))
             self.total_income = self.findChild(QtWidgets.QLabel, 'total_income')
             self.total_expenses = self.findChild(QtWidgets.QLabel, 'total_expenses')
-            self.total_expenses.setText('{0:.2f}'.format(self.sum_expenses))
             self.total_cashflow = self.findChild(QtWidgets.QLabel, 'total_cashflow')
-            self.total_cashflow.setText('{0:.2f}'.format((self.sum_salaries+self.sum_passive)-self.sum_expenses))
             self.goal_percent = self.findChild(QtWidgets.QProgressBar, 'goal_percent')
-            self.percent = self.sum_passive/self.sum_expenses*100
-            self.goal_percent.setValue(int(self.percent))
+            self.worth = self.findChild(QtWidgets.QLabel, 'networth_label')
+            self.update_display()
             #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
         except Exception:
             traceback.print_exc()
-
+    def update_display(self):
+        self.total_passive.setText('{0:,.2f}'.format(self.sum_passive))
+        self.total_expenses.setText('{0:,.2f}'.format(self.sum_expenses))
+        self.total_cashflow.setText('{0:,.2f}'.format((self.sum_salaries+self.sum_passive)-self.sum_expenses))
+        self.percent = self.sum_passive/self.sum_expenses*100
+        if self.percent >= 100:
+            self.goal_percent.setValue(int(100))
+            self.statusBar().showMessage('YOU ARE FREE! FINANCIALLY FREE! GREAT JOB!!')
+        else:
+            self.goal_percent.setValue(int(self.percent))
+        self.worth.setText(' $'+'{0:,.0f}'.format(self.sum_assets-self.sum_debts))
+    def addAsset(self):
+        self.asset = Asset()
+        self.asset.move(675,150)
+        self.asset.show()
+    def sellit(self):
+        self.selling = SellAsset()
+        self.selling.show()
     def set_model_income(self):
         self.income.setModel(QtGui.QStandardItemModel(self))
         self.income.model().setColumnCount(2)
@@ -419,6 +501,7 @@ class MainWindow(QtWidgets.QMainWindow):
             response = requests.get(url)
             for item in list(response.json()):
                 self.addItem_Liabilities(item['source'], item['amount'])
+                self.sum_debts += float(item['amount'])
         except Exception:
             traceback.print_exc()
     def load_assets(self):
@@ -427,6 +510,7 @@ class MainWindow(QtWidgets.QMainWindow):
             response = requests.get(url)
             for item in list(response.json()):
                 self.addItem_Assets(item['source'], item['cost'])
+                self.sum_assets += float(item['cost'])
         except Exception:
             traceback.print_exc()
     def load_exp(self):
@@ -448,7 +532,7 @@ class MainWindow(QtWidgets.QMainWindow):
                    self.sum_salaries += float(item['amount'])
                if item['source'] != 'Salary/Wages':
                    self.sum_passive += float(item['amount'])
-           self.total_income.setText('{0:.2f}'.format(self.sum_salaries+self.sum_passive))
+           self.total_income.setText('{0:,.2f}'.format(self.sum_salaries+self.sum_passive))
        except Exception:
            traceback.print_exc()
     def get_new_account(self):
@@ -456,11 +540,10 @@ class MainWindow(QtWidgets.QMainWindow):
         if text and text != '':
             return text
     def add_account(self):
+        #Asset or Expense Account?
         account, ok = QInputDialog.getText(self, 'Add New Account', 'Enter the name of new Account: ')
         if ok:
-            #~~~~write~~~to~~~file
-            with open('data/opportunities.db', 'w') as file:
-                json.dump(account, file)
+            print(account)
     def addTransaction(self):
         try:
             ledger.show()
