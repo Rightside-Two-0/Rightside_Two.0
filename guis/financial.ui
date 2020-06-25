@@ -678,7 +678,7 @@ p, li { white-space: pre-wrap; }
     <widget class="QPushButton" name="analyze_button">
      <property name="geometry">
       <rect>
-       <x>210</x>
+       <x>260</x>
        <y>0</y>
        <width>51</width>
        <height>31</height>
@@ -698,7 +698,7 @@ p, li { white-space: pre-wrap; }
     <widget class="QPushButton" name="add_transaction">
      <property name="geometry">
       <rect>
-       <x>260</x>
+       <x>210</x>
        <y>0</y>
        <width>51</width>
        <height>31</height>
