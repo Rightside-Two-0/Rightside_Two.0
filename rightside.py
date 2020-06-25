@@ -322,8 +322,32 @@ class SellAsset(QtWidgets.QWidget):
             content.append(item['notes'])
         self.asset.addItems(content)
     def sell(self):
-        asset = self.asset.currentText()
+        asset_note = self.asset.currentText()
         price = self.price.text()
+        headers = {"content-type": "application/json"}
+        account = ''
+        amount = ''
+        url = 'http://localhost:8000/api/liability/'
+        response = requests.get(url)
+        id = 0
+        for item in list(response.json()):
+            if item['notes'] == asset_note:
+                id = item['id']
+                account = item['source']
+                amount = item['amount']
+        dict = {
+            "source": account,
+            "amount": amount,
+            "notes": asset_note
+        }
+        data = json.dumps(dict)
+        response = requests.delete(url+str(id), data=data, headers=headers)
+        #~~~~~~~~~~remove~~~asset~~~~~~>
+        #~~~~~>
+        print(response.json())
+
+
+
         window.update_display()
         #~~~~~~~save~to~~database~~~~~~>
         #price minus mortgage
@@ -405,6 +429,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.asset.show()
     def sellit(self):
         self.selling = SellAsset()
+        self.asset.move(675,150)
         self.selling.show()
     def set_model_income(self):
         self.income.setModel(QtGui.QStandardItemModel(self))
@@ -522,7 +547,7 @@ class MainWindow(QtWidgets.QMainWindow):
             url = 'http://localhost:8000/api/liability/'
             response = requests.get(url)
             for item in list(response.json()):
-                self.addItem_Liabilities(item['source']+' - '+item['notes'], item['amount'])
+                self.addItem_Liabilities(item['source']+' - '+item['notes'],  '{0:,.0f}'.format(float(item['amount'])))
                 self.sum_debts += float(item['amount'])
         except Exception:
             traceback.print_exc()
@@ -531,7 +556,7 @@ class MainWindow(QtWidgets.QMainWindow):
             url = 'http://localhost:8000/api/asset/'
             response = requests.get(url)
             for item in list(response.json()):
-                self.addItem_Assets(item['source']+' - '+item['notes'], item['cost'])
+                self.addItem_Assets(item['source']+' - '+item['notes'], '{0:,.0f}'.format(float(item['cost'])))
                 self.sum_assets += float(item['cost'])
         except Exception:
             traceback.print_exc()
@@ -540,7 +565,7 @@ class MainWindow(QtWidgets.QMainWindow):
             url = 'http://localhost:8000/api/expense/'
             response = requests.get(url)
             for item in list(response.json()):
-                self.addItem_Expenses(item['source'], item['amount'])
+                self.addItem_Expenses(item['source'],  '{0:,.0f}'.format(float(item['amount'])))
                 self.sum_expenses += float(item['amount'])
         except Exception:
             traceback.print_exc()
@@ -549,7 +574,7 @@ class MainWindow(QtWidgets.QMainWindow):
            url = 'http://localhost:8000/api/income/'
            response = requests.get(url)
            for item in list(response.json()):
-               self.addItem_income(item['source']+' - '+item['notes'], item['amount'])
+               self.addItem_income(item['source']+' - '+item['notes'],  '{0:,.0f}'.format(float(item['amount'])))
                if item['source'] == 'Salary/Wages':
                    self.sum_salaries += float(item['amount'])
                if item['source'] != 'Salary/Wages':
