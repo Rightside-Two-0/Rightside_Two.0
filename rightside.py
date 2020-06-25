@@ -225,9 +225,10 @@ class Asset(QtWidgets.QWidget):
     def __init__(self):
         super(Asset, self).__init__()
         uic.loadUi('guis/asset.ui', self)
-        self.type_in = self.findChild(QtWidgets.QLineEdit, 'type_input')
+        self.type_in = self.findChild(QtWidgets.QComboBox, 'type_input')
         self.down_in = self.findChild(QtWidgets.QLineEdit, 'down_input')
         self.cost_in = self.findChild(QtWidgets.QLineEdit, 'cost_input')
+        self.pymt = self.findChild(QtWidgets.QLineEdit, 'payment_input')
         self.notes = self.findChild(QtWidgets.QLineEdit, 'notes_input')
         self.cash_flow_in = self.findChild(QtWidgets.QLineEdit, 'cashflow_input')
         self.ok_button = self.findChild(QtWidgets.QPushButton, 'ok_button')
@@ -235,14 +236,13 @@ class Asset(QtWidgets.QWidget):
         self.ok_button.clicked.connect(self.ok)
         self.cancel_button.clicked.connect(self.cancel)
     def ok(self):
-        type = self.type_in.text()
+        type = self.type_in.currentText()
         down = self.down_in.text()
         cost = self.cost_in.text()
+        pymt= self.pymt.text()
         note = self.notes.text()
         cash_flow = self.cash_flow_in.text()
         mortgage = float(cost) - float(down)
-        window.addItem_Assets(type, cost)
-        window.update_display()
         #~~~~~~~save~to~~database~~~~~~>
         try:
             headers = {"content-type": "application/json"}
@@ -267,17 +267,39 @@ class Asset(QtWidgets.QWidget):
             #~~~~~~~~~~~~~liability~~~~~~~~~~~>
             #~~~~~~~~>
             url3 = 'http://localhost:8000/api/liability/'
+            if type == 'Real Estate':
+                type = 'RE Mortgages'
+            elif type =='Business':
+                type = 'Business Debts'
             dict3 = {
                 "source" : f'{type}',
                 "amount" : f'{mortgage}',
                 "notes" : f'{note}'
             }
             data3 = json.dumps(dict3)
-            response3 = requests.get(url3, data=data3, headers=headers)
+            response3 = requests.post(url3, data=data3, headers=headers)
+            #~~~~~~~~~~~~~~~~expense~~~~~~~~~~>
+            #~~~~~~~~>
+            id = 0
+            url4 = 'http://localhost:8000/api/expense/'
+            response_get = requests.get(url4).json()
+            for item in list(response_get):
+                if item['source'] == 'RE Debt Service':
+                     id = item['id']
+            dict4 = {
+                "source" : 'RE Debt Service',
+                "amount" : f'{pymt}'
+            }
+            data4 = json.dumps(dict4)
+            response4 = requests.put(url4+str(id), data=data4, headers=headers)
+            window.addItem_Assets(type, cost)
+            window.addItem_income(type, cash_flow)
+            window.addItem_Expenses(dict4['source'], pymt)
+            window.addItem_Liabilities(type, str(mortgage))
+            window.update_display()
         except Exception:
             traceback.print_exc()
         #~~~~~~~~~~clean~up~fields~~~~~>
-        type = self.type_in.setText('')
         down = self.down_in.setText('')
         cost = self.cost_in.setText('')
         cash_flow = self.cash_flow_in.setText('')
@@ -500,7 +522,7 @@ class MainWindow(QtWidgets.QMainWindow):
             url = 'http://localhost:8000/api/liability/'
             response = requests.get(url)
             for item in list(response.json()):
-                self.addItem_Liabilities(item['source'], item['amount'])
+                self.addItem_Liabilities(item['source']+' - '+item['notes'], item['amount'])
                 self.sum_debts += float(item['amount'])
         except Exception:
             traceback.print_exc()
@@ -509,7 +531,7 @@ class MainWindow(QtWidgets.QMainWindow):
             url = 'http://localhost:8000/api/asset/'
             response = requests.get(url)
             for item in list(response.json()):
-                self.addItem_Assets(item['source'], item['cost'])
+                self.addItem_Assets(item['source']+' - '+item['notes'], item['cost'])
                 self.sum_assets += float(item['cost'])
         except Exception:
             traceback.print_exc()
@@ -527,7 +549,7 @@ class MainWindow(QtWidgets.QMainWindow):
            url = 'http://localhost:8000/api/income/'
            response = requests.get(url)
            for item in list(response.json()):
-               self.addItem_income(item['source'], item['amount'])
+               self.addItem_income(item['source']+' - '+item['notes'], item['amount'])
                if item['source'] == 'Salary/Wages':
                    self.sum_salaries += float(item['amount'])
                if item['source'] != 'Salary/Wages':

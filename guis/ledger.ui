@@ -214,6 +214,11 @@
      <string>Taxes</string>
     </property>
    </item>
+   <item>
+    <property name="text">
+     <string>RE Debt Service</string>
+    </property>
+   </item>
   </widget>
   <widget class="QTableWidget" name="transaction_view">
    <property name="geometry">

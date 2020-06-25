@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>230</width>
-    <height>245</height>
+    <width>226</width>
+    <height>292</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -27,16 +27,6 @@
    </property>
    <property name="alignment">
     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-   </property>
-  </widget>
-  <widget class="QLineEdit" name="type_input">
-   <property name="geometry">
-    <rect>
-     <x>90</x>
-     <y>10</y>
-     <width>121</width>
-     <height>27</height>
-    </rect>
    </property>
   </widget>
   <widget class="QLabel" name="label_2">
@@ -95,7 +85,7 @@
    <property name="geometry">
     <rect>
      <x>148</x>
-     <y>210</y>
+     <y>250</y>
      <width>71</width>
      <height>31</height>
     </rect>
@@ -108,7 +98,7 @@
    <property name="geometry">
     <rect>
      <x>70</x>
-     <y>210</y>
+     <y>250</y>
      <width>71</width>
      <height>31</height>
     </rect>
@@ -121,7 +111,7 @@
    <property name="geometry">
     <rect>
      <x>90</x>
-     <y>170</y>
+     <y>210</y>
      <width>121</width>
      <height>27</height>
     </rect>
@@ -131,7 +121,7 @@
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>170</y>
+     <y>210</y>
      <width>71</width>
      <height>21</height>
     </rect>
@@ -147,7 +137,7 @@
    <property name="geometry">
     <rect>
      <x>90</x>
-     <y>130</y>
+     <y>170</y>
      <width>121</width>
      <height>27</height>
     </rect>
@@ -157,7 +147,7 @@
    <property name="geometry">
     <rect>
      <x>40</x>
-     <y>130</y>
+     <y>170</y>
      <width>41</width>
      <height>21</height>
     </rect>
@@ -168,6 +158,77 @@
    <property name="alignment">
     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
    </property>
+  </widget>
+  <widget class="QLineEdit" name="payment_input">
+   <property name="geometry">
+    <rect>
+     <x>90</x>
+     <y>130</y>
+     <width>121</width>
+     <height>27</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_6">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>130</y>
+     <width>71</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Payment</string>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+   </property>
+  </widget>
+  <widget class="QComboBox" name="type_input">
+   <property name="geometry">
+    <rect>
+     <x>90</x>
+     <y>10</y>
+     <width>121</width>
+     <height>27</height>
+    </rect>
+   </property>
+   <item>
+    <property name="text">
+     <string>Savings</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>Checking</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>Stocks</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>Mutual Funds</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>Bank CDs</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>Real Estate</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>Business</string>
+    </property>
+   </item>
   </widget>
  </widget>
  <resources/>
