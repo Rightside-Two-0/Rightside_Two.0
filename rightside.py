@@ -310,7 +310,6 @@ class Asset(QtWidgets.QWidget):
             }
             data4 = json.dumps(dict4)
             response4 = requests.put(url4+str(id), data=data4, headers=headers)
-<<<<<<< HEAD
             #~~~~~~~~~~~~why~not~just~get(url)~~~~~>
             #~~~~~~~~~>
             window.addItem_Assets(type+' - '+note, cost)
@@ -318,13 +317,11 @@ class Asset(QtWidgets.QWidget):
             #~~reload~~~~~~>
             window.addItem_Expenses(dict4['source']+' - '+note, pymt)
             window.addItem_Liabilities(type+' - '+note, str(mortgage))
-=======
             window.addItem_Assets(type+' - '+note, '{0:,.0f}'.format(float(cost)))
             window.addItem_income(type+' - '+note, '{0:,.0f}'.format(float(cash_flow)))
             window.reload_expenses()
             # window.addItem_Expenses(dict4['source'], pymt)
             window.addItem_Liabilities(type+' - '+note, '{0:,.0f}'.format(float(mortgage)))
->>>>>>> remove_asset
             window.update_display()
         except Exception:
             traceback.print_exc()
