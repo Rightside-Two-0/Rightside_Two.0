@@ -545,7 +545,7 @@ p, li { white-space: pre-wrap; }
      </font>
     </property>
     <property name="toolTip">
-     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Total Passive Income&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
     </property>
     <property name="layoutDirection">
      <enum>Qt::RightToLeft</enum>
@@ -575,7 +575,7 @@ p, li { white-space: pre-wrap; }
      </font>
     </property>
     <property name="toolTip">
-     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Total Passive Income&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
     </property>
     <property name="layoutDirection">
      <enum>Qt::RightToLeft</enum>
@@ -605,7 +605,7 @@ p, li { white-space: pre-wrap; }
      </font>
     </property>
     <property name="toolTip">
-     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Total Passive Income&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
     </property>
     <property name="layoutDirection">
      <enum>Qt::RightToLeft</enum>
@@ -635,7 +635,7 @@ p, li { white-space: pre-wrap; }
      </font>
     </property>
     <property name="toolTip">
-     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Total Passive Income&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
     </property>
     <property name="layoutDirection">
      <enum>Qt::RightToLeft</enum>
@@ -692,7 +692,7 @@ p, li { white-space: pre-wrap; }
      </property>
      <property name="icon">
       <iconset>
-       <normaloff>../../../../icons/abacus.png</normaloff>../../../../icons/abacus.png</iconset>
+       <normaloff>../../../../icons/magnifier-zoom.png</normaloff>../../../../icons/magnifier-zoom.png</iconset>
      </property>
     </widget>
     <widget class="QPushButton" name="add_transaction">
@@ -712,7 +712,7 @@ p, li { white-space: pre-wrap; }
      </property>
      <property name="icon">
       <iconset>
-       <normaloff>../../../../icons/cheque--arrow.png</normaloff>../../../../icons/cheque--arrow.png</iconset>
+       <normaloff>../../../../icons/abacus.png</normaloff>../../../../icons/abacus.png</iconset>
      </property>
     </widget>
     <widget class="QPushButton" name="add_asset">

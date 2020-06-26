@@ -310,6 +310,7 @@ class Asset(QtWidgets.QWidget):
             }
             data4 = json.dumps(dict4)
             response4 = requests.put(url4+str(id), data=data4, headers=headers)
+<<<<<<< HEAD
             #~~~~~~~~~~~~why~not~just~get(url)~~~~~>
             #~~~~~~~~~>
             window.addItem_Assets(type+' - '+note, cost)
@@ -317,6 +318,13 @@ class Asset(QtWidgets.QWidget):
             #~~reload~~~~~~>
             window.addItem_Expenses(dict4['source']+' - '+note, pymt)
             window.addItem_Liabilities(type+' - '+note, str(mortgage))
+=======
+            window.addItem_Assets(type+' - '+note, '{0:,.0f}'.format(float(cost)))
+            window.addItem_income(type+' - '+note, '{0:,.0f}'.format(float(cash_flow)))
+            window.reload_expenses()
+            # window.addItem_Expenses(dict4['source'], pymt)
+            window.addItem_Liabilities(type+' - '+note, '{0:,.0f}'.format(float(mortgage)))
+>>>>>>> remove_asset
             window.update_display()
         except Exception:
             traceback.print_exc()
@@ -345,41 +353,29 @@ class SellAsset(QtWidgets.QWidget):
     def sell(self):
         asset_note = self.asset.currentText()
         price = self.price.text()
-        headers = {"content-type": "application/json"}
-        account = ''
-        amount = ''
-        url = 'http://localhost:8000/api/liability/'
-        response = requests.get(url)
-        id = 0
-        for item in list(response.json()):
-            if item['notes'] == asset_note:
-                id = item['id']
-                account = item['source']
-                amount = item['amount']
-        dict = {
-            "source": account,
-            "amount": amount,
-            "notes": asset_note
-        }
-        data = json.dumps(dict)
-        response = requests.delete(url+str(id), data=data, headers=headers)
-        #~~~~~~~~~~remove~~~asset~~~~~~>
+        self.remove('income', asset_note)
+        # self.remove('expense', '')
+        self.remove('asset', asset_note)
+        self.remove('liability', asset_note)
         #~~~~~>
-        print(response.json())
-
-
-
+        window.reload_income()
+        window.reload_assets()
+        # window.reload_expenses()
+        window.reload_liabilities()
         window.update_display()
-        #~~~~~~~save~to~~database~~~~~~>
-        #price minus mortgage
-        #remove assets
-        #remove sum_debts
-        #remove inocme
         #~~~~~~~~~~clean~up~fields~~~~~>
         self.price_sold.setText('')
         self.hide()
     def cancel(self):
         self.hide()
+    def remove(self, account, notes):
+        url = 'http://localhost:8000/api/'+account+'/'
+        response = requests.get(url)
+        id = ''
+        for item in list(response.json()):
+            if item['notes'] == notes:
+                id = str(item['id'])
+        response_del = requests.delete(url+id)
 class MainWindow(QtWidgets.QMainWindow):
     def __init__(self):
         try:
@@ -443,27 +439,38 @@ class MainWindow(QtWidgets.QMainWindow):
         except Exception:
             traceback.print_exc()
     def update_display(self):
+<<<<<<< HEAD
         #clear all first...~~~~>
 
         #reload~~~~~~>
         self.total_passive.setText('{0:,.2f}'.format(self.get_total_passive()))
         self.total_expenses.setText('{0:,.2f}'.format(self.get_total_expense()))
         self.total_cashflow.setText('{0:,.2f}'.format(self.get_total_income()-self.get_total_expense()))
+=======
+        self.total_passive.setText('{0:,.2f}'.format(self.get_total_income()[1]))
+        self.total_income.setText('{0:,.2f}'.format(self.get_total_income()[0]))
+        self.total_expenses.setText('{0:,.2f}'.format(self.get_total_expenses()))
+        self.total_cashflow.setText('{0:,.2f}'.format(self.get_total_income()[0]-self.get_total_expenses()))
+>>>>>>> remove_asset
         self.percent = self.sum_passive/self.sum_expenses*100
         if self.percent >= 100:
             self.goal_percent.setValue(int(100))
             self.statusBar().showMessage('YOU ARE FREE! FINANCIALLY FREE! GREAT JOB!!')
         else:
             self.goal_percent.setValue(int(self.percent))
+<<<<<<< HEAD
         self.worth.setText(' $'+'{0:,.0f}'.format(self.sum_assets-self.sum_debts))
 
+=======
+        self.worth.setText(' $'+'{0:,.0f}'.format(self.get_total_assets()-self.get_total_liabilities()))
+>>>>>>> remove_asset
     def addAsset(self):
         self.asset = Asset()
         self.asset.move(675,150)
         self.asset.show()
     def sellit(self):
         self.selling = SellAsset()
-        self.asset.move(675,150)
+        self.selling.move(675,150)
         self.selling.show()
     def set_model_income(self):
         self.income.setModel(QtGui.QStandardItemModel(self))
@@ -568,6 +575,18 @@ class MainWindow(QtWidgets.QMainWindow):
         second = QtGui.QStandardItem(value)
         second.setTextAlignment(QtCore.Qt.AlignRight)
         self.opp_small.model().appendRow([first, second])
+    def reload_income(self):
+        self.income.model().removeRows(0, self.income.model().rowCount())
+        self.load()
+    def reload_expenses(self) :
+        self.expenses.model().removeRows(0, self.expenses.model().rowCount())
+        self.load_exp()
+    def reload_assets(self):
+        self.assets.model().removeRows(0, self.assets.model().rowCount())
+        self.load_assets()
+    def reload_liabilities(self):
+        self.liabilities.model().removeRows(0, self.liabilities.model().rowCount())
+        self.load_debts()
     def load_small_opps(self):
         try:
             url = 'http://localhost:8000/api/opportunity/'
@@ -656,6 +675,7 @@ class MainWindow(QtWidgets.QMainWindow):
             elif data == 'ledger':
                 content = json.dump(self.opps_model.opportunities, file)
     def get_total_income(self):
+<<<<<<< HEAD
         url = 'http://localhost:8000/api/income/'
         response = requests.get(url)
         total = 0.0
@@ -694,10 +714,50 @@ class MainWindow(QtWidgets.QMainWindow):
         for item in list(response.json()):
             total += float(item['amount'])
         return total
+=======
+        '''returns a tuple with total income & passive'''
+        income = 0
+        passive = 0
+        url = 'http://localhost:8000/api/income/'
+        response = requests.get(url)
+        for item in list(response.json()):
+            income += int(item['amount'])
+            if item['source'] == 'Salary/Wages':
+                passive += int(item['amount'])
+        return (income, passive)
+    def get_total_expenses(self):
+        '''returns an int value of the sum total of expenses'''
+        expense = 0
+        url = 'http://localhost:8000/api/expense/'
+        response = requests.get(url)
+        for item in list(response.json()):
+            expense += int(item['amount'])
+        return expense
+    def get_total_assets(self):
+        '''returns an int value of the sum total of assets'''
+        assets = 0.0
+        url = 'http://localhost:8000/api/asset/'
+        response = requests.get(url)
+        for item in list(response.json()):
+            assets += float(item['cost'])
+        return assets
+    def get_total_liabilities(self):
+        '''returns an int value of the sum total of liabilities'''
+        liabilities = 0.0
+        url = 'http://localhost:8000/api/liability/'
+        response = requests.get(url)
+        for item in list(response.json()):
+            liabilities += float(item['amount'])
+        return liabilities
+>>>>>>> remove_asset
 app = QtWidgets.QApplication(sys.argv)
 window = MainWindow()
 ledger = Ledger()
 analysis = Analysis()
+<<<<<<< HEAD
 window.move(300,50)
+=======
+window.move(300,75)
+>>>>>>> remove_asset
 window.show()
 app.exec_()
