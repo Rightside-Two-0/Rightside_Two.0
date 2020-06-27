@@ -109,7 +109,8 @@ class Ledger(QtWidgets.QWidget):
                     }
                     data_post = json.dumps(dict_to_post)
                     response_post = requests.put(url_to+str(id), data=data_post, headers=headers)
-
+            window.sum_exp_accounts()
+            window.reload_expenses()
             window.update_display()
         except Exception:
             traceback.print_exc()
@@ -299,6 +300,7 @@ class Asset(QtWidgets.QWidget):
             id = 0
             url4 = 'http://localhost:8000/api/expense/'
             response_get = requests.get(url4).json()
+            prev_amount = 0.0
             for item in list(response_get):
                 if item['source'] == 'RE Debt Service':
                      id = item['id']
@@ -311,17 +313,12 @@ class Asset(QtWidgets.QWidget):
             data4 = json.dumps(dict4)
             response4 = requests.put(url4+str(id), data=data4, headers=headers)
             #~~~~~~~~~~~~why~not~just~get(url)~~~~~>
-            #~~~~~~~~~>
-            window.addItem_Assets(type+' - '+note, cost)
-            window.addItem_income(type+' - '+note, cash_flow)
-            #~~reload~~~~~~>
-            window.addItem_Expenses(dict4['source']+' - '+note, pymt)
-            window.addItem_Liabilities(type+' - '+note, str(mortgage))
-            window.addItem_Assets(type+' - '+note, '{0:,.0f}'.format(float(cost)))
-            window.addItem_income(type+' - '+note, '{0:,.0f}'.format(float(cash_flow)))
+            #~~~~~~~~~>I think this is not best...
+            #should call post api then get all
+            window.reload_income()
             window.reload_expenses()
-            # window.addItem_Expenses(dict4['source'], pymt)
-            window.addItem_Liabilities(type+' - '+note, '{0:,.0f}'.format(float(mortgage)))
+            window.reload_assets()
+            window.reload_liabilities()
             window.update_display()
         except Exception:
             traceback.print_exc()
@@ -398,6 +395,7 @@ class MainWindow(QtWidgets.QMainWindow):
             self.set_model_assets()
             self.set_model_liabilities()
             self.set_model_opportunities()
+            self.sum_exp_accounts()
             self.load()
             self.load_exp()
             self.load_assets()
@@ -421,7 +419,7 @@ class MainWindow(QtWidgets.QMainWindow):
             self.total_cashflow = self.findChild(QtWidgets.QLabel, 'total_cashflow')
             self.goal_percent = self.findChild(QtWidgets.QProgressBar, 'goal_percent')
             self.worth = self.findChild(QtWidgets.QLabel, 'networth_label')
-            self.total_passive.setText('{0:,.2f}'.format(self.get_total_passive()))
+            self.total_passive.setText('{0:,.2f}'.format(self.sum_passive))
             self.total_expenses.setText('{0:,.2f}'.format(self.sum_expenses))
             self.total_cashflow.setText('{0:,.2f}'.format((self.sum_salaries+self.sum_passive)-self.sum_expenses))
             self.percent = self.sum_passive/self.sum_expenses*100
@@ -431,36 +429,40 @@ class MainWindow(QtWidgets.QMainWindow):
             else:
                 self.goal_percent.setValue(int(self.percent))
             self.worth.setText(' $'+'{0:,.0f}'.format(self.sum_assets-self.sum_debts))
-            #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
+            #~~~~~~set~deal~details on click~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+            self.opp_small.clicked.connect(self.see_details)
+            self.opp_big.clicked.connect(self.see_details)
+            self.opp_title = self.findChild(QtWidgets.QLabel, 'label')
+            self.opp_body = self.findChild(QtWidgets.QTextEdit, 'card_details')
+            self.opp_buy = self.findChild(QtWidgets.QPushButton, 'buy_button')
+            self.opp_assign = self.findChild(QtWidgets.QPushButton, 'assign_button')
+            self.opp_cost = self.findChild(QtWidgets.QLabel, 'cost_value')
+            self.opp_down = self.findChild(QtWidgets.QLabel, 'down_display')
+            self.opp_mortgage = self.findChild(QtWidgets.QLabel, 'mortgage_value')
+            self.opp_cash_flow = self.findChild(QtWidgets.QLabel, 'cashflow_display')
+            self.opp_coc = self.findChild(QtWidgets.QLabel, 'coc_display')
+            self.opp_irr = self.findChild(QtWidgets.QLabel, 'irr_display')
         except Exception:
             traceback.print_exc()
     def update_display(self):
-<<<<<<< HEAD
         #clear all first...~~~~>
-
         #reload~~~~~~>
         self.total_passive.setText('{0:,.2f}'.format(self.get_total_passive()))
         self.total_expenses.setText('{0:,.2f}'.format(self.get_total_expense()))
-        self.total_cashflow.setText('{0:,.2f}'.format(self.get_total_income()-self.get_total_expense()))
-=======
+        self.total_cashflow.setText('{0:,.2f}'.format(self.get_total_income()[0]-self.get_total_expense()))
         self.total_passive.setText('{0:,.2f}'.format(self.get_total_income()[1]))
         self.total_income.setText('{0:,.2f}'.format(self.get_total_income()[0]))
         self.total_expenses.setText('{0:,.2f}'.format(self.get_total_expenses()))
         self.total_cashflow.setText('{0:,.2f}'.format(self.get_total_income()[0]-self.get_total_expenses()))
->>>>>>> remove_asset
         self.percent = self.sum_passive/self.sum_expenses*100
         if self.percent >= 100:
             self.goal_percent.setValue(int(100))
             self.statusBar().showMessage('YOU ARE FREE! FINANCIALLY FREE! GREAT JOB!!')
         else:
             self.goal_percent.setValue(int(self.percent))
-<<<<<<< HEAD
         self.worth.setText(' $'+'{0:,.0f}'.format(self.sum_assets-self.sum_debts))
 
-=======
         self.worth.setText(' $'+'{0:,.0f}'.format(self.get_total_assets()-self.get_total_liabilities()))
->>>>>>> remove_asset
     def addAsset(self):
         self.asset = Asset()
         self.asset.move(675,150)
@@ -615,7 +617,7 @@ class MainWindow(QtWidgets.QMainWindow):
             url = 'http://localhost:8000/api/expense/'
             response = requests.get(url)
             for item in list(response.json()):
-                self.addItem_Expenses(item['source'],  '{0:,.0f}'.format(float(item['amount'])))
+                self.addItem_Expenses(item['source'], '{0:,.0f}'.format(float(item['amount'])))
                 self.sum_expenses += float(item['amount'])
         except Exception:
             traceback.print_exc()
@@ -632,6 +634,24 @@ class MainWindow(QtWidgets.QMainWindow):
            self.total_income.setText('{0:,.2f}'.format(self.sum_salaries+self.sum_passive))
        except Exception:
            traceback.print_exc()
+    def see_details(self):
+        content = []
+        for ix in self.opp_small.selectedIndexes():
+            content.append(ix.data()) # or ix.data()
+        url = 'http://localhost:8000/api/opportunity/'
+        response = requests.get(url)
+        res_details = []
+        for item in list(response.json()):
+            if item['heading'] == content[0] and item['description'] == content[1]:
+                res_details = requests.get(url+str(item['id']))
+        self.opp_title.setText(res_details.json()['heading'])
+        self.opp_body.setText(res_details.json()['description'])
+        self.opp_cost.setText('{0:,.0f}'.format(float(res_details.json()['cost'])))
+        self.opp_down.setText('{0:,.0f}'.format(float(res_details.json()['down'])))
+        self.opp_mortgage.setText('{0:,.0f}'.format(float(res_details.json()['mortgage'])))
+        self.opp_cash_flow.setText('{0:,.0f}'.format(float(res_details.json()['cash_flow'])))
+        self.opp_coc.setText(res_details.json()['coc'])
+        self.opp_irr.setText(res_details.json()['irr'])
     def get_new_account(self):
         text, ok = QInputDialog.getText(self, 'Input Dialog', 'Enter Account:')
         if text and text != '':
@@ -657,22 +677,7 @@ class MainWindow(QtWidgets.QMainWindow):
         text = str(self.comboBox.currentText())
         if text and text is not '':
             return text
-    def save(self, data):
-        with open(f'data/{data}.db', 'w') as file:
-            if data == 'income':
-                content = json.dump(self.income_model.income, file)
-            elif data == 'expenses':
-                content = json.dump(self.expense_model.expenses, file)
-            elif data == 'assets':
-                content = json.dump(self.asset_model.assets, file)
-            elif data == 'liabilities':
-                content = json.dump(self.liability_model.liabilities, file)
-            elif data == 'opportunities':
-                content = json.dump(self.opps_model.opportunities, file)
-            elif data == 'ledger':
-                content = json.dump(self.opps_model.opportunities, file)
     def get_total_income(self):
-<<<<<<< HEAD
         url = 'http://localhost:8000/api/income/'
         response = requests.get(url)
         total = 0.0
@@ -683,18 +688,17 @@ class MainWindow(QtWidgets.QMainWindow):
         total = self.get_total_income()
         url = 'http://localhost:8000/api/income/'
         response = requests.get(url)
-        clock_time = 0.0
+        wages = 0.0
         for item in list(response.json()):
             if item['source'] == 'Salary/Wages':
                 clock_time += float(item['amount'])
-        passive = total - clock_time
+        passive = float(total[0]) - wages
         return passive
     def get_total_expense(self):
         url = 'http://localhost:8000/api/expense/'
         response = requests.get(url)
         total = 0.0
         for item in list(response.json()):
-            print(item)
             total += float(item['amount'])
         return total
     def get_total_asset(self):
@@ -711,7 +715,7 @@ class MainWindow(QtWidgets.QMainWindow):
         for item in list(response.json()):
             total += float(item['amount'])
         return total
-=======
+    def get_total_income(self):
         '''returns a tuple with total income & passive'''
         income = 0
         passive = 0
@@ -728,7 +732,7 @@ class MainWindow(QtWidgets.QMainWindow):
         url = 'http://localhost:8000/api/expense/'
         response = requests.get(url)
         for item in list(response.json()):
-            expense += int(item['amount'])
+            expense += int(float(item['amount']))
         return expense
     def get_total_assets(self):
         '''returns an int value of the sum total of assets'''
@@ -746,15 +750,97 @@ class MainWindow(QtWidgets.QMainWindow):
         for item in list(response.json()):
             liabilities += float(item['amount'])
         return liabilities
->>>>>>> remove_asset
+    def get_exp_id(self, exp_account):
+        #~~~~~~need~the~id~~~~~~>
+        url_put = 'http://localhost:8000/api/expense/'
+        response_id = requests.get(url_put)
+        id = 0
+        for item_ in list(response_id.json()):
+            if item_['source'] == exp_account:
+                id = item_['id']
+                return id
+        return id
+    def sum_exp_accounts(self):
+        data_dict = {
+            "Mortgage/Rent" : 0,
+            "Utilities" : 0,
+            "Insurance" : 0,
+            "Health/Wellness" : 0,
+            "Food/Groceries" : 0,
+            "Vehicle(s)" : 0,
+            "Entertainment" : 0,
+            "Clothing" : 0,
+            "Furniture" : 0,
+            "Donations/Charity" : 0,
+            "Taxes" : 0,
+            "Fees/Fines" : 0,
+            "Other" : 0,
+            "RE Debt Service": 0
+        }
+        url = 'http://localhost:8000/api/ledger/'
+        response = requests.get(url)
+        for item in list(response.json()):
+            if item['to_account'] == 'Mortgage/Rent':
+                data_dict['Mortgage/Rent'] += float(item['amount'])
+            elif item['to_account'] == 'Utilities':
+                data_dict['Utilities'] += float(item['amount'])
+            elif item['to_account'] == 'Insurance':
+                data_dict['Insurance'] += float(item['amount'])
+            elif item['to_account'] == 'Health/Wellness':
+                data_dict['Health/Wellness'] += float(item['amount'])
+            elif item['to_account'] == 'Vehicle(s)':
+                data_dict['Vehicle(s)'] += float(item['amount'])
+            elif item['to_account'] == 'Food/Groceries':
+                data_dict['Food/Groceries'] += float(item['amount'])
+            elif item['to_account'] == 'Entertainment':
+                data_dict['Entertainment'] += float(item['amount'])
+            elif item['to_account'] == 'Clothing':
+                data_dict['Clothing'] += float(item['amount'])
+            elif item['to_account'] == 'Furniture':
+                data_dict['Furniture'] += float(item['amount'])
+            elif item['to_account'] == 'Donations/Charity':
+                data_dict['Donations/Charity'] += float(item['amount'])
+            elif item['to_account'] == 'Taxes':
+                data_dict['Taxes'] += float(item['amount'])
+            elif item['to_account'] == 'Fees/Fines':
+                data_dict['Fees/Fines'] += float(item['amount'])
+            elif item['to_account'] == 'Other':
+                data_dict['Other'] += float(item['amount'])
+            elif item['to_account'] == 'RE Debt Service':
+                data_dict['RE Debt Service'] += float(item['amount'])
+        for key, value in enumerate(list(data_dict)):
+            data_dict[value] = str(data_dict[value])
+        #~~need~a~for-loop~then~put~each~one~in~expense~~~>
+        put_data = {
+            "source": '',
+            "amount": ''
+        }
+        data = ''
+        id = 0
+        # print(data_dict)
+        #~~~~~~~~~~~~~~~~~~~~~~~>
+        url_put = 'http://localhost:8000/api/expense/'
+        for item in data_dict:
+            put_data['source'] = item
+            put_data['amount'] = data_dict[item]
+            data = json.dumps(put_data)
+            id = self.get_exp_id(item)
+            print(id, data)
+            #~~~~~~~~~this~is~not~working~~~~~~~~~>
+            #~~~~~>
+            if id != 0:
+                headers = {"content-type": "application/json"}
+                response_post = requests.put(url_put+str(id), data=data, headers=headers)
+                if response_post.status_code == 405 or 404:
+                    print('problem here:...#:832')
+                    # response_post = requests.post(url_put, data=data, headers=headers)
+            else:
+                response_post = requests.post(url_put, data=data, headers=headers)
 app = QtWidgets.QApplication(sys.argv)
 window = MainWindow()
 ledger = Ledger()
 analysis = Analysis()
-<<<<<<< HEAD
 window.move(300,50)
-=======
 window.move(300,75)
->>>>>>> remove_asset
 window.show()
 app.exec_()
