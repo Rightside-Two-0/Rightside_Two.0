@@ -307,7 +307,7 @@
      <rect>
       <x>710</x>
       <y>520</y>
-      <width>341</width>
+      <width>301</width>
       <height>51</height>
      </rect>
     </property>
@@ -678,10 +678,10 @@ p, li { white-space: pre-wrap; }
       <height>31</height>
      </rect>
     </property>
-    <widget class="QPushButton" name="analyze_button">
+    <widget class="QPushButton" name="paycheck_button">
      <property name="geometry">
       <rect>
-       <x>260</x>
+       <x>210</x>
        <y>0</y>
        <width>51</width>
        <height>31</height>
@@ -695,13 +695,13 @@ p, li { white-space: pre-wrap; }
      </property>
      <property name="icon">
       <iconset>
-       <normaloff>../../../../icons/magnifier-zoom.png</normaloff>../../../../icons/magnifier-zoom.png</iconset>
+       <normaloff>../../../../icons/cheque--plus.png</normaloff>../../../../icons/cheque--plus.png</iconset>
      </property>
     </widget>
     <widget class="QPushButton" name="add_transaction">
      <property name="geometry">
       <rect>
-       <x>210</x>
+       <x>260</x>
        <y>0</y>
        <width>51</width>
        <height>31</height>
@@ -801,7 +801,7 @@ p, li { white-space: pre-wrap; }
     <widget class="QLabel" name="label_2">
      <property name="geometry">
       <rect>
-       <x>810</x>
+       <x>730</x>
        <y>0</y>
        <width>91</width>
        <height>31</height>
@@ -819,9 +819,9 @@ p, li { white-space: pre-wrap; }
     <widget class="QLabel" name="networth_label">
      <property name="geometry">
       <rect>
-       <x>900</x>
+       <x>850</x>
        <y>0</y>
-       <width>151</width>
+       <width>201</width>
        <height>31</height>
       </rect>
      </property>
@@ -922,13 +922,13 @@ p, li { white-space: pre-wrap; }
      <set>Qt::AlignCenter</set>
     </property>
    </widget>
-   <widget class="QPushButton" name="analyze_button_2">
+   <widget class="QPushButton" name="analyze_button">
     <property name="geometry">
      <rect>
-      <x>930</x>
-      <y>710</y>
-      <width>41</width>
-      <height>51</height>
+      <x>1020</x>
+      <y>530</y>
+      <width>31</width>
+      <height>31</height>
      </rect>
     </property>
     <property name="toolTip">

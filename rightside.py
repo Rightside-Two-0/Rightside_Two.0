@@ -409,9 +409,9 @@ class MainWindow(QtWidgets.QMainWindow):
             self.asset.clicked.connect(self.addAsset)
             self.sell_a_asset = self.findChild(QtWidgets.QPushButton, 'liquidate_asset')
             self.sell_a_asset.clicked.connect(self.sellit)
-            self.analyze_it = self.findChild(QtWidgets.QPushButton, 'analyze_button')
-            self.analyze_it.clicked.connect(self.analyze)
-            self.analyze_it_ = self.findChild(QtWidgets.QPushButton, 'analyze_button_2')
+            self.paycheck = self.findChild(QtWidgets.QPushButton, 'paycheck_button')
+            self.paycheck.clicked.connect(self.add_pay)
+            self.analyze_it_ = self.findChild(QtWidgets.QPushButton, 'analyze_button')
             self.analyze_it_.clicked.connect(self.analyze)
             self.add_transaction = self.findChild(QtWidgets.QPushButton, 'add_transaction')
             self.add_transaction.clicked.connect(self.addTransaction)
@@ -462,6 +462,11 @@ class MainWindow(QtWidgets.QMainWindow):
         else:
             self.goal_percent.setValue(int(self.percent))
         self.worth.setText(' $'+'{0:,.0f}'.format(self.get_total_assets()-self.get_total_liabilities()))
+    def add_pay(self):
+        pay, ok = QInputDialog.getText(self, 'Paycheck', 'Enter the Gross Amount: ')
+        if ok:
+            print(pay)
+        pass
     def addAsset(self):
         self.asset = Asset()
         self.asset.move(675,150)
@@ -624,6 +629,7 @@ class MainWindow(QtWidgets.QMainWindow):
        try:
            url = 'http://localhost:8000/api/income/'
            response = requests.get(url)
+           self.addItem_income('Salary/Wages', '{0:,.0f}'.format(self.sum_wages()))
            for item in list(response.json()):
                self.addItem_income(item['source']+' - '+item['notes'],  '{0:,.0f}'.format(float(item['amount'])))
                if item['source'] == 'Salary/Wages':
@@ -797,10 +803,18 @@ class MainWindow(QtWidgets.QMainWindow):
             put_data['amount'] = str(data_dict[item])
             data = json.dumps(put_data)
             id = self.get_exp_id(item)
-            #~~~~~~~~~this~is~not~working~~~~~~~~~>
+            #~~~~~~~~~~~~~~~~~~>
             #~~~~~>
             if id == 0:
                 response_post = requests.post(url_put, data=data, headers=headers)
+    def sum_wages(self):
+        url = 'http://localhost:8000/api/ledger'
+        response = requests.get(url)
+        wages = 0.0
+        for item in list(response.json()):
+            if item['from_account'] == 'Employement/Contract':
+                wages += float(item['amount'])
+        return wages
 app = QtWidgets.QApplication(sys.argv)
 window = MainWindow()
 ledger = Ledger()

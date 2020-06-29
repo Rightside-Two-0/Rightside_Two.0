@@ -144,6 +144,11 @@
      <string>Business</string>
     </property>
    </item>
+   <item>
+    <property name="text">
+     <string>Employement/Contract</string>
+    </property>
+   </item>
   </widget>
   <widget class="QComboBox" name="to_account">
    <property name="geometry">
@@ -222,6 +227,11 @@
    <item>
     <property name="text">
      <string>RE Debt Service</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>Checking</string>
     </property>
    </item>
   </widget>
