@@ -256,7 +256,7 @@
     </property>
     <widget class="QWidget" name="tab">
      <attribute name="title">
-      <string>Small Deals</string>
+      <string>&lt;250K</string>
      </attribute>
      <widget class="QTreeView" name="opportunity_small">
       <property name="geometry">
@@ -285,7 +285,7 @@
     </widget>
     <widget class="QWidget" name="tab_2">
      <attribute name="title">
-      <string>Big Deals</string>
+      <string>&gt;250K</string>
      </attribute>
      <widget class="QTreeView" name="opportunity_big">
       <property name="geometry">

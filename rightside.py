@@ -1,7 +1,7 @@
 import sys, os
 import json, csv
 from PyQt5 import QtCore, QtGui, QtWidgets, uic
-from PyQt5.QtWidgets import QInputDialog, QLineEdit, QVBoxLayout, QTableWidgetItem, QFileDialog
+from PyQt5.QtWidgets import QInputDialog, QLineEdit, QVBoxLayout, QTableWidgetItem, QFileDialog, QHeaderView
 from PyQt5.QtCore import Qt, QUrl
 import traceback
 import requests
@@ -55,65 +55,63 @@ class Ledger(QtWidgets.QWidget):
                 "notes": f'{notes_}'
             }
             data = json.dumps(dict)
-            print(data)
             response = requests.post(self.base_url, data=data, headers=headers)
-            print(response)
             # #~~~~~GET~~~~~
-            # response2 = requests.get(url)
-            # json_response = list(response2.json())
-            # for item in json_response:
-            #     date_of = item['date']
-            #     from_ = item['from_account']
-            #     to_ = item['to_account']
-            #     amount_ = item['amount']
-            #     notes_ = item['notes']
-            # row = self.display_table.rowCount()
-            # self.display_table.setRowCount(row+1)
-            # row_data = []
-            # row_data.append(date_of)
-            # row_data.append(from_)
-            # row_data.append(to_)
-            # row_data.append(amount_)
-            # row_data.append(notes_)
-            # col = 0
-            # for item in row_data:
-            #     cell = QTableWidgetItem(str(item))
-            #     self.display_table.setItem(row, col, cell)
-            #     col += 1
-            # #~~~~~update~expense~~~~~>
-            # #~~~~> 2 accounts from_ & to_
-            # url_from = 'http://localhost:8000/api/asset/'
-            # url_to = 'http://localhost:8000/api/expense/'
-            # response_from = requests.get(url_from)
-            # response_to = requests.get(url_to)
-            # for item in list(response_from.json()):
-            #     if item['source'] == from_:
-            #         id = item['id']
-            #         prev_amount = item['cost']
-            #         old_note = item['notes']
-            #         update = str(float(prev_amount) - float(amount_))
-            #         dict_from_post = {
-            #             "source": from_,
-            #             "down": update,
-            #             "cost": update,
-            #             "notes": old_note
-            #         }
-            #         data_post = json.dumps(dict_from_post)
-            #         response_post = requests.put(url_from+str(id), data=data_post, headers=headers)
-            # for item in list(response_to.json()):
-            #     if item['source'] == to_:
-            #         id = item['id']
-            #         prev_amount = item['amount']
-            #         update = str(float(prev_amount) + float(amount_))
-            #         dict_to_post = {
-            #             "source": to_,
-            #             "amount" : update
-            #         }
-            #         data_post = json.dumps(dict_to_post)
-            #         response_post = requests.put(url_to+str(id), data=data_post, headers=headers)
-            # window.sum_exp_accounts()
-            # window.reload_expenses()
-            # window.update_display()
+            response2 = requests.get(self.base_url)
+            json_response = list(response2.json())
+            for item in json_response:
+                date_of = item['date']
+                from_ = item['from_account']
+                to_ = item['to_account']
+                amount_ = item['amount']
+                notes_ = item['notes']
+            row = self.display_table.rowCount()
+            self.display_table.setRowCount(row+1)
+            row_data = []
+            row_data.append(date_of)
+            row_data.append(from_)
+            row_data.append(to_)
+            row_data.append(amount_)
+            row_data.append(notes_)
+            col = 0
+            for item in row_data:
+                cell = QTableWidgetItem(str(item))
+                self.display_table.setItem(row, col, cell)
+                col += 1
+            #~~~~~update~expense~~~~~>
+            #~~~~> 2 accounts from_ & to_
+            url_from = 'http://localhost:8000/api/asset/'
+            url_to = 'http://localhost:8000/api/expense/'
+            response_from = requests.get(url_from)
+            response_to = requests.get(url_to)
+            for item in list(response_from.json()):
+                if item['source'] == from_:
+                    id = item['id']
+                    prev_amount = item['cost']
+                    old_note = item['notes']
+                    update = str(float(prev_amount) - float(amount_))
+                    dict_from_post = {
+                        "source": from_,
+                        "down": update,
+                        "cost": update,
+                        "notes": old_note
+                    }
+                    data_post = json.dumps(dict_from_post)
+                    response_post = requests.put(url_from+str(id), data=data_post, headers=headers)
+            for item in list(response_to.json()):
+                if item['source'] == to_:
+                    id = item['id']
+                    prev_amount = item['amount']
+                    update = str(float(prev_amount) + float(amount_))
+                    dict_to_post = {
+                        "source": to_,
+                        "amount" : update
+                    }
+                    data_post = json.dumps(dict_to_post)
+                    response_post = requests.put(url_to+str(id), data=data_post, headers=headers)
+            window.reload_expenses()
+            window.reload_assets()
+            window.update_display()
         except Exception:
             traceback.print_exc()
         # # self.date.setDate()
@@ -123,6 +121,8 @@ class Ledger(QtWidgets.QWidget):
         self.notes.setText('')
     def set_table_model(self):
         self.display_table.setColumnCount(5)
+        header = self.display_table.horizontalHeader()
+        header.setSectionResizeMode(QHeaderView.Stretch)
         self.display_table.setHorizontalHeaderLabels(['Date','From','To','Amount','Notes'])
         self.display_table.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
     def read_in_table(self):
@@ -451,21 +451,16 @@ class MainWindow(QtWidgets.QMainWindow):
     def update_display(self):
         #clear all first...~~~~>
         #reload~~~~~~>
-        self.total_passive.setText('{0:,.2f}'.format(self.get_total_passive()))
-        self.total_expenses.setText('{0:,.2f}'.format(self.get_total_expense()))
-        self.total_cashflow.setText('{0:,.2f}'.format(self.get_total_income()[0]-self.get_total_expense()))
-        self.total_passive.setText('{0:,.2f}'.format(self.get_total_income()[1]))
-        self.total_income.setText('{0:,.2f}'.format(self.get_total_income()[0]))
         self.total_expenses.setText('{0:,.2f}'.format(self.get_total_expenses()))
         self.total_cashflow.setText('{0:,.2f}'.format(self.get_total_income()[0]-self.get_total_expenses()))
+        self.total_passive.setText('{0:,.2f}'.format(self.get_total_income()[1]))
+        self.total_income.setText('{0:,.2f}'.format(self.get_total_income()[0]))
         self.percent = self.sum_passive/self.sum_expenses*100
         if self.percent >= 100:
             self.goal_percent.setValue(int(100))
             self.statusBar().showMessage('YOU ARE FREE! FINANCIALLY FREE! GREAT JOB!!')
         else:
             self.goal_percent.setValue(int(self.percent))
-        self.worth.setText(' $'+'{0:,.0f}'.format(self.sum_assets-self.sum_debts))
-
         self.worth.setText(' $'+'{0:,.0f}'.format(self.get_total_assets()-self.get_total_liabilities()))
     def addAsset(self):
         self.asset = Asset()
@@ -681,13 +676,6 @@ class MainWindow(QtWidgets.QMainWindow):
         text = str(self.comboBox.currentText())
         if text and text is not '':
             return text
-    def get_total_income(self):
-        url = 'http://localhost:8000/api/income/'
-        response = requests.get(url)
-        total = 0.0
-        for item in list(response.json()):
-            total += float(item['amount'])
-        return total
     def get_total_passive(self):
         total = self.get_total_income()
         url = 'http://localhost:8000/api/income/'
@@ -698,27 +686,6 @@ class MainWindow(QtWidgets.QMainWindow):
                 clock_time += float(item['amount'])
         passive = float(total[0]) - wages
         return passive
-    def get_total_expense(self):
-        url = 'http://localhost:8000/api/expense/'
-        response = requests.get(url)
-        total = 0.0
-        for item in list(response.json()):
-            total += float(item['amount'])
-        return total
-    def get_total_asset(self):
-        url = 'http://localhost:8000/api/asset/'
-        response = requests.get(url)
-        total = 0.0
-        for item in list(response.json()):
-            total += float(item['cost'])
-        return total
-    def get_total_liability(self):
-        url = 'http://localhost:8000/api/liability/'
-        response = requests.get(url)
-        total = 0.0
-        for item in list(response.json()):
-            total += float(item['amount'])
-        return total
     def get_total_income(self):
         '''returns a tuple with total income & passive'''
         income = 0
@@ -727,7 +694,7 @@ class MainWindow(QtWidgets.QMainWindow):
         response = requests.get(url)
         for item in list(response.json()):
             income += int(item['amount'])
-            if item['source'] == 'Salary/Wages':
+            if item['source'] != 'Salary/Wages':
                 passive += int(item['amount'])
         return (income, passive)
     def get_total_expenses(self):
@@ -771,7 +738,7 @@ class MainWindow(QtWidgets.QMainWindow):
             "Insurance" : 0,
             "Health/Wellness" : 0,
             "Food/Groceries" : 0,
-            "Vehicle(s)" : 0,
+            "Vehicle" : 0,
             "Entertainment" : 0,
             "Clothing" : 0,
             "Furniture" : 0,
@@ -792,8 +759,8 @@ class MainWindow(QtWidgets.QMainWindow):
                 data_dict['Insurance'] += float(item['amount'])
             elif item['to_account'] == 'Health/Wellness':
                 data_dict['Health/Wellness'] += float(item['amount'])
-            elif item['to_account'] == 'Vehicle(s)':
-                data_dict['Vehicle(s)'] += float(item['amount'])
+            elif item['to_account'] == 'Vehicle':
+                data_dict['Vehicle'] += float(item['amount'])
             elif item['to_account'] == 'Food/Groceries':
                 data_dict['Food/Groceries'] += float(item['amount'])
             elif item['to_account'] == 'Entertainment':
@@ -821,25 +788,19 @@ class MainWindow(QtWidgets.QMainWindow):
         }
         data = ''
         id = 0
-        # print(data_dict)
+        response_post = ''
         #~~~~~~~~~~~~~~~~~~~~~~~>
         url_put = 'http://localhost:8000/api/expense/'
+        headers = {"content-type": "application/json"}
         for item in data_dict:
             put_data['source'] = item
-            put_data['amount'] = data_dict[item]
+            put_data['amount'] = str(data_dict[item])
             data = json.dumps(put_data)
             id = self.get_exp_id(item)
-            # print(id, data)
             #~~~~~~~~~this~is~not~working~~~~~~~~~>
             #~~~~~>
-            # if id != 0:
-            #     headers = {"content-type": "application/json"}
-            #     response_post = requests.put(url_put+str(id), data=data, headers=headers)
-            #     if response_post.status_code == 405 or 404:
-            #         print('problem here:...#:832')
-            #         # response_post = requests.post(url_put, data=data, headers=headers)
-            # else:
-            #     response_post = requests.post(url_put, data=data, headers=headers)
+            if id == 0:
+                response_post = requests.post(url_put, data=data, headers=headers)
 app = QtWidgets.QApplication(sys.argv)
 window = MainWindow()
 ledger = Ledger()
