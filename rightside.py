@@ -486,7 +486,27 @@ class MainWindow(QtWidgets.QMainWindow):
             if id == 0:
                 data = json.dumps(data_dict)
                 response_post = requests.post(url, data=data, headers=headers)
+            #~~~add~income~to~checking~account~~~~~~~~>
+            #~~~~~~>
+            url_asset = 'http://localhost:8000/api/asset/'
+            response_asset = requests.get(url_asset)
+            data_asset = {
+                "source": 'Checking',
+                "down": '',
+                "cost": '',
+                "notes": 'Paycheck'
+            }
+            for item in list(response_asset.json()):
+                if item['source'] == 'Checking':
+                    id_checking = item['id']
+                    prev_amount = float(item['cost'])
+                    updated = prev_amount + float(pay)
+                    data_asset['down'] = updated
+                    data_asset['cost'] = updated
+                    data = json.dumps(data_asset)
+                    response_put = requests.put(url_asset+str(id_checking), data=data, headers=headers)
             self.reload_income()
+            self.reload_assets()
             self.update_display()
     def addAsset(self):
         self.asset = Asset()
