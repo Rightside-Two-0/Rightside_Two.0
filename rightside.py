@@ -465,8 +465,29 @@ class MainWindow(QtWidgets.QMainWindow):
     def add_pay(self):
         pay, ok = QInputDialog.getText(self, 'Paycheck', 'Enter the Gross Amount: ')
         if ok:
-            print(pay)
-        pass
+            headers = {"content-type": "application/json"}
+            self.addItem_income('Salary/Wages', '{0:,.2f}'.format(float(pay)))
+            url = 'http://localhost:8000/api/income/'
+            response = requests.get(url)
+            data_dict = {
+                "source": 'Salary/Wages',
+                "amount": pay,
+                "notes": 'paycheck'
+            }
+            id = 0
+            updated = 0.0
+            for item in list(response.json()):
+                if item ['source'] == 'Salary/Wages':
+                    id = item['id']
+                    prev_amount = float(item['amount'])
+                    updated = float(pay) + prev_amount
+                    data_dict['amount'] = str(updated)
+                    data = json.dumps(data_dict)
+                    print(id, data)
+                    response_put = requests.put(url+str(id), data=data, headers=headers)
+                else:
+                    data = json.dumps(data_dict)
+                    response_post = requests.post(url, data=data, headers=headers)
     def addAsset(self):
         self.asset = Asset()
         self.asset.move(675,150)
@@ -629,7 +650,6 @@ class MainWindow(QtWidgets.QMainWindow):
        try:
            url = 'http://localhost:8000/api/income/'
            response = requests.get(url)
-           self.addItem_income('Salary/Wages', '{0:,.0f}'.format(self.sum_wages()))
            for item in list(response.json()):
                self.addItem_income(item['source']+' - '+item['notes'],  '{0:,.0f}'.format(float(item['amount'])))
                if item['source'] == 'Salary/Wages':
@@ -807,14 +827,6 @@ class MainWindow(QtWidgets.QMainWindow):
             #~~~~~>
             if id == 0:
                 response_post = requests.post(url_put, data=data, headers=headers)
-    def sum_wages(self):
-        url = 'http://localhost:8000/api/ledger'
-        response = requests.get(url)
-        wages = 0.0
-        for item in list(response.json()):
-            if item['from_account'] == 'Employement/Contract':
-                wages += float(item['amount'])
-        return wages
 app = QtWidgets.QApplication(sys.argv)
 window = MainWindow()
 ledger = Ledger()
