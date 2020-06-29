@@ -466,7 +466,6 @@ class MainWindow(QtWidgets.QMainWindow):
         pay, ok = QInputDialog.getText(self, 'Paycheck', 'Enter the Gross Amount: ')
         if ok:
             headers = {"content-type": "application/json"}
-            self.addItem_income('Salary/Wages', '{0:,.2f}'.format(float(pay)))
             url = 'http://localhost:8000/api/income/'
             response = requests.get(url)
             data_dict = {
@@ -483,11 +482,12 @@ class MainWindow(QtWidgets.QMainWindow):
                     updated = float(pay) + prev_amount
                     data_dict['amount'] = str(updated)
                     data = json.dumps(data_dict)
-                    print(id, data)
                     response_put = requests.put(url+str(id), data=data, headers=headers)
-                else:
-                    data = json.dumps(data_dict)
-                    response_post = requests.post(url, data=data, headers=headers)
+            if id == 0:
+                data = json.dumps(data_dict)
+                response_post = requests.post(url, data=data, headers=headers)
+            self.reload_income()
+            self.update_display()
     def addAsset(self):
         self.asset = Asset()
         self.asset.move(675,150)
@@ -656,7 +656,7 @@ class MainWindow(QtWidgets.QMainWindow):
                    self.sum_salaries += float(item['amount'])
                if item['source'] != 'Salary/Wages':
                    self.sum_passive += float(item['amount'])
-           self.total_income.setText('{0:,.2f}'.format(self.sum_salaries+self.sum_passive))
+           self.total_income.setText('{0:,.2f}'.format(float(self.get_total_income()[0])))
        except Exception:
            traceback.print_exc()
     def see_details(self):
@@ -714,12 +714,12 @@ class MainWindow(QtWidgets.QMainWindow):
         return passive
     def get_total_income(self):
         '''returns a tuple with total income & passive'''
-        income = 0
-        passive = 0
+        income = 0.0
+        passive = 0.0
         url = 'http://localhost:8000/api/income/'
         response = requests.get(url)
         for item in list(response.json()):
-            income += int(item['amount'])
+            income += float(item['amount'])
             if item['source'] != 'Salary/Wages':
                 passive += int(item['amount'])
         return (income, passive)
