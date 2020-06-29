@@ -248,6 +248,9 @@
       <height>471</height>
      </rect>
     </property>
+    <property name="toolTip">
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    </property>
     <property name="currentIndex">
      <number>0</number>
     </property>
@@ -834,6 +837,26 @@ p, li { white-space: pre-wrap; }
       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
      </property>
     </widget>
+    <widget class="QPushButton" name="analyze_button_3">
+     <property name="geometry">
+      <rect>
+       <x>310</x>
+       <y>0</y>
+       <width>51</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="toolTip">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Analyze Property&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="icon">
+      <iconset>
+       <normaloff>../../../../icons/marker.png</normaloff>../../../../icons/marker.png</iconset>
+     </property>
+    </widget>
    </widget>
    <widget class="QLabel" name="irr_display">
     <property name="geometry">
@@ -902,9 +925,9 @@ p, li { white-space: pre-wrap; }
    <widget class="QPushButton" name="analyze_button_2">
     <property name="geometry">
      <rect>
-      <x>900</x>
+      <x>930</x>
       <y>710</y>
-      <width>71</width>
+      <width>41</width>
       <height>51</height>
      </rect>
     </property>
