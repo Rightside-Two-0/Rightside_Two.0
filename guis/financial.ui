@@ -778,7 +778,7 @@ p, li { white-space: pre-wrap; }
        <normaloff>../../../../icons/money--plus.png</normaloff>../../../../icons/money--plus.png</iconset>
      </property>
     </widget>
-    <widget class="QPushButton" name="add_liability_2">
+    <widget class="QPushButton" name="remove_liability">
      <property name="geometry">
       <rect>
        <x>160</x>

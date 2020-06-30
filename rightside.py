@@ -112,6 +112,7 @@ class Ledger(QtWidgets.QWidget):
             window.reload_expenses()
             window.reload_assets()
             window.update_display()
+            self.hide()
         except Exception:
             traceback.print_exc()
         # # self.date.setDate()
@@ -409,6 +410,10 @@ class MainWindow(QtWidgets.QMainWindow):
             self.asset.clicked.connect(self.addAsset)
             self.sell_a_asset = self.findChild(QtWidgets.QPushButton, 'liquidate_asset')
             self.sell_a_asset.clicked.connect(self.sellit)
+            self.debt = self.findChild(QtWidgets.QPushButton, 'add_liability')
+            self.debt.clicked.connect(self.add_debt)
+            self.remove_debts = self.findChild(QtWidgets.QPushButton, 'remove_liability')
+            self.remove_debts.clicked.connect(self.remove_debt)
             self.paycheck = self.findChild(QtWidgets.QPushButton, 'paycheck_button')
             self.paycheck.clicked.connect(self.add_pay)
             self.analyze_it_ = self.findChild(QtWidgets.QPushButton, 'analyze_button')
@@ -512,6 +517,35 @@ class MainWindow(QtWidgets.QMainWindow):
         self.asset = Asset()
         self.asset.move(675,150)
         self.asset.show()
+    def add_debt(self):
+        debt, ok = QInputDialog.getText(self, 'Debts - (use a comma(,) to seperate)', 'Enter the Account, Remaing Balance Amount: ')
+        if ok:
+            parts = debt.split(',')
+            account = parts[0]
+            amount = parts[1]
+            url = 'http://localhost:8000/api/liability/'
+            headers = {"content-type": "application/json"}
+            data_dict = {
+                "source": account,
+                "amount": amount,
+                "notes": 'Debts - Initially'
+            }
+            data = json.dumps(data_dict)
+            response = requests.post(url, data=data, headers=headers)
+            self.reload_liabilities()
+            self.update_display()
+    def remove_debt(self):
+        account, ok = QInputDialog.getText(self, 'Debts', 'Enter the Account: ')
+        if ok:
+            url = 'http://localhost:8000/api/liability/'
+            response = requests.get(url)
+            id = 0
+            for item in list(response.json()):
+                if item['source'] == account:
+                    id = item['id']
+                    res_remove = requests.delete(url+str(id))
+                    self.reload_liabilities()
+                    self.update_display()
     def sellit(self):
         self.selling = SellAsset()
         self.selling.move(675,150)
