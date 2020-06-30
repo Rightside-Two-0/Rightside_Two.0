@@ -156,7 +156,6 @@ class Analysis(QtWidgets.QWidget):
         self.open_sheet()
         self.open_rightside()
         #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        self.hide()
         self.getURLButton.clicked.connect(self.view_deal)
     def view_deal(self):
         try:
@@ -731,6 +730,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.opp_cash_flow.setText('{0:,.0f}'.format(float(res_details.json()['cash_flow'])))
         self.opp_coc.setText(res_details.json()['coc'])
         self.opp_irr.setText(res_details.json()['irr'])
+        analysis.url_OM.setText(res_details.json()['url'])
     def get_new_account(self):
         text, ok = QInputDialog.getText(self, 'Input Dialog', 'Enter Account:')
         if text and text != '':
@@ -883,8 +883,8 @@ class MainWindow(QtWidgets.QMainWindow):
                 response_post = requests.post(url_put, data=data, headers=headers)
 app = QtWidgets.QApplication(sys.argv)
 window = MainWindow()
-ledger = Ledger()
 analysis = Analysis()
+ledger = Ledger()
 window.move(300,75)
 window.show()
 app.exec_()
