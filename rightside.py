@@ -5,7 +5,7 @@ from PyQt5.QtWidgets import QInputDialog, QLineEdit, QVBoxLayout, QTableWidgetIt
 from PyQt5.QtCore import Qt, QUrl
 import traceback
 import requests
-# import PyPDF4
+import PyPDF4
 
 class Ledger(QtWidgets.QWidget):
     def __init__(self):
@@ -178,19 +178,19 @@ class Analysis(QtWidgets.QWidget):
             col = self.currentColumn()
             value = self.item(row, col)
             value = value.text()
-            print("The current cell is ", row, ", ", col)
-            print("In this cell we have: ", value)
+            # print("The current cell is ", row, ", ", col)
+            # print("In this cell we have: ", value)
     def open_rightside(self):
         self.rightside_tab.check_change = False
         url = '/home/tetrapro/projects/python/Rightside_Two.0/deals/rightside.csv'
         with open(url, newline='') as csv_file:
             self.rightside_tab.setRowCount(0)
-            self.rightside_tab.setColumnCount(10)
+            self.rightside_tab.setColumnCount(17)
             my_file = csv.reader(csv_file, delimiter=',', quotechar='|')
             for row_data in my_file:
                 row = self.rightside_tab.rowCount()
                 self.rightside_tab.insertRow(row)
-                if len(row_data) > 10:
+                if len(row_data) > 17:
                     self.rightside_tab.setColumnCount(len(row_data))
                 for column, content in enumerate(row_data):
                     item = QTableWidgetItem(content)
@@ -201,12 +201,12 @@ class Analysis(QtWidgets.QWidget):
         url = '/home/tetrapro/projects/python/Rightside_Two.0/deals/current.csv'
         with open(url, newline='') as csv_file:
             self.current_tab.setRowCount(0)
-            self.current_tab.setColumnCount(10)
+            self.current_tab.setColumnCount(17)
             my_file = csv.reader(csv_file, delimiter=',', quotechar='|')
             for row_data in my_file:
                 row = self.current_tab.rowCount()
                 self.current_tab.insertRow(row)
-                if len(row_data) > 10:
+                if len(row_data) > 17:
                     self.current_tab.setColumnCount(len(row_data))
                 for column, content in enumerate(row_data):
                     item = QTableWidgetItem(content)
