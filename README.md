@@ -27,4 +27,4 @@ This software will help you get rich!
 This is the Rightside Two.0.
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-This intellectual property and all associated rights belongs exclusively to Rightside Two.0.
+This is intellectual property and all associated rights belongs exclusively to Rightside Two.0.
