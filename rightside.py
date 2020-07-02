@@ -5,7 +5,8 @@ from PyQt5.QtWidgets import QInputDialog, QLineEdit, QVBoxLayout, QTableWidgetIt
 from PyQt5.QtCore import Qt, QUrl
 import traceback
 import requests
-import PyPDF4
+
+# import PyPDF4
 
 class Ledger(QtWidgets.QWidget):
     def __init__(self):
@@ -147,99 +148,107 @@ class Analysis(QtWidgets.QWidget):
         self.current_tab = self.findChild(QtWidgets.QTableWidget, 'table_current')
         self.rightside_tab = self.findChild(QtWidgets.QTableWidget, 'table_rightside')
         self.url_OM = self.findChild(QtWidgets.QLineEdit, 'urlBox')
-        self.current_tab.check_change = True
-        self.rightside_tab.check_change = True
-        self.current_tab.cellChanged.connect(self.c_current)
-        self.rightside_tab.cellChanged.connect(self.c_rightside)
-
+        #~~~~~income~~~~~~~~~~~~~~~~~~~~~>
+        #~~~~~>
+        self.asking = self.findChild(QtWidgets.QLineEdit, 'ask_display')
+        self.sqft = self.findChild(QtWidgets.QLineEdit, 'sqft_display')
+        self.units = self.findChild(QtWidgets.QLineEdit, 'num_units_display')
+        self.montly_rent = self.findChild(QtWidgets.QLineEdit, 'ave_monthly_rent_display')
+        self.vacancy = self.findChild(QtWidgets.QLineEdit, 'vacancy_rate_display')
+        self.other_income = self.findChild(QtWidgets.QLineEdit, 'other_income')
+        self.gross_income = self.findChild(QtWidgets.QLabel, 'gross_income')
+        #~~~~~expenses~~~~~~~~~~~~~~~~~~~~>
+        #~~~~~>
+        self.repairs = self.findChild(QtWidgets.QLineEdit, 'repairs_display')
+        self.management = self.findChild(QtWidgets.QLineEdit, 'management_display')
+        self.taxes = self.findChild(QtWidgets.QLineEdit, 'taxes_display')
+        self.insurance = self.findChild(QtWidgets.QLineEdit, 'insurance_display')
+        self.wages = self.findChild(QtWidgets.QLineEdit, 'wages_display')
+        self.utilities = self.findChild(QtWidgets.QLineEdit, 'utilitites_display')
+        self.gen_admin = self.findChild(QtWidgets.QLineEdit, 'gen_admin_display')
+        self.professional_fees = self.findChild(QtWidgets.QLineEdit, 'professional_fees_display')
+        self.advertising = self.findChild(QtWidgets.QLineEdit, 'advertising_display')
+        self.capital_reserves = self.findChild(QtWidgets.QLineEdit, 'cap_x_display')
+        self.other = self.findChild(QtWidgets.QLineEdit, 'other_expense_display')
+        self.total_expense = self.findChild(QtWidgets.QLabel, 'total_expense_display')
+        #~~~~~>progressbars...
+        self.repairsProgress = self.findChild(QtWidgets.QProgressBar, 'repairs_progressBar')
+        self.managementProgress = self.findChild(QtWidgets.QProgressBar, 'management_progressBar')
+        self.taxesProgress = self.findChild(QtWidgets.QProgressBar, 'taxes_progressBar')
+        self.insuranceProgress = self.findChild(QtWidgets.QProgressBar, 'insurance_progressBar')
+        self.wagesProgress = self.findChild(QtWidgets.QProgressBar, 'wages_progressBar')
+        self.utilitiesProgress = self.findChild(QtWidgets.QProgressBar, 'utilitites_dprogressBar')
+        self.gen_adminProgress = self.findChild(QtWidgets.QProgressBar, 'gen_admin_progressBar')
+        self.professional_feesProgress = self.findChild(QtWidgets.QProgressBar, 'professional_fees_progressBar')
+        self.advertisingProgress = self.findChild(QtWidgets.QProgressBar, 'advertising_progressBar')
+        self.capital_reservesProgress = self.findChild(QtWidgets.QProgressBar, 'cap_x_progressBar')
+        self.otherProgress = self.findChild(QtWidgets.QProgressBar, 'other_expense_progressBar')
+        #~~~~~financing~~~~~~~~~~~~~~~~~~~~>
+        #~~~~~>
+        self.total_purhcase = self.findChild(QtWidgets.QLineEdit, 'total_purchase_display')
+        self.financing = self.findChild(QtWidgets.QLineEdit, 'financing_display')
+        self.seller_carry = self.findChild(QtWidgets.QLineEdit, 'seller_carry_display')
+        self.down = self.findChild(QtWidgets.QLineEdit, 'down_display')
+        self.closing_costs = self.findChild(QtWidgets.QLineEdit, 'closing_costs_display')
+        self.financing_rate = self.findChild(QtWidgets.QLineEdit, 'financing_rate_lineEdit')
+        self.financing_term = self.findChild(QtWidgets.QLineEdit, 'financing_term_lineEdit')
+        self.seller_carry_rate = self.findChild(QtWidgets.QLineEdit, 'seller_carray_rate_lineEdit')
+        self.seller_carry_term = self.findChild(QtWidgets.QLineEdit, 'seller_carry_term_lineEdit')
+        self.financing_payment = self.findChild(QtWidgets.QLabel, 'financing_payment_display')
+        self.seller_carry_payment = self.findChild(QtWidgets.QLabel, 'seller_carray_display')
+        self.financing_progressBar = self.findChild(QtWidgets.QProgressBar, 'financing_progressBar')
+        self.seller_carray_progressBar = self.findChild(QtWidgets.QProgressBar, 'seller_carray_progressBar')
+        self.down_progressBar = self.findChild(QtWidgets.QProgressBar, 'down_progressBar')
+        self.closing_costs_progressBar = self.findChild(QtWidgets.QProgressBar, 'closing_costs_progressBar')
+        #~~~~~contributions~~~~~~~~~~~~~~~~~~~>
+        #~~~~~>
+        self.capital_required = self.findChild(QtWidgets.QLabel, 'capital_required_display')
+        self.crypto_units = self.findChild(QtWidgets.QLabel, 'crypto_units_display')
+        self.sponsor = self.findChild(QtWidgets.QLabel, 'sponsor_display')
+        self.investor_list = self.findChild(QtWidgets.QListView, 'investor_listView')
         #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        self.open_sheet()
-        self.open_rightside()
+        self.submit = self.findChild(QtWidgets.QPushButton, 'submit_button')
+        self.verify = self.findChild(QtWidgets.QPushButton, 'verify_button')
+        self.submit.clicked.connect(self.submit_it)
+        self.verify.clicked.connect(self.verify_it)
+        self.join_opp_button = self.findChild(QtWidgets.QCommandLinkButton, 'join_commandLinkButton')
+        self.sponsor_opp_button = self.findChild(QtWidgets.QCommandLinkButton, 'sponsor_commandLinkButton')
+        self.join_opp_button.clicked.connect(self.join_opp)
+        self.sponsor_opp_button.clicked.connect(self.sponsor_opp)
+        # scan_for_data ()
+        # poulate_fields()
         #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         self.getURLButton.clicked.connect(self.view_deal)
+    def submit_it(self):
+        print('hi form #223')
+    def verify_it(self):
+        print('hi from 225')
+    def sponsor_opp(self):
+        print('hi from 227')
+    def join_opp(self):
+        print('hi from 229')
     def view_deal(self):
         try:
             self.webView.load(QUrl(self.urlBox.text()))
             #~~~~~~~~~~start~~analysis~~~~~~~~~~~~
-            self.find_data()
+            # self.find_data()
         except Exception as e:
             traceback.print_exc()
-    def c_rightside(self):
-        if self.current_tab.check_change:
-            row = self.rightside_tab.currentRow()
-            col = self.rightside_tab.currentColumn()
-            value = self.rightside_tab.item(row, col)
-            # value = value.text()
-            # print("The current cell is ", row, ", ", col)
-            # print("In this cell we have: ", value)
-    def c_current(self):
-        if self.current_tab.check_change:
-            row = self.currentRow()
-            col = self.currentColumn()
-            value = self.item(row, col)
-            value = value.text()
-            # print("The current cell is ", row, ", ", col)
-            # print("In this cell we have: ", value)
-    def open_rightside(self):
-        self.rightside_tab.check_change = False
-        url = '/home/tetrapro/projects/python/Rightside_Two.0/deals/rightside.csv'
-        with open(url, newline='') as csv_file:
-            self.rightside_tab.setRowCount(0)
-            self.rightside_tab.setColumnCount(17)
-            my_file = csv.reader(csv_file, delimiter=',', quotechar='|')
-            for row_data in my_file:
-                row = self.rightside_tab.rowCount()
-                self.rightside_tab.insertRow(row)
-                if len(row_data) > 17:
-                    self.rightside_tab.setColumnCount(len(row_data))
-                for column, content in enumerate(row_data):
-                    item = QTableWidgetItem(content)
-                    self.rightside_tab.setItem(row, column, item)
-        self.rightside_tab.check_change = True
-    def open_sheet(self):
-        self.current_tab.check_change = False
-        url = '/home/tetrapro/projects/python/Rightside_Two.0/deals/current.csv'
-        with open(url, newline='') as csv_file:
-            self.current_tab.setRowCount(0)
-            self.current_tab.setColumnCount(17)
-            my_file = csv.reader(csv_file, delimiter=',', quotechar='|')
-            for row_data in my_file:
-                row = self.current_tab.rowCount()
-                self.current_tab.insertRow(row)
-                if len(row_data) > 17:
-                    self.current_tab.setColumnCount(len(row_data))
-                for column, content in enumerate(row_data):
-                    item = QTableWidgetItem(content)
-                    self.current_tab.setItem(row, column, item)
-        self.current_tab.check_change = True
-    def save_sheet(self):
-        path = QFileDialog.getOpenFileName(self, 'Save CSV', os.getenv('/home/tetrapro/projects/python/Rightside_Two.0'), 'CSV(*.csv)')
-        if path[0] != '':
-            with open(path[0], 'w') as csv_file:
-                writer = csv.writer(csv_file, dialect='excel')
-                for row in range(self.current_tab.rowCount()):
-                    row_data = []
-                    for column in range(self.current_tab.columnCount()):
-                        item = self.current_tab.item(row, column)
-                        if item is not None:
-                            row_data.append(item.next())
-                        else:
-                            row_data.append('')
-                    writer.writerow(row_data)
     def find_data(self):
+        pass
         #~~~TASK~~TWO~~2)~~~~~~~~~~~~~~~~~~~>
         #~~bs4~~download~OM~~~~~~~~>
-        url = self.urlBox.text()
-        response = requests.get(url)
-        with open('pdf_OM.pdf', 'wb') as pdf:
-            pdf.write(response.content)
-        #~~~scan~~for~text~~~~~~~~~>
-        pdf_name = 'pdf_OM.pdf'
-        pdf_file = open(pdf_name, 'rb')
-        pdf_reader = PyPDF2.PdfFileReader(pdf_file)
-        for i in range(pdf_reader.numPages):
-            page = pdf_reader.getPage(i)
-            print(page.extractText())
+        # url = self.urlBox.text()
+        # response = requests.get(url)
+        # with open('pdf_OM.pdf', 'wb') as pdf:
+        #     pdf.write(response.content)
+        # #~~~scan~~for~text~~~~~~~~~>
+        # pdf_name = 'pdf_OM.pdf'
+        # pdf_file = open(pdf_name, 'rb')
+        # pdf_reader = PyPDF2.PdfFileReader(pdf_file)
+        # for i in range(pdf_reader.numPages):
+        #     page = pdf_reader.getPage(i)
+        #     print(page.extractText())
 class Asset(QtWidgets.QWidget):
     def __init__(self):
         super(Asset, self).__init__()
@@ -383,6 +392,7 @@ class MainWindow(QtWidgets.QMainWindow):
             self.sum_expenses = 1.0
             self.sum_assets = 0.0
             self.sum_debts = 0.0
+            self.savings = 0.0
             #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             #setting popup action to add new account to ledger to or from accoutns
             self.new_account = self.findChild(QtWidgets.QAction, 'account_mentu_item')
@@ -392,17 +402,6 @@ class MainWindow(QtWidgets.QMainWindow):
             self.liabilities = self.findChild(QtWidgets.QTreeView, 'liabilities_view')
             self.opp_small = self.findChild(QtWidgets.QTreeView, 'opportunity_small')
             self.opp_big = self.findChild(QtWidgets.QTreeView, 'opportunity_big')
-            self.set_model_income()
-            self.set_model_expenses()
-            self.set_model_assets()
-            self.set_model_liabilities()
-            self.set_model_opportunities()
-            self.sum_exp_accounts()
-            self.load()
-            self.load_exp()
-            self.load_assets()
-            self.load_debts()
-            self.load_small_opps()
             #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             #connect button actions
             self.asset = self.findChild(QtWidgets.QPushButton, 'add_asset')
@@ -450,6 +449,19 @@ class MainWindow(QtWidgets.QMainWindow):
             self.opp_cash_flow = self.findChild(QtWidgets.QLabel, 'cashflow_display')
             self.opp_coc = self.findChild(QtWidgets.QLabel, 'coc_display')
             self.opp_irr = self.findChild(QtWidgets.QLabel, 'irr_display')
+            self.commitments = self.findChild(QtWidgets.QProgressBar, 'commitment_progress')
+            #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~>
+            self.set_model_income()
+            self.set_model_expenses()
+            self.set_model_assets()
+            self.set_model_liabilities()
+            self.set_model_opportunities()
+            self.sum_exp_accounts()
+            self.load()
+            self.load_exp()
+            self.load_assets()
+            self.load_debts()
+            self.load_small_opps()
         except Exception:
             traceback.print_exc()
     def update_display(self):
@@ -688,6 +700,8 @@ class MainWindow(QtWidgets.QMainWindow):
             for item in list(response.json()):
                 self.addItem_Assets(item['source']+' - '+item['notes'], '{0:,.0f}'.format(float(item['cost'])))
                 self.sum_assets += float(item['cost'])
+                if item['source'] == 'Savings':
+                    self.savings += float(item['cost'])
         except Exception:
             traceback.print_exc()
     def load_exp(self):
@@ -731,6 +745,11 @@ class MainWindow(QtWidgets.QMainWindow):
         self.opp_coc.setText(res_details.json()['coc'])
         self.opp_irr.setText(res_details.json()['irr'])
         analysis.url_OM.setText(res_details.json()['url'])
+        #~~~~~savings/down~~~~~~~~~~>
+        qoutient = self.savings/float(res_details.json()['down'])
+        if qoutient >= 1:
+            qoutient = 100
+        self.commitments.setValue(int(qoutient))
     def get_new_account(self):
         text, ok = QInputDialog.getText(self, 'Input Dialog', 'Enter Account:')
         if text and text != '':
@@ -750,6 +769,7 @@ class MainWindow(QtWidgets.QMainWindow):
         try:
             analysis.show()
             analysis.move(313,150)
+            analysis.view_deal()
         except Exception as e:
             traceback.print_exc()
     def getComboSelection(self):
