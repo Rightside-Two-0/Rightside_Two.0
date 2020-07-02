@@ -153,10 +153,10 @@ class Analysis(QtWidgets.QWidget):
         self.asking = self.findChild(QtWidgets.QLineEdit, 'ask_display')
         self.sqft = self.findChild(QtWidgets.QLineEdit, 'sqft_display')
         self.units = self.findChild(QtWidgets.QLineEdit, 'num_units_display')
-        self.montly_rent = self.findChild(QtWidgets.QLineEdit, 'ave_monthly_rent_display')
+        self.monthly_rent = self.findChild(QtWidgets.QLineEdit, 'ave_monthly_rent_display')
         self.vacancy = self.findChild(QtWidgets.QLineEdit, 'vacancy_rate_display')
-        self.other_income = self.findChild(QtWidgets.QLineEdit, 'other_income')
-        self.gross_income = self.findChild(QtWidgets.QLabel, 'gross_income')
+        self.other_income = self.findChild(QtWidgets.QLineEdit, 'other_income_display')
+        self.gross_income = self.findChild(QtWidgets.QLabel, 'gross_income_display')
         #~~~~~expenses~~~~~~~~~~~~~~~~~~~~>
         #~~~~~>
         self.repairs = self.findChild(QtWidgets.QLineEdit, 'repairs_display')
@@ -164,7 +164,7 @@ class Analysis(QtWidgets.QWidget):
         self.taxes = self.findChild(QtWidgets.QLineEdit, 'taxes_display')
         self.insurance = self.findChild(QtWidgets.QLineEdit, 'insurance_display')
         self.wages = self.findChild(QtWidgets.QLineEdit, 'wages_display')
-        self.utilities = self.findChild(QtWidgets.QLineEdit, 'utilitites_display')
+        self.utilities = self.findChild(QtWidgets.QLineEdit, 'utilities_display')
         self.gen_admin = self.findChild(QtWidgets.QLineEdit, 'gen_admin_display')
         self.professional_fees = self.findChild(QtWidgets.QLineEdit, 'professional_fees_display')
         self.advertising = self.findChild(QtWidgets.QLineEdit, 'advertising_display')
@@ -183,6 +183,8 @@ class Analysis(QtWidgets.QWidget):
         self.advertisingProgress = self.findChild(QtWidgets.QProgressBar, 'advertising_progressBar')
         self.capital_reservesProgress = self.findChild(QtWidgets.QProgressBar, 'cap_x_progressBar')
         self.otherProgress = self.findChild(QtWidgets.QProgressBar, 'other_expense_progressBar')
+        #~~~noi~~~~~~~>
+        self.noi = self.findChild(QtWidgets.QLabel, 'noi_display')
         #~~~~~financing~~~~~~~~~~~~~~~~~~~~>
         #~~~~~>
         self.total_purhcase = self.findChild(QtWidgets.QLineEdit, 'total_purchase_display')
@@ -209,8 +211,10 @@ class Analysis(QtWidgets.QWidget):
         #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         self.submit = self.findChild(QtWidgets.QPushButton, 'submit_button')
         self.verify = self.findChild(QtWidgets.QPushButton, 'verify_button')
+        self.calc_it = self.findChild(QtWidgets.QPushButton, 'calculate_button')
         self.submit.clicked.connect(self.submit_it)
         self.verify.clicked.connect(self.verify_it)
+        self.calc_it.clicked.connect(self.calculate_it)
         self.join_opp_button = self.findChild(QtWidgets.QCommandLinkButton, 'join_commandLinkButton')
         self.sponsor_opp_button = self.findChild(QtWidgets.QCommandLinkButton, 'sponsor_commandLinkButton')
         self.join_opp_button.clicked.connect(self.join_opp)
@@ -219,14 +223,47 @@ class Analysis(QtWidgets.QWidget):
         # poulate_fields()
         #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         self.getURLButton.clicked.connect(self.view_deal)
+    def calculate_it(self):
+        gross = (float(self.units.text()) * float(self.monthly_rent.text())) * (1 - float(self.vacancy.text())) + float(self.other_income.text())
+        self.gross_income.setText('$'+'{0:,.2f}'.format(gross))
+        #~~~~~~~~expenses~~~~~~~~>
+        repairs_ = float(self.repairs.text())
+        management_ = float(self.management.text())
+        taxes_ = float(self.taxes.text())
+        insurance_ = float(self.insurance.text())
+        salaries_wages_ = float(self.wages.text())
+        utility_ = float(self.utilities.text())
+        gen_admin_ = float(self.gen_admin.text())
+        professional_fees_ = float(self.professional_fees.text())
+        advertising_ = float(self.advertising.text())
+        capital_reserves_ = float(self.capital_reserves.text())
+        other_ = float(self.other.text())
+        total_expenses = repairs_+management_+taxes_+insurance_+salaries_wages_+utility_+gen_admin_+professional_fees_+advertising_+capital_reserves_+other_
+        self.total_expense.setText('$'+'{0:,.2f}'.format(total_expenses))
+        #~~~~~~~~NOI~~~~~~~~>
+        noi = gross - total_expenses
+        self.noi.setText('$'+'{0:,.2f}'.format(noi))
+        #~~~~~~~set~progressBars~~~~~~~~>
+        #~~~~>
+        self.repairsProgress.setValue(int(repairs_ / total_expenses))
+        self.managementProgress.setValue(int(management_/total_expenses))
+        self.taxesProgress.setValue(int(taxes_/total_expenses))
+        self.insuranceProgress.setValue(int(insurance_/total_expenses))
+        self.wagesProgress.setValue(int(salaries_wages_/total_expenses))
+        self.utilityProgress.setValue(int(utility_/total_expenses))
+        self.gen_adminProgress.setValue(int(gen_admin_/total_expenses))
+        self.professional_feesProgress.setValue(int(professional_fees_/total_expenses))
+        self.advertisingProgress.setValue(int(advertising_/total_expenses))
+        self.capital_reservesProgress.setValue(int(capital_reserves_/total_expenses))
+        self.otherProgress.setValue(int(other_/total_expenses))
     def submit_it(self):
-        print('hi form #223')
+        print('hi form #225')
     def verify_it(self):
-        print('hi from 225')
-    def sponsor_opp(self):
         print('hi from 227')
-    def join_opp(self):
+    def sponsor_opp(self):
         print('hi from 229')
+    def join_opp(self):
+        print('hi from 231')
     def view_deal(self):
         try:
             self.webView.load(QUrl(self.urlBox.text()))
