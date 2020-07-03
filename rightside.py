@@ -177,12 +177,12 @@ class Analysis(QtWidgets.QWidget):
         self.taxesProgress = self.findChild(QtWidgets.QProgressBar, 'taxes_progressBar')
         self.insuranceProgress = self.findChild(QtWidgets.QProgressBar, 'insurance_progressBar')
         self.wagesProgress = self.findChild(QtWidgets.QProgressBar, 'wages_progressBar')
-        self.utilitiesProgress = self.findChild(QtWidgets.QProgressBar, 'utilitites_dprogressBar')
+        self.utilitiesProgress = self.findChild(QtWidgets.QProgressBar, 'utilities_progressBar')
         self.gen_adminProgress = self.findChild(QtWidgets.QProgressBar, 'gen_admin_progressBar')
         self.professional_feesProgress = self.findChild(QtWidgets.QProgressBar, 'professional_fees_progressBar')
         self.advertisingProgress = self.findChild(QtWidgets.QProgressBar, 'advertising_progressBar')
         self.capital_reservesProgress = self.findChild(QtWidgets.QProgressBar, 'cap_x_progressBar')
-        self.otherProgress = self.findChild(QtWidgets.QProgressBar, 'other_expense_progressBar')
+        self.otherProgress = self.findChild(QtWidgets.QProgressBar, 'other_progressBar')
         #~~~noi~~~~~~~>
         self.noi = self.findChild(QtWidgets.QLabel, 'noi_display')
         #~~~~~financing~~~~~~~~~~~~~~~~~~~~>
@@ -245,17 +245,17 @@ class Analysis(QtWidgets.QWidget):
         self.noi.setText('$'+'{0:,.2f}'.format(noi))
         #~~~~~~~set~progressBars~~~~~~~~>
         #~~~~>
-        self.repairsProgress.setValue(int(repairs_ / total_expenses))
-        self.managementProgress.setValue(int(management_/total_expenses))
-        self.taxesProgress.setValue(int(taxes_/total_expenses))
-        self.insuranceProgress.setValue(int(insurance_/total_expenses))
-        self.wagesProgress.setValue(int(salaries_wages_/total_expenses))
-        self.utilityProgress.setValue(int(utility_/total_expenses))
-        self.gen_adminProgress.setValue(int(gen_admin_/total_expenses))
-        self.professional_feesProgress.setValue(int(professional_fees_/total_expenses))
-        self.advertisingProgress.setValue(int(advertising_/total_expenses))
-        self.capital_reservesProgress.setValue(int(capital_reserves_/total_expenses))
-        self.otherProgress.setValue(int(other_/total_expenses))
+        self.repairsProgress.setValue(int(repairs_ / total_expenses*100))
+        self.managementProgress.setValue(int(management_/total_expenses*100))
+        self.taxesProgress.setValue(int(taxes_/total_expenses*100))
+        self.insuranceProgress.setValue(int(insurance_/total_expenses*100))
+        self.wagesProgress.setValue(int(salaries_wages_/total_expenses*100))
+        self.utilitiesProgress.setValue(int(utility_/total_expenses*100))
+        self.gen_adminProgress.setValue(int(gen_admin_/total_expenses*100))
+        self.professional_feesProgress.setValue(int(professional_fees_/total_expenses*100))
+        self.advertisingProgress.setValue(int(advertising_/total_expenses*100))
+        self.capital_reservesProgress.setValue(int(capital_reserves_/total_expenses*100))
+        self.otherProgress.setValue(int(other_/total_expenses*100))
     def submit_it(self):
         print('hi form #225')
     def verify_it(self):
