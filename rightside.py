@@ -479,7 +479,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.statusBar().showMessage('YOU ARE FREE! FINANCIALLY FREE! GREAT JOB!!')
             else:
                 self.goal_percent.setValue(int(self.percent))
-            self.worth.setText(' $'+'{0:,.0f}'.format(self.sum_assets-self.sum_debts))
+            self.worth.setText(' $'+'{0:,.0f}'.format(self.get_total_assets()-self.get_total_liabilities()))
             #~~~~~~set~deal~details on click~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             self.opp_small.clicked.connect(self.see_details)
             self.opp_big.clicked.connect(self.see_details)
