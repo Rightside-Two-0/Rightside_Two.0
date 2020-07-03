@@ -58,7 +58,7 @@
     </rect>
    </property>
    <property name="currentIndex">
-    <number>1</number>
+    <number>0</number>
    </property>
    <widget class="QWidget" name="opp_tab">
     <attribute name="title">
@@ -632,7 +632,7 @@
       </rect>
      </property>
      <property name="text">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:12pt;&quot;&gt;Salaraies &amp;amp; Wages:&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:12pt;&quot;&gt;Salaries &amp;amp; Wages:&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="alignment">
       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -1528,6 +1528,16 @@
      </property>
      <property name="text">
       <string>Calculate</string>
+     </property>
+    </widget>
+    <widget class="QWidget" name="chart_widget" native="true">
+     <property name="geometry">
+      <rect>
+       <x>590</x>
+       <y>409</y>
+       <width>391</width>
+       <height>241</height>
+      </rect>
      </property>
     </widget>
    </widget>

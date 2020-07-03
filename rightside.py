@@ -3,6 +3,8 @@ import json, csv
 from PyQt5 import QtCore, QtGui, QtWidgets, uic
 from PyQt5.QtWidgets import QInputDialog, QLineEdit, QVBoxLayout, QTableWidgetItem, QFileDialog, QHeaderView
 from PyQt5.QtCore import Qt, QUrl
+# from pyqtgraph import PlotWidget
+# import pyqtgraph as pg
 import traceback
 import requests
 
@@ -207,7 +209,7 @@ class Analysis(QtWidgets.QWidget):
         self.capital_required = self.findChild(QtWidgets.QLabel, 'capital_required_display')
         self.crypto_units = self.findChild(QtWidgets.QLabel, 'crypto_units_display')
         self.sponsor = self.findChild(QtWidgets.QLabel, 'sponsor_display')
-        self.investor_list = self.findChild(QtWidgets.QListView, 'investor_listView')
+        self.chart = self.findChild(QtWidgets.QWidget, 'chart_widget')
         #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         self.submit = self.findChild(QtWidgets.QPushButton, 'submit_button')
         self.verify = self.findChild(QtWidgets.QPushButton, 'verify_button')
@@ -256,6 +258,11 @@ class Analysis(QtWidgets.QWidget):
         self.advertisingProgress.setValue(int(advertising_/total_expenses*100))
         self.capital_reservesProgress.setValue(int(capital_reserves_/total_expenses*100))
         self.otherProgress.setValue(int(other_/total_expenses*100))
+        #~~~set~chart~values~~~~~~~>
+        #~~~~>
+        self.chart.clear()
+        #~~needs~updating~to~real~values~~~>
+        self.chart.plot([1.0,2.0,3.0,4.0,5.0])
     def submit_it(self):
         print('hi form #225')
     def verify_it(self):
