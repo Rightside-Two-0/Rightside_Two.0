@@ -3,8 +3,8 @@ import json, csv
 from PyQt5 import QtCore, QtGui, QtWidgets, uic
 from PyQt5.QtWidgets import QInputDialog, QLineEdit, QVBoxLayout, QTableWidgetItem, QFileDialog, QHeaderView
 from PyQt5.QtCore import Qt, QUrl
-from tests import mortgage
-from tests import calc_irr
+from tests.calc_irr import mortgage
+from tests.calc_irr import calc_irr
 
 import traceback
 import requests
@@ -265,6 +265,15 @@ class Analysis(QtWidgets.QWidget):
         #~~~intigrate~irr.py~calculation~~~~~~~>
         #~~~~>
         irr = calc_irr()
+        irr.cost_rev(asking=float(self.asking.text()),units=float(self.units.text()),average_rent=float(self.monthly_rent.text()),sqft=float(self.sqft.text()))
+        irr.financing_assumptions(equity_per=self.down_progressBar.value,seller_carry_per=0,interest_rate=5.0,amort_period=30,seller_carry_rate=8.0,seller_carry_term=60)
+        irr.revenues(rent_increase=0.02,expense_increase=0.025,vac_rate=10.0,extra_income=0)
+        irr.expenses(repairs=60,management=0,tax=0,insure=0,payroll=0,utils=0,gen_admin=0,pro_fees=0,ads=0,cap_x=1850,other_x=30000)
+        interest_loan = irr.calc_interest(start=12, end=0)
+        irr.deal(percent_rightside=0.45)
+        irr.offer()
+        irr.key_ratios()
+        print('IRR:', str(irr)+'%')
         #~~~set~chart~values~~~~~~~>
         #~~~~>
         self.chart_widget.clear()

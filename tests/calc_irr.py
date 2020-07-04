@@ -148,27 +148,26 @@ class calc_irr():
         #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~>
         #~~~~>
         # global m, irr, interest_loan, interest_rate_yearly, financing_amount, amort_period_monthly
-        self.cost_rev(asking=240000,improvements=0,units=12,average_rent=500,sqft=10000)
-        self.financing_assumptions(equity_per=0.3,seller_carry_per=0,interest_rate=5.0,amort_period=30,seller_carry_rate=8.0,seller_carry_term=60)
-        self.revenues(rent_increase=0.02,expense_increase=0.025,vac_rate=10.0,extra_income=0)
-        self.expenses(repairs=60,management=0,tax=0,insure=0,payroll=0,utils=0,gen_admin=0,pro_fees=0,ads=0,cap_x=1850,other_x=30000)
-        interest_loan = self.calc_interest(start=12, end=0)
-        self.deal(percent_rightside=0.45)
-        self.offer()
-        self.key_ratios()
-        print('IRR:', str(self.irr)+'%')
-        if self.irr >= 15.00:
-            print('Initiall looks like it might be a good deal!')
+        # self.cost_rev(asking=240000,improvements=0,units=12,average_rent=500,sqft=10000)
+        # self.financing_assumptions(equity_per=0.3,seller_carry_per=0,interest_rate=5.0,amort_period=30,seller_carry_rate=8.0,seller_carry_term=60)
+        # self.revenues(rent_increase=0.02,expense_increase=0.025,vac_rate=10.0,extra_income=0)
+        # self.expenses(repairs=60,management=0,tax=0,insure=0,payroll=0,utils=0,gen_admin=0,pro_fees=0,ads=0,cap_x=1850,other_x=30000)
+        # interest_loan = self.calc_interest(start=12, end=0)
+        # self.deal(percent_rightside=0.45)
+        # self.offer()
+        # self.key_ratios()
+        # print('IRR:', str(self.irr)+'%')
+        # if self.irr >= 15.00:
+        #     print('Initiall looks like it might be a good deal!')
             # write values and then save
             # Save the spreadsheet
             # workbook.save(filename='deals/deal'+str(datetime.datetime.now().timestamp())+'.xlsx')
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     # workbook = load_workbook(filename='Template2.0.xlsx')
     # sheet = workbook.active
-    def cost_rev(self, asking, improvements, units, average_rent, sqft):
-        # global ask, improvements_cost, num_units, ave_rent_monthly, land, building, closing_costs, acquisition_fee, gross_rents, total_sqft
+    def cost_rev(self, asking, units, average_rent, sqft):
         self.ask = asking
-        self.improvements_cost = improvements
+        # self.improvements_cost = improvements
         self.num_units = units
         self.ave_rent_monthly = average_rent
         self.land = self.ask * 0.2
@@ -178,7 +177,6 @@ class calc_irr():
         self.gross_rents = units * self.ave_rent_monthly
         self.total_sqft = sqft
     def financing_assumptions(self, equity_per, seller_carry_per, interest_rate, amort_period, seller_carry_rate, seller_carry_term):
-        # global m, total_purchase, ask, improvements_cost, owners_equity_percent, seller_financing_percent, owners_equity_value, seller_financing_value, financing_amount, interest_rate_yearly, interest_rate_monthly, amort_period_yearly, amort_period_monthly, payment_monthly, payment_annual, seller_financing_rate, seller_financing_term
         self.total_purchase = self.ask - self.improvements_cost
         self.owners_equity_percent = equity_per
         self.seller_financing_percent = seller_carry_per
@@ -195,7 +193,6 @@ class calc_irr():
         self.seller_financing_rate = seller_carry_rate
         self.seller_financing_term = seller_carry_term
     def revenues(self, rent_increase, expense_increase, vac_rate, extra_income):
-        # global rental_increase_projection, operating_expense_projection, vacancy_rate, gross_scheduled_income, num_units, gross_rents, vacancy_rate_value, net_rental_income, other_income, gross_income
         self.rental_increase_projection = rent_increase
         self.operating_expense_projection = expense_increase
         self.vacancy_rate = vac_rate
@@ -205,7 +202,6 @@ class calc_irr():
         self.other_income = extra_income
         self.gross_income = self.other_income + self.net_rental_income
     def expenses(self, repairs, management, tax, insure, payroll, utils, gen_admin, pro_fees, ads, cap_x, other_x):
-        # global financing_amount, repairs_maintenance, property_mang_fee, taxes, insurance, salaries_wages, general_admin, professional_fees, advertising, capital_reserves, other, gross_income, total_operating_expenses, noi, net_income_before_taxes
         self.repairs_maintenance = repairs
         self.property_mang_fee = management
         self.taxes = tax
@@ -221,14 +217,12 @@ class calc_irr():
         self.noi = self.gross_income - self.total_operating_expenses
         self.net_income_before_taxes = self.noi-(float(self.payment_annual)+self.seller_financing_cost)
     def calc_interest(self, start, end):
-        # global m, interest_rate_yearly, financing_amount, amort_period_monthly
         if end == 0:
             self.interest = sum(month[1] for month in islice(self.m.monthly_payment_schedule(), 12))
         else:
             self.interest = sum(month[1] for month in islice(self.m.monthly_payment_schedule(), start, end))
         return self.interest
     def deal(self, percent_rightside):
-        # global opportunity_percent, opportunity_value, net_income_before_taxes, investment_unit, creating_units, total_sqft, contributing_units, investors_percent, rightside_percent_coc, investors_percent_coc, first_yr_returns, first_yr_returns_rightside, contributing_value
         self.investors_percent = 1 - percent_rightside
         self.contributing_units = self.total_sqft * self.investors_percent
         self.investment_unit = (self.owners_equity_value+((self.total_purchase*0.035)+(self.total_purchase*0.01)))/self.contributing_units
@@ -245,13 +239,11 @@ class calc_irr():
         self.min_investment_investor = "{0:.0f}".format(self.owners_equity_value / 35)
         self.min_investment_unit = "{0:.0f}".format(float(self.min_investment_investor) / self.investment_unit)
     def offer(self):
-        # global total_purchase, contributing_value, closing_costs, acquisition_cost, down, five_years_unit, ten_years_unit, twenty_years_unit, thirty_years_unit, five_years_total, ten_years_total, twenty_years_total, thirty_years_total, roi, roi_yr, roi_month
         self.calc_future_unit_worth()
         self.closing_costs = self.total_purchase * 0.035
         self.acquisition_cost = self.contributing_value * 0.01
         self.down = self.contributing_value - (self.closing_costs + self.acquisition_cost)
     def key_ratios(self):
-        # global total_sqft, num_units, gross_rents, total_purchase, gross_income, ave_cost_sqft, ave_sqft_unit, ave_rent_sqft, ave_unit_cost, gross_rent_multiplier, expense_sqft, expense_unit, cash_on_cash, total_operating_expenses, net_income_before_taxes, contributing_value
         self.ave_sqft_unit = self.total_sqft / self.num_units
         self.ave_rent_sqft = self.total_sqft / self.gross_rents
         self.ave_cost_sqft = self.total_purchase / self.total_sqft
@@ -260,7 +252,6 @@ class calc_irr():
         self.expense_unit = self.total_operating_expenses / self.num_units
         self.expense_sqft = self.total_operating_expenses / self.total_sqft
     def calc_future_unit_worth(self):
-        # global contributing_value, noi, gross_scheduled_income, rental_increase_projection, operating_expense_projection, total_operating_expenses, total_sqft, financing_amount, five_years_unit, ten_years_unit, twenty_years_unit, thirty_years_unit, five_years_total, ten_years_total, twenty_years_total, thirty_years_total, roi, roi_month, roi_yr, investors_percent_coc, first_yr_returns_investors, profits, cash_profits, percentage_5yr, net_income_before_taxes, expected_tax_bill, net_after_tax, irr
         self.gross_scheduled_income_2yr = (self.gross_scheduled_income * self.rental_increase_projection) + self.gross_scheduled_income
         self.gross_scheduled_income_3yr = (self.gross_scheduled_income_2yr * self.rental_increase_projection) + self.gross_scheduled_income_2yr
         self.gross_scheduled_income_4yr = (self.gross_scheduled_income_3yr * self.rental_increase_projection) + self.gross_scheduled_income_3yr
@@ -354,4 +345,3 @@ class calc_irr():
         self.cashflows = [self.initial_investment, self.irr_pv_1yr, self.irr_pv_2yr, self.irr_pv_3yr, self.irr_pv_4yr, self.irr_pv_5yr, self.irr_cashout]
         self.irr = round(np.irr(self.cashflows),4)*100
 
-calc_irr = calc_irr()
