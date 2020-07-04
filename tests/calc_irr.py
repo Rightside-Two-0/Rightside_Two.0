@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-import mortgage
+from tests import mortgage
 import datetime
 import numpy as np
 from itertools import islice
@@ -145,6 +145,8 @@ class calc_irr():
         self.npv_unit = 0
         self.irr = 0
         self.m = None
+        #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~>
+        #~~~~>
         # global m, irr, interest_loan, interest_rate_yearly, financing_amount, amort_period_monthly
         self.cost_rev(asking=240000,improvements=0,units=12,average_rent=500,sqft=10000)
         self.financing_assumptions(equity_per=0.3,seller_carry_per=0,interest_rate=5.0,amort_period=30,seller_carry_rate=8.0,seller_carry_term=60)
@@ -160,8 +162,6 @@ class calc_irr():
             # write values and then save
             # Save the spreadsheet
             # workbook.save(filename='deals/deal'+str(datetime.datetime.now().timestamp())+'.xlsx')
-
-
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     # workbook = load_workbook(filename='Template2.0.xlsx')
     # sheet = workbook.active

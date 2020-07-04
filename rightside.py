@@ -3,8 +3,9 @@ import json, csv
 from PyQt5 import QtCore, QtGui, QtWidgets, uic
 from PyQt5.QtWidgets import QInputDialog, QLineEdit, QVBoxLayout, QTableWidgetItem, QFileDialog, QHeaderView
 from PyQt5.QtCore import Qt, QUrl
-# from pyqtgraph import PlotWidget
-# import pyqtgraph as pg
+from tests import mortgage
+from tests import calc_irr
+
 import traceback
 import requests
 
@@ -209,7 +210,7 @@ class Analysis(QtWidgets.QWidget):
         self.capital_required = self.findChild(QtWidgets.QLabel, 'capital_required_display')
         self.crypto_units = self.findChild(QtWidgets.QLabel, 'crypto_units_display')
         self.sponsor = self.findChild(QtWidgets.QLabel, 'sponsor_display')
-        self.chart = self.findChild(QtWidgets.QWidget, 'chart_widget')
+        # self.chart = self.findChild(QtWidgets.QWidget, 'chart_widget')
         #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         self.submit = self.findChild(QtWidgets.QPushButton, 'submit_button')
         self.verify = self.findChild(QtWidgets.QPushButton, 'verify_button')
@@ -223,6 +224,9 @@ class Analysis(QtWidgets.QWidget):
         self.sponsor_opp_button.clicked.connect(self.sponsor_opp)
         # scan_for_data ()
         # poulate_fields()
+        #~~generic~data~for~testing~~~~~~~~~~~~~>
+        #~~~~>
+        self.chart_widget.plot([9.01,35.16,42.74,61.41,86.55])
         #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         self.getURLButton.clicked.connect(self.view_deal)
     def calculate_it(self):
@@ -258,11 +262,14 @@ class Analysis(QtWidgets.QWidget):
         self.advertisingProgress.setValue(int(advertising_/total_expenses*100))
         self.capital_reservesProgress.setValue(int(capital_reserves_/total_expenses*100))
         self.otherProgress.setValue(int(other_/total_expenses*100))
+        #~~~intigrate~irr.py~calculation~~~~~~~>
+        #~~~~>
+        irr = calc_irr()
         #~~~set~chart~values~~~~~~~>
         #~~~~>
-        self.chart.clear()
+        self.chart_widget.clear()
         #~~needs~updating~to~real~values~~~>
-        self.chart.plot([1.0,2.0,3.0,4.0,5.0])
+        self.chart_widget.plot([9.01,35.16,42.74,61.41,86.55])
     def submit_it(self):
         print('hi form #225')
     def verify_it(self):
@@ -827,7 +834,7 @@ class MainWindow(QtWidgets.QMainWindow):
         wages = 0.0
         for item in list(response.json()):
             if item['source'] == 'Salary/Wages':
-                clock_time += float(item['amount'])
+                wages += float(item['amount'])
         passive = float(total[0]) - wages
         return passive
     def get_total_income(self):

@@ -1530,7 +1530,7 @@
       <string>Calculate</string>
      </property>
     </widget>
-    <widget class="QWidget" name="chart_widget" native="true">
+    <widget class="PlotWidget" name="chart_widget" native="true">
      <property name="geometry">
       <rect>
        <x>590</x>
@@ -1548,6 +1548,12 @@
    <class>QWebView</class>
    <extends>QWidget</extends>
    <header>QtWebKitWidgets/QWebView</header>
+  </customwidget>
+  <customwidget>
+   <class>PlotWidget</class>
+   <extends>QWidget</extends>
+   <header>pyqtgraph</header>
+   <container>1</container>
   </customwidget>
  </customwidgets>
  <resources/>
