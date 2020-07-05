@@ -148,6 +148,7 @@ class Analysis(QtWidgets.QWidget):
     def __init__(self):
         super(Analysis, self).__init__()
         uic.loadUi('guis/analysis.ui', self)
+        self.irr = None
         self.current_tab = self.findChild(QtWidgets.QTableWidget, 'table_current')
         self.rightside_tab = self.findChild(QtWidgets.QTableWidget, 'table_rightside')
         self.url_OM = self.findChild(QtWidgets.QLineEdit, 'urlBox')
@@ -275,17 +276,17 @@ class Analysis(QtWidgets.QWidget):
         self.advertisingProgress.setValue(int(advertising_/total_expenses*100))
         self.capital_reservesProgress.setValue(int(capital_reserves_/total_expenses*100))
         self.otherProgress.setValue(int(other_/total_expenses*100))
-        #~~~intigrate~irr.py~calculation~~~~~~~>
+        #~~~integrate~irr.py~calculation~~~~~~~>
         #~~~~>
-        irr = calc_irr()
-        irr.cost_rev(asking=float(self.asking.text()),units=float(self.units.text()),average_rent=float(self.monthly_rent.text()),sqft=float(self.sqft.text()))
-        irr.financing_assumptions(equity_per=self.down_progressBar.value,seller_carry_per=self.seller_carry_progressBar.value,interest_rate=float(self.financing_rate_lineEdit.text()),amort_period=30,seller_carry_rate=float(self.seller_carray_rate_lineEdit),seller_carry_term=float(self.seller_carry_term_lineEdit))
-        irr.revenues(rent_increase=0.02,expense_increase=0.025,vac_rate=float(self.vacancy_rate_display),extra_income=float(self.other_income_display))
-        irr.expenses(repairs=float(self.repairs_display.text()),management=float(self.management_display.text()),tax=float(self.taxes_display.text()),insure=float(self.insurance_display.text()),payroll=float(self.wages_display.text()),utils=float(self.utilities_display.text()),gen_admin=float(self.gen_admin_display.text()),pro_fees=float(self.professional_fees_display.text()),ads=float(self.advertising_display.text()),cap_x=float(self.cap_x_display.text()),other_x=float(self.other_expense_display.text()))
-        interest_loan = irr.calc_interest(start=12, end=0)
-        irr.deal(percent_rightside=float(self.sponsor_percent_deal_display.text()))
-        irr.offer()
-        irr.key_ratios()
+        self.irr = calc_irr()
+        self.irr.cost_rev(asking=float(self.asking.text()),units=float(self.units.text()),average_rent=float(self.monthly_rent.text()),sqft=float(self.sqft.text()))
+        self.irr.financing_assumptions(equity_per=self.down_progressBar.value,seller_carry_per=self.seller_carry_progressBar.value,interest_rate=float(self.financing_rate_lineEdit.text()),amort_period=30,seller_carry_rate=float(self.seller_carry_rate_lineEdit.text()),seller_carry_term=float(self.seller_carry_term_lineEdit.text()))
+        self.irr.revenues(rent_increase=0.02,expense_increase=0.025,vac_rate=float(self.vacancy_rate_display),extra_income=float(self.other_income_display))
+        self.irr.expenses(repairs=float(self.repairs_display.text()),management=float(self.management_display.text()),tax=float(self.taxes_display.text()),insure=float(self.insurance_display.text()),payroll=float(self.wages_display.text()),utils=float(self.utilities_display.text()),gen_admin=float(self.gen_admin_display.text()),pro_fees=float(self.professional_fees_display.text()),ads=float(self.advertising_display.text()),cap_x=float(self.cap_x_display.text()),other_x=float(self.other_expense_display.text()))
+        interest_loan = self.irr.calc_interest(start=12, end=0)
+        self.irr.deal(percent_rightside=float(self.sponsor_percent_deal_display.text()))
+        self.irr.offer()
+        self.irr.key_ratios()
         self.investment_display.setText(float(self.asking.text())+float(self.closing_costs.text()))
         print('IRR:', str(irr)+'%')
         #~~~set~chart~values~~~~~~~>
@@ -466,7 +467,7 @@ class MainWindow(QtWidgets.QMainWindow):
             self.sum_expenses = 1.0
             self.sum_assets = 0.0
             self.sum_debts = 0.0
-            self.savings = 0.0
+            self.savings = 0.0           
             #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             #setting popup action to add new account to ledger to or from accoutns
             self.new_account = self.findChild(QtWidgets.QAction, 'account_mentu_item')
@@ -819,6 +820,72 @@ class MainWindow(QtWidgets.QMainWindow):
         self.opp_coc.setText(res_details.json()['coc'])
         self.opp_irr.setText(res_details.json()['irr'])
         analysis.url_OM.setText(res_details.json()['url'])
+        #~~~~set~numbers~of~property~~~~~~>
+        #~~~~>
+        analysis.ask_display.setText(res_details.json()['ask'])
+        analysis.sqft_display.setText(res_details.json()['sqft'])
+        analysis.num_units_display.setText(res_details.json()['units'])
+        analysis.ave_monthly_rent_display.setText(res_details.json()['ave_rent'])
+        analysis.vacancy_rate_display.setText(res_details.json()['vacancy_rate'])
+        analysis.other_income_display.setText(res_details.json()['other_income'])
+        #~~~~expenses~~~~~~~~~~~~~>
+        analysis.repairs_display.setText(res_details.json()['repairs'])
+        analysis.management_display.setText(res_details.json()['management'])
+        analysis.taxes_display.setText(res_details.json()['taxes'])
+        analysis.insurance_display.setText(res_details.json()['insurance'])
+        analysis.wages_display.setText(res_details.json()['wages'])
+        analysis.utilities_display.setText(res_details.json()['utilities'])
+        analysis.gen_admin_display.setText(res_details.json()['gen_admin'])
+        analysis.professional_fees_display.setText(res_details.json()['professional_fees'])
+        analysis.advertising_display.setText(res_details.json()['advertising'])
+        analysis.cap_x_display.setText(res_details.json()['cap_x'])
+        analysis.other_expense_display.setText(res_details.json()['other'])
+        #~~~~~~calculate~totals~~~~~~~~~~~~~~~~~>
+        #~~~>
+        scheduled = float(res_details.json()['units'])*int(res_details.json()['ave_rent'])
+        gross_income = scheduled-(float(res_details.json()['vacancy_rate'])*scheduled)+float(res_details.json()['other_income'])
+        analysis.gross_income_display.setText('{0:,.2f}'.format(gross_income))
+        total_expenses = float(res_details.json()['repairs'])+float(res_details.json()['management'])+float(res_details.json()['taxes'])+float(res_details.json()['insurance'])+float(res_details.json()['wages'])+float(res_details.json()['utilities'])+float(res_details.json()['gen_admin'])+float(res_details.json()['professional_fees'])+float(res_details.json()['advertising'])+float(res_details.json()['cap_x'])+float(res_details.json()['other'])
+        analysis.total_expense_display.setText('{0:,.2f}'.format(total_expenses))
+        noi = gross_income - total_expenses
+        analysis.noi_display.setText('{0:,.2f}'.format(noi))
+        #~~~~set~progressbars...~~~~~~~~~~~~~~~~~~~~~>
+        analysis.repairsProgress.setValue(int(float(res_details.json()['repairs']) / gross_income*100))
+        analysis.managementProgress.setValue(int(float(res_details.json()['management'])/gross_income*100))
+        analysis.taxesProgress.setValue(int(float(res_details.json()['taxes'])/gross_income*100))
+        analysis.insuranceProgress.setValue(int(float(res_details.json()['insurance'])/gross_income*100))
+        analysis.wagesProgress.setValue(int(float(res_details.json()['wages'])/gross_income*100))
+        analysis.utilitiesProgress.setValue(int(float(res_details.json()['utilities'])/gross_income*100))
+        analysis.gen_adminProgress.setValue(int(float(res_details.json()['gen_admin'])/gross_income*100))
+        analysis.professional_feesProgress.setValue(int(float(res_details.json()['professional_fees'])/total_expenses*100))
+        analysis.advertisingProgress.setValue(int(float(res_details.json()['advertising'])/gross_income*100))
+        analysis.capital_reservesProgress.setValue(int(float(res_details.json()['cap_x'])/gross_income*100))
+        analysis.otherProgress.setValue(int(float(res_details.json()['other'])/gross_income*100))
+        analysis.total_expenses_progressBar.setValue(int(total_expenses/gross_income*100))
+        analysis.noi_progressBar.setValue(int(noi/gross_income*100))
+        #~~~~financing~~~~~~~~~~~~~~~>
+        purchase_price = float(res_details.json()['ask'])
+        analysis.total_purchase_display.setText(str(purchase_price))
+        analysis.financing_display.setText(str(purchase_price*.7))
+        analysis.seller_carry_display.setText(str(purchase_price*.1))
+        down = purchase_price*.2
+        closing_costs = purchase_price*.035
+        analysis.down_display.setText('{0:,.2f}'.format(down))
+        analysis.closing_costs_display.setText('{0:,.2f}'.format(closing_costs))
+        #~~~~~~key~numbers~~~~~~~~~~~~~~~>
+        #~~~>
+        analysis.calculate_it()
+        analysis.capital_required_display.setText('{0:,.2f}'.format(down+closing_costs))
+        analysis.crypto_units_display.setText('{0:,.0f}'.format(float(res_details.json()['sqft'])))
+        analysis.investment_display.setText('{0:,.2f}'.format(down+closing_costs))
+        per_unit_cost = float((down+closing_costs) / int(res_details.json()['sqft']))
+        analysis.investment_unit_display.setText('{0:,.2f}'.format(per_unit_cost))
+        analysis.flow_1_display.setText('{0:,.2f}'.format(analysis.irr.year_1_cashflow_value))
+        analysis.flow_2_display.setText('{0:,.2f}'.format(analysis.irr.year_2_cashflow_value))
+        analysis.flow_3_display.setText('{0:,.2f}'.format(analysis.irr.year_3_cashflow_value))
+        analysis.flow_4_display.setText('{0:,.2f}'.format(analysis.irr.year_4_cashflow_value))
+        analysis.flow_5_display.setText('{0:,.2f}'.format(analysis.irr.year_5_cashflow_value))
+        # analysis..setText(res_details.json()[])
         #~~~~~savings/down~~~~~~~~~~>
         qoutient = self.savings/float(res_details.json()['down'])
         if qoutient >= 1:
