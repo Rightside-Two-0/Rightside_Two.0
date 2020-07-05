@@ -276,6 +276,8 @@ class Analysis(QtWidgets.QWidget):
         self.advertisingProgress.setValue(int(advertising_/total_expenses*100))
         self.capital_reservesProgress.setValue(int(capital_reserves_/total_expenses*100))
         self.otherProgress.setValue(int(other_/total_expenses*100))
+        self.total_expenses_progressBar.setValue(int(total_expenses/gross*100))
+        self.noi_progressBar.setValue(int(noi/gross*100))
         #~~~integrate~irr.py~calculation~~~~~~~>
         #~~~~>
         self.irr = calc_irr()
@@ -298,7 +300,8 @@ class Analysis(QtWidgets.QWidget):
         url = 'http://localhost:8000/api/opportunity/'
         response = requests.get(url)
         for item in list(response.json()):
-            print(item)
+            if item['url'] == self.url_OM.text():
+                print(item['id'])
     def verify_it(self):
         print('hi from 227')
     def sponsor_opp(self):
@@ -504,9 +507,9 @@ class MainWindow(QtWidgets.QMainWindow):
             self.total_cashflow = self.findChild(QtWidgets.QLabel, 'total_cashflow')
             self.goal_percent = self.findChild(QtWidgets.QProgressBar, 'goal_percent')
             self.worth = self.findChild(QtWidgets.QLabel, 'networth_label')
-            self.total_passive.setText('{0:,.2f}'.format(self.sum_passive))
-            self.total_expenses.setText('{0:,.2f}'.format(self.sum_expenses))
-            self.total_cashflow.setText('{0:,.2f}'.format((self.sum_salaries+self.sum_passive)-self.sum_expenses))
+            self.total_passive.setText('{0:,.2f}'.format(self.get_total_income()[1]))
+            self.total_expenses.setText('{0:,.2f}'.format(self.get_total_expenses()))
+            self.total_cashflow.setText('{0:,.2f}'.format(self.get_total_income()[0]-self.get_total_expenses()))
             self.percent = self.sum_passive/self.sum_expenses*100
             if self.percent >= 100:
                 self.goal_percent.setValue(int(100))
@@ -876,13 +879,13 @@ class MainWindow(QtWidgets.QMainWindow):
         analysis.down_display.setText('{0:,.2f}'.format(down))
         analysis.closing_costs_display.setText('{0:,.2f}'.format(closing_costs))
         #~~~~~~key~numbers~~~~~~~~~~~~~~~>
-        #~~~>
-        analysis.calculate_it()
+        #~~~>        
         analysis.capital_required_display.setText('{0:,.2f}'.format(down+closing_costs))
         analysis.crypto_units_display.setText('{0:,.0f}'.format(float(res_details.json()['sqft'])))
         analysis.investment_display.setText('{0:,.2f}'.format(down+closing_costs))
         per_unit_cost = float((down+closing_costs) / int(res_details.json()['sqft']))
         analysis.investment_unit_display.setText('{0:,.2f}'.format(per_unit_cost))
+        analysis.calculate_it()
         analysis.flow_1_display.setText('{0:,.2f}'.format(analysis.irr.year_1_cashflow_value))
         analysis.flow_2_display.setText('{0:,.2f}'.format(analysis.irr.year_2_cashflow_value))
         analysis.flow_3_display.setText('{0:,.2f}'.format(analysis.irr.year_3_cashflow_value))
