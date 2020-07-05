@@ -229,6 +229,19 @@ class Analysis(QtWidgets.QWidget):
         self.chart_widget.plot([9.01,35.16,42.74,61.41,86.55])
         #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         self.getURLButton.clicked.connect(self.view_deal)
+        self.financing_rate_lineEdit.setText('.05')
+        self.financing_term_lineEdit.setText('360')
+        self.seller_carry_rate_lineEdit.setText('.08')
+        self.seller_carry_term_lineEdit.setText('60')
+        self.financing_progressBar.setValue(int(70))
+        self.seller_carry_progressBar.setValue(int(10))
+        self.down_progressBar.setValue(int(20))
+        self.closing_costs_progressBar.setValue(int(4))
+        # self.total_purchase_display.setText(str(float(self.ask_display.text())+(.035*float(self.ask_display.text()))))
+        # self.down_display.setText(str(float(self.ask_display.text())*.3))
+        # self.seller_carry_display.setText('0')
+        # self.closing_costs_display.setText(str(float(self.ask_display.text())*.035))
+        # self.financing_display.setText(str(float(self.total_purhcase.text())-float(self.seller_carry_display.text()))-float(self.down_display.text(())))
     def calculate_it(self):
         gross = (float(self.units.text()) * float(self.monthly_rent.text())) * (1 - float(self.vacancy.text())) + float(self.other_income.text())
         self.gross_income.setText('$'+'{0:,.2f}'.format(gross))
@@ -266,13 +279,14 @@ class Analysis(QtWidgets.QWidget):
         #~~~~>
         irr = calc_irr()
         irr.cost_rev(asking=float(self.asking.text()),units=float(self.units.text()),average_rent=float(self.monthly_rent.text()),sqft=float(self.sqft.text()))
-        irr.financing_assumptions(equity_per=self.down_progressBar.value,seller_carry_per=0,interest_rate=5.0,amort_period=30,seller_carry_rate=8.0,seller_carry_term=60)
-        irr.revenues(rent_increase=0.02,expense_increase=0.025,vac_rate=10.0,extra_income=0)
-        irr.expenses(repairs=60,management=0,tax=0,insure=0,payroll=0,utils=0,gen_admin=0,pro_fees=0,ads=0,cap_x=1850,other_x=30000)
+        irr.financing_assumptions(equity_per=self.down_progressBar.value,seller_carry_per=self.seller_carry_progressBar.value,interest_rate=float(self.financing_rate_lineEdit.text()),amort_period=30,seller_carry_rate=float(self.seller_carray_rate_lineEdit),seller_carry_term=float(self.seller_carry_term_lineEdit))
+        irr.revenues(rent_increase=0.02,expense_increase=0.025,vac_rate=float(self.vacancy_rate_display),extra_income=float(self.other_income_display))
+        irr.expenses(repairs=float(self.repairs_display.text()),management=float(self.management_display.text()),tax=float(self.taxes_display.text()),insure=float(self.insurance_display.text()),payroll=float(self.wages_display.text()),utils=float(self.utilities_display.text()),gen_admin=float(self.gen_admin_display.text()),pro_fees=float(self.professional_fees_display.text()),ads=float(self.advertising_display.text()),cap_x=float(self.cap_x_display.text()),other_x=float(self.other_expense_display.text()))
         interest_loan = irr.calc_interest(start=12, end=0)
-        irr.deal(percent_rightside=0.45)
+        irr.deal(percent_rightside=float(self.sponsor_percent_deal_display.text()))
         irr.offer()
         irr.key_ratios()
+        self.investment_display.setText(float(self.asking.text())+float(self.closing_costs.text()))
         print('IRR:', str(irr)+'%')
         #~~~set~chart~values~~~~~~~>
         #~~~~>
