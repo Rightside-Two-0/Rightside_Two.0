@@ -279,7 +279,6 @@ class Analysis(QtWidgets.QWidget):
         self.total_expenses_progressBar.setValue(int(total_expenses/gross*100))
         self.noi_progressBar.setValue(int(noi/gross*100))
         #~~~integrate~irr.py~calculation~~~~~~~>
-        #~~~~>
         self.irr = calc_irr()
         self.irr.cost_rev(asking=float(self.asking.text()),units=float(self.units.text()),average_rent=float(self.monthly_rent.text()),sqft=float(self.sqft.text()))
         self.irr.financing_assumptions(equity_per=float(self.down_progressBar.value()),seller_carry_per=float(self.seller_carry_progressBar.value()),interest_rate=float(self.financing_rate_lineEdit.text()),amort_period=30,seller_carry_rate=float(self.seller_carry_rate_lineEdit.text()),seller_carry_term=float(self.seller_carry_term_lineEdit.text()))
@@ -871,18 +870,32 @@ class MainWindow(QtWidgets.QMainWindow):
         analysis.noi_progressBar.setValue(int(noi/gross_income*100))
         #~~~~financing~~~~~~~~~~~~~~~>
         purchase_price = float(res_details.json()['ask'])
-        analysis.total_purchase_display.setText(str(purchase_price))
-        analysis.financing_display.setText(str(purchase_price*.7))
-        analysis.seller_carry_display.setText(str(purchase_price*.1))
-        down = purchase_price*.2
+        analysis.total_purchase_display.setText('{0:.0f}'.format(purchase_price))
+        analysis.financing_display.setText('{0:.0f}'.format(purchase_price*.7))
+        analysis.seller_carry_display.setText('{0:.0f}'.format(purchase_price*.1))
+        down = purchase_price*.035#FHA
         closing_costs = purchase_price*.035
-        analysis.down_display.setText('{0:,.2f}'.format(down))
-        analysis.closing_costs_display.setText('{0:,.2f}'.format(closing_costs))
+        analysis.down_display.setText('{0:.0f}'.format(down))
+        analysis.closing_costs_display.setText('{0:.0f}'.format(closing_costs))
+        #~~~~financing~progressbars~~~~~~~~~~~~>
+        down_pymt_percent = int(float(analysis.down_display.text().replace(',',''))/purchase_price*100)
+        analysis.down_progressBar.setValue(down_pymt_percent)
+        analysis.down_Slider.setValue(down_pymt_percent)
+        # carry_amount = 
+        # analysis.seller_carry_progressBar.setValue(int(float(res_details.json()[''])/float(res_details.json()['ask'])))
+        # analysis.financing_progressBar.setValue(int())
         #~~~~~~key~numbers~~~~~~~~~~~~~~~>
         #~~~>        
-        analysis.capital_required_display.setText('{0:,.2f}'.format(down+closing_costs))
+        #~~~~>problems~here~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~>
+        #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~>
+        #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~>
+        #~~~~~~~~~~~~~~~~~~~~~~~~~~~>
+        #~~~~~~~~~~~~~~~>
+        #~~~~~>
+        #~>
+        analysis.capital_required_display.setText('$'+'{0:,.2f}'.format(down+closing_costs))
         analysis.crypto_units_display.setText('{0:,.0f}'.format(float(res_details.json()['sqft'])))
-        analysis.investment_display.setText('{0:,.2f}'.format(down+closing_costs))
+        analysis.investment_display.setText('{0:,.2f}'.format(int(down)+int(closing_costs)))
         per_unit_cost = float((down+closing_costs) / int(res_details.json()['sqft']))
         analysis.investment_unit_display.setText('{0:,.2f}'.format(per_unit_cost))
         analysis.calculate_it()

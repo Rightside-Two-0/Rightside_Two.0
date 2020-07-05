@@ -957,7 +957,7 @@
       </rect>
      </property>
      <property name="text">
-      <string>Equity Units</string>
+      <string>Equity Units:</string>
      </property>
      <property name="alignment">
       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -1662,7 +1662,7 @@
       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
      </property>
     </widget>
-    <widget class="QSlider" name="horizontalSlider">
+    <widget class="QSlider" name="down_Slider">
      <property name="geometry">
       <rect>
        <x>790</x>
