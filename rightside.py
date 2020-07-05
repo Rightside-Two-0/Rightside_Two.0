@@ -280,22 +280,25 @@ class Analysis(QtWidgets.QWidget):
         #~~~~>
         self.irr = calc_irr()
         self.irr.cost_rev(asking=float(self.asking.text()),units=float(self.units.text()),average_rent=float(self.monthly_rent.text()),sqft=float(self.sqft.text()))
-        self.irr.financing_assumptions(equity_per=self.down_progressBar.value,seller_carry_per=self.seller_carry_progressBar.value,interest_rate=float(self.financing_rate_lineEdit.text()),amort_period=30,seller_carry_rate=float(self.seller_carry_rate_lineEdit.text()),seller_carry_term=float(self.seller_carry_term_lineEdit.text()))
-        self.irr.revenues(rent_increase=0.02,expense_increase=0.025,vac_rate=float(self.vacancy_rate_display),extra_income=float(self.other_income_display))
+        self.irr.financing_assumptions(equity_per=float(self.down_progressBar.value()),seller_carry_per=float(self.seller_carry_progressBar.value()),interest_rate=float(self.financing_rate_lineEdit.text()),amort_period=30,seller_carry_rate=float(self.seller_carry_rate_lineEdit.text()),seller_carry_term=float(self.seller_carry_term_lineEdit.text()))
+        self.irr.revenues(rent_increase=0.02,expense_increase=0.025,vac_rate=float(self.vacancy_rate_display.text()),extra_income=float(self.other_income_display.text()))
         self.irr.expenses(repairs=float(self.repairs_display.text()),management=float(self.management_display.text()),tax=float(self.taxes_display.text()),insure=float(self.insurance_display.text()),payroll=float(self.wages_display.text()),utils=float(self.utilities_display.text()),gen_admin=float(self.gen_admin_display.text()),pro_fees=float(self.professional_fees_display.text()),ads=float(self.advertising_display.text()),cap_x=float(self.cap_x_display.text()),other_x=float(self.other_expense_display.text()))
         interest_loan = self.irr.calc_interest(start=12, end=0)
-        self.irr.deal(percent_rightside=float(self.sponsor_percent_deal_display.text()))
+        self.irr.deal(percent_rightside=float(self.sponsor_percent_deal_slider.value()))
         self.irr.offer()
         self.irr.key_ratios()
-        self.investment_display.setText(float(self.asking.text())+float(self.closing_costs.text()))
-        print('IRR:', str(irr)+'%')
+        self.investment_display.setText(str(float(self.asking.text())+float(self.closing_costs.text().replace(',',''))))
+        self.irr_display.setText('IRR: '+'{0:,.2f}'.format(self.irr.irr)+'%')
         #~~~set~chart~values~~~~~~~>
         #~~~~>
         self.chart_widget.clear()
         #~~needs~updating~to~real~values~~~>
         self.chart_widget.plot([9.01,35.16,42.74,61.41,86.55])
     def submit_it(self):
-        print('hi form #225')
+        url = 'http://localhost:8000/api/opportunity/'
+        response = requests.get(url)
+        for item in list(response.json()):
+            print(item)
     def verify_it(self):
         print('hi from 227')
     def sponsor_opp(self):
