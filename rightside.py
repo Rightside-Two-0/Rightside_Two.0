@@ -234,9 +234,9 @@ class Analysis(QtWidgets.QWidget):
         self.financing_term_lineEdit.setText('360')
         self.seller_carry_rate_lineEdit.setText('.08')
         self.seller_carry_term_lineEdit.setText('60')
-        self.financing_progressBar.setValue(int(70))
+        self.financing_progressBar.setValue(int(80))
         self.seller_carry_progressBar.setValue(int(10))
-        self.down_progressBar.setValue(int(20))
+        self.down_progressBar.setValue(int(10))
         self.closing_costs_progressBar.setValue(int(4))
         # self.total_purchase_display.setText(str(float(self.ask_display.text())+(.035*float(self.ask_display.text()))))
         # self.down_display.setText(str(float(self.ask_display.text())*.3))
@@ -265,17 +265,17 @@ class Analysis(QtWidgets.QWidget):
         self.noi.setText('$'+'{0:,.2f}'.format(noi))
         #~~~~~~~set~progressBars~~~~~~~~>
         #~~~~>
-        self.repairsProgress.setValue(int(repairs_ / total_expenses*100))
-        self.managementProgress.setValue(int(management_/total_expenses*100))
-        self.taxesProgress.setValue(int(taxes_/total_expenses*100))
-        self.insuranceProgress.setValue(int(insurance_/total_expenses*100))
-        self.wagesProgress.setValue(int(salaries_wages_/total_expenses*100))
-        self.utilitiesProgress.setValue(int(utility_/total_expenses*100))
-        self.gen_adminProgress.setValue(int(gen_admin_/total_expenses*100))
-        self.professional_feesProgress.setValue(int(professional_fees_/total_expenses*100))
-        self.advertisingProgress.setValue(int(advertising_/total_expenses*100))
-        self.capital_reservesProgress.setValue(int(capital_reserves_/total_expenses*100))
-        self.otherProgress.setValue(int(other_/total_expenses*100))
+        self.repairsProgress.setValue(int(repairs_ / gross*100))
+        self.managementProgress.setValue(int(management_/gross*100))
+        self.taxesProgress.setValue(int(taxes_/gross*100))
+        self.insuranceProgress.setValue(int(insurance_/gross*100))
+        self.wagesProgress.setValue(int(salaries_wages_/gross*100))
+        self.utilitiesProgress.setValue(int(utility_/gross*100))
+        self.gen_adminProgress.setValue(int(gen_admin_/gross*100))
+        self.professional_feesProgress.setValue(int(professional_fees_/gross*100))
+        self.advertisingProgress.setValue(int(advertising_/gross*100))
+        self.capital_reservesProgress.setValue(int(capital_reserves_/gross*100))
+        self.otherProgress.setValue(int(other_/gross*100))
         self.total_expenses_progressBar.setValue(int(total_expenses/gross*100))
         self.noi_progressBar.setValue(int(noi/gross*100))
         #~~~integrate~irr.py~calculation~~~~~~~>
@@ -869,24 +869,27 @@ class MainWindow(QtWidgets.QMainWindow):
         analysis.total_expenses_progressBar.setValue(int(total_expenses/gross_income*100))
         analysis.noi_progressBar.setValue(int(noi/gross_income*100))
         #~~~~financing~~~~~~~~~~~~~~~>
-        purchase_price = float(res_details.json()['ask'])
-        analysis.total_purchase_display.setText('{0:.0f}'.format(purchase_price))
-        analysis.financing_display.setText('{0:.0f}'.format(purchase_price*.7))
-        analysis.seller_carry_display.setText('{0:.0f}'.format(purchase_price*.1))
+        purchase_price = float(res_details.json()['ask'].replace(',',''))
+        analysis.total_purchase_display.setText('{0:,.0f}'.format(purchase_price))
+        analysis.financing_display.setText('{0:,.0f}'.format(purchase_price*.7))
+        analysis.seller_carry_display.setText('{0:,.0f}'.format(purchase_price*.1))
+        #~~~~financing~progressbars~~~~~~~~~~~~>
+        #~~~~~Task~1)~~~~~~~~~~~~~~~~~~>
+        #~~~>
         down = purchase_price*.035#FHA
         closing_costs = purchase_price*.035
-        analysis.down_display.setText('{0:.0f}'.format(down))
-        analysis.closing_costs_display.setText('{0:.0f}'.format(closing_costs))
-        #~~~~financing~progressbars~~~~~~~~~~~~>
+        analysis.down_display.setText('{0:,.0f}'.format(down))
+        analysis.closing_costs_display.setText('{0:,.0f}'.format(closing_costs))
         down_pymt_percent = int(float(analysis.down_display.text().replace(',',''))/purchase_price*100)
         analysis.down_progressBar.setValue(down_pymt_percent)
-        analysis.down_Slider.setValue(down_pymt_percent)
+        analysis.down_Slider.setValue(down_pymt_percent)        
+        
         # carry_amount = 
         # analysis.seller_carry_progressBar.setValue(int(float(res_details.json()[''])/float(res_details.json()['ask'])))
         # analysis.financing_progressBar.setValue(int())
         #~~~~~~key~numbers~~~~~~~~~~~~~~~>
         #~~~>        
-        #~~~~>problems~here~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~>
+        #~~~~>Task~2)~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~>
         #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~>
         #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~>
         #~~~~~~~~~~~~~~~~~~~~~~~~~~~>
@@ -895,6 +898,7 @@ class MainWindow(QtWidgets.QMainWindow):
         #~>
         analysis.capital_required_display.setText('$'+'{0:,.2f}'.format(down+closing_costs))
         analysis.crypto_units_display.setText('{0:,.0f}'.format(float(res_details.json()['sqft'])))
+        analysis.sponsoring_units_display.setText('{0:,.0f}'.format(float(res_details.json()['sqft'])*(1-float(analysis.sponsor_percent_deal_slider.value())/100)))
         analysis.investment_display.setText('{0:,.2f}'.format(int(down)+int(closing_costs)))
         per_unit_cost = float((down+closing_costs) / int(res_details.json()['sqft']))
         analysis.investment_unit_display.setText('{0:,.2f}'.format(per_unit_cost))
