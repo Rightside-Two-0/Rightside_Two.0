@@ -238,7 +238,8 @@ class Analysis(QtWidgets.QWidget):
         self.down_progressBar.setValue(int(10))
         self.closing_costs_progressBar.setValue(int(4))
         #~~~down~slider~~~~~>
-        self.down_Slider.valueChanged.connect(self.get_down_percent)
+        self.down_Slider.valueChanged.connect(self.update_fields)
+        self.sponsor_percent_deal_slider.valueChanged.connect(self.investors_percent)
     def calculate_it(self):
         gross = (float(self.units.text()) * float(self.monthly_rent.text())) * (1 - float(self.vacancy.text())) + float(self.other_income.text())
         self.gross_income.setText('$'+'{0:,.2f}'.format(gross))
@@ -338,10 +339,31 @@ class Analysis(QtWidgets.QWidget):
         carry_rate = float(self.seller_carry_rate_lineEdit.text())
         interest_only = carry_amount*carry_rate
         self.seller_carry_payment_display.setText('{0:,.2f}'.format(interest_only/12))
-    def get_down_percent(self):
-        '''get value from down_slider and set down_progressBar with value'''
+    def update_fields(self):
+        '''get value from down_slider and set down_progressBar & down_display with value'''
         slider_value = self.down_Slider.value()
-        self.down_progressBar.setValue(slider_value)
+        total_price = float(self.total_purchase_display.text().replace(',',''))
+        down_amount = total_price * float(slider_value)/100
+        self.down_progressBar.setValue(int(down_amount/total_price*100))
+        self.down_display.setText('{0:,.0f}'.format(down_amount))
+        #~~~~~the~remaining~financing~fields~should~be~updated~~~~~>
+        #~~~~~>
+        seller_financing_amount = float(self.seller_carry_display.text().replace(',',''))
+        financing_amount = total_price-(down_amount+seller_financing_amount+float(self.closing_costs_display.text().replace(',','')))
+        self.financing_display.setText('{0:,.0f}'.format(financing_amount))
+        #~~~progressbar~~~~~~~>
+        ratio = financing_amount/total_price*100
+        self.financing_progressBar.setValue(int(ratio))
+        carry_ratio = seller_financing_amount/total_price*100
+        self.seller_carry_progressBar.setValue(int(carry_ratio))
+        #~~~update~payment~with~new~values~~~~>
+        #~~>
+        self.get_payment()
+    def investors_percent(self):
+        value = float(self.sponsor_percent_deal_slider.value())
+        equity_units = int(self.crypto_units_display.text().replace(',',''))
+        investors_portion = float(equity_units*value/100)
+        self.sponsoring_units_display.setText('{0:,.0f}'.format(investors_portion))
 class Asset(QtWidgets.QWidget):
     def __init__(self):
         super(Asset, self).__init__()
