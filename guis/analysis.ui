@@ -373,7 +373,7 @@
       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="alignment">
-      <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+      <set>Qt::AlignCenter</set>
      </property>
     </widget>
     <widget class="QLabel" name="sqft_label">
@@ -1446,7 +1446,7 @@
     <widget class="QPushButton" name="submit_button">
      <property name="geometry">
       <rect>
-       <x>880</x>
+       <x>870</x>
        <y>140</y>
        <width>61</width>
        <height>31</height>
@@ -1459,7 +1459,7 @@
     <widget class="QPushButton" name="verify_button">
      <property name="geometry">
       <rect>
-       <x>950</x>
+       <x>940</x>
        <y>140</y>
        <width>61</width>
        <height>31</height>
@@ -1520,7 +1520,7 @@
     <widget class="QPushButton" name="calculate_button">
      <property name="geometry">
       <rect>
-       <x>800</x>
+       <x>790</x>
        <y>140</y>
        <width>71</width>
        <height>31</height>

@@ -12,4 +12,6 @@ task~4)
 task~5)
 	#0: We need the webpage built and up so that folks can download our software 
 task~6)
-	#0: 
+	#0: blockchain & crypto coin that will be distributed to raise the funds for down payments.  The distribution of such coins will match the rentable sqft of the deal in question.  The sponsoring group of the deal will be the source of the new coins.  The crypto coin will represent the equity portion of the deal.  This coin will be intricately linked to the real estate of the deal.  To own the crypto coin will be to own a small peice of the deal.  
+task~7)
+	#0: add functionality to opportunity display list view.  Need to add a search button that can customize the filter for specific data results.
