@@ -5,7 +5,7 @@ from PyQt5.QtWidgets import QInputDialog, QLineEdit, QVBoxLayout, QTableWidgetIt
 from PyQt5.QtCore import Qt, QUrl
 from tests.calc_irr import mortgage
 from tests.calc_irr import calc_irr
-
+from tests import mortgage
 import traceback
 import requests
 
@@ -223,8 +223,6 @@ class Analysis(QtWidgets.QWidget):
         self.sponsor_opp_button = self.findChild(QtWidgets.QCommandLinkButton, 'sponsor_commandLinkButton')
         self.join_opp_button.clicked.connect(self.join_opp)
         self.sponsor_opp_button.clicked.connect(self.sponsor_opp)
-        # scan_for_data ()
-        # poulate_fields()
         #~~generic~data~for~testing~~~~~~~~~~~~~>
         #~~~~>
         self.chart_widget.plot([9.01,35.16,42.74,61.41,86.55])
@@ -234,15 +232,13 @@ class Analysis(QtWidgets.QWidget):
         self.financing_term_lineEdit.setText('360')
         self.seller_carry_rate_lineEdit.setText('.08')
         self.seller_carry_term_lineEdit.setText('60')
+        #~~~progressbars...~~~~~~~~~~~~~~~>
         self.financing_progressBar.setValue(int(80))
         self.seller_carry_progressBar.setValue(int(10))
         self.down_progressBar.setValue(int(10))
         self.closing_costs_progressBar.setValue(int(4))
-        # self.total_purchase_display.setText(str(float(self.ask_display.text())+(.035*float(self.ask_display.text()))))
-        # self.down_display.setText(str(float(self.ask_display.text())*.3))
-        # self.seller_carry_display.setText('0')
-        # self.closing_costs_display.setText(str(float(self.ask_display.text())*.035))
-        # self.financing_display.setText(str(float(self.total_purhcase.text())-float(self.seller_carry_display.text()))-float(self.down_display.text(())))
+        #~~~down~slider~~~~~>
+        self.down_Slider.valueChanged.connect(self.get_down_percent)
     def calculate_it(self):
         gross = (float(self.units.text()) * float(self.monthly_rent.text())) * (1 - float(self.vacancy.text())) + float(self.other_income.text())
         self.gross_income.setText('$'+'{0:,.2f}'.format(gross))
@@ -278,6 +274,8 @@ class Analysis(QtWidgets.QWidget):
         self.otherProgress.setValue(int(other_/gross*100))
         self.total_expenses_progressBar.setValue(int(total_expenses/gross*100))
         self.noi_progressBar.setValue(int(noi/gross*100))
+        #~~~~~>
+        self.get_payment()
         #~~~integrate~irr.py~calculation~~~~~~~>
         self.irr = calc_irr()
         self.irr.cost_rev(asking=float(self.asking.text()),units=float(self.units.text()),average_rent=float(self.monthly_rent.text()),sqft=float(self.sqft.text()))
@@ -329,6 +327,21 @@ class Analysis(QtWidgets.QWidget):
         # for i in range(pdf_reader.numPages):
         #     page = pdf_reader.getPage(i)
         #     print(page.extractText())
+    def get_payment(self):
+        rate = float(self.financing_rate_lineEdit.text())
+        principle = float(self.financing_display.text().replace(',',''))
+        term = int(self.financing_term_lineEdit.text())
+        pymt = mortgage.Mortgage(interest=rate, amount=principle, months=term)
+        self.financing_payment_display.setText('{0:,.2f}'.format(pymt.monthly_payment()))
+        #~~~~~~set~seller~financing~~~~~~~~~~~>
+        carry_amount = float(self.seller_carry_display.text().replace(',',''))        
+        carry_rate = float(self.seller_carry_rate_lineEdit.text())
+        interest_only = carry_amount*carry_rate
+        self.seller_carry_payment_display.setText('{0:,.2f}'.format(interest_only/12))
+    def get_down_percent(self):
+        '''get value from down_slider and set down_progressBar with value'''
+        slider_value = self.down_Slider.value()
+        self.down_progressBar.setValue(slider_value)
 class Asset(QtWidgets.QWidget):
     def __init__(self):
         super(Asset, self).__init__()
@@ -883,7 +896,7 @@ class MainWindow(QtWidgets.QMainWindow):
         down_pymt_percent = int(float(analysis.down_display.text().replace(',',''))/purchase_price*100)
         analysis.down_progressBar.setValue(down_pymt_percent)
         analysis.down_Slider.setValue(down_pymt_percent)        
-        
+        analysis.get_payment()
         # carry_amount = 
         # analysis.seller_carry_progressBar.setValue(int(float(res_details.json()[''])/float(res_details.json()['ask'])))
         # analysis.financing_progressBar.setValue(int())
