@@ -212,7 +212,7 @@ class Analysis(QtWidgets.QWidget):
         self.crypto_units = self.findChild(QtWidgets.QLabel, 'crypto_units_display')
         self.sponsor = self.findChild(QtWidgets.QLabel, 'sponsor_display')
         # self.chart = self.findChild(QtWidgets.QWidget, 'chart_widget')
-        #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~>
         self.submit = self.findChild(QtWidgets.QPushButton, 'submit_button')
         self.verify = self.findChild(QtWidgets.QPushButton, 'verify_button')
         self.calc_it = self.findChild(QtWidgets.QPushButton, 'calculate_button')
@@ -227,8 +227,8 @@ class Analysis(QtWidgets.QWidget):
         self.sponsor_percent_deal_slider.setToolTip(str(value)+'%')
         #~~generic~data~for~testing~~~~~~~~~~~~~>
         #~~~~>
-        self.chart_widget.plot([9.01,35.16,42.74,61.41,86.55])
-        #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        
+        #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~>
         self.getURLButton.clicked.connect(self.view_deal)
         self.financing_rate_lineEdit.setText('.05')
         self.financing_term_lineEdit.setText('360')
@@ -277,26 +277,24 @@ class Analysis(QtWidgets.QWidget):
         self.otherProgress.setValue(int(other_/gross*100))
         self.total_expenses_progressBar.setValue(int(total_expenses/gross*100))
         self.noi_progressBar.setValue(int(noi/gross*100))
+        self.seller_carry_progressBar.setValue(int(self.seller_carry_display.text().replace(',','')))
         #~~~~~>
         self.get_payment()
         self.crypto_units_display.setText('{0:,.0f}'.format(float(self.sqft.text())))
         #~~~integrate~irr.py~calculation~~~~~~~>
-        self.irr = calc_irr()
-        self.irr.cost_rev(asking=float(self.asking.text()),units=float(self.units.text()),average_rent=float(self.monthly_rent.text()),sqft=float(self.sqft.text()))
-        self.irr.financing_assumptions(equity_per=float(self.down_progressBar.value()/100),seller_carry_per=float(self.seller_carry_progressBar.value()/100),interest_rate=float(self.financing_rate_lineEdit.text()),amort_period=30,seller_carry_rate=float(self.seller_carry_rate_lineEdit.text()),seller_carry_term=float(self.seller_carry_term_lineEdit.text()))
-        print('monthly pymt:' , self.irr.payment_monthly)
-        self.irr.revenues(rent_increase=0.02,expense_increase=0.025,vac_rate=float(self.vacancy_rate_display.text()),extra_income=float(self.other_income_display.text()))
-        self.irr.expenses(repairs=float(self.repairs_display.text()),management=float(self.management_display.text()),tax=float(self.taxes_display.text()),insure=float(self.insurance_display.text()),payroll=float(self.wages_display.text()),utils=float(self.utilities_display.text()),gen_admin=float(self.gen_admin_display.text()),pro_fees=float(self.professional_fees_display.text()),ads=float(self.advertising_display.text()),cap_x=float(self.cap_x_display.text()),other_x=float(self.other_expense_display.text()))
-        interest_loan = self.irr.calc_interest(start=12, end=0)
-        self.irr.deal(percent_rightside=float(self.sponsor_percent_deal_slider.value()))
-        self.irr.offer()
-        self.irr.key_ratios()
-        self.irr_display.setText('IRR: '+'{0:,.2f}'.format(self.irr.irr)+'%')
+        self.get_irr()
+        #~~~~cash~flows~too~~~~~~~~~~>
+        self.flow_1_display.setText('{0:,.2f}'.format(self.irr.year_1_cashflow_value))
+        self.flow_2_display.setText('{0:,.2f}'.format(self.irr.year_2_cashflow_value))
+        self.flow_3_display.setText('{0:,.2f}'.format(self.irr.year_3_cashflow_value))
+        self.flow_4_display.setText('{0:,.2f}'.format(self.irr.year_4_cashflow_value))
+        self.flow_5_display.setText('{0:,.2f}'.format(self.irr.year_5_cashflow_value))
         #~~~set~chart~values~~~~~~~>
         #~~~~>
         self.chart_widget.clear()
         #~~needs~updating~to~real~values~~~>
-        self.chart_widget.plot([9.01,35.16,42.74,61.41,86.55])
+        units = float(self.investor_units_display.text().replace(',',''))
+        self.chart_widget.plot([float(self.investment_unit_display.text().replace(',','')),self.irr.year_5_cashflow_value/units,self.irr.year_4_cashflow_value/units,self.irr.year_3_cashflow_value/units,self.irr.year_2_cashflow_value/units,self.irr.year_1_cashflow_value/units])
     def submit_it(self):
         url = 'http://localhost:8000/api/opportunity/'
         response = requests.get(url)
@@ -342,6 +340,18 @@ class Analysis(QtWidgets.QWidget):
         carry_rate = float(self.seller_carry_rate_lineEdit.text())
         interest_only = carry_amount*carry_rate
         self.seller_carry_payment_display.setText('{0:,.2f}'.format(interest_only/12))
+    def get_irr(self):
+        self.irr = calc_irr()
+        self.irr.cost_rev(asking=float(self.asking.text()),units=float(self.units.text()),average_rent=float(self.monthly_rent.text()),sqft=float(self.sqft.text()))       
+        self.irr.financing_assumptions(equity_per=float(self.down_progressBar.value()/100),seller_carry_per=float(self.seller_carry_progressBar.value()/100),interest_rate=float(self.financing_rate_lineEdit.text())*100,amort_period=30,seller_carry_rate=float(self.seller_carry_rate_lineEdit.text()),seller_carry_term=float(self.seller_carry_term_lineEdit.text()))
+        self.irr.revenues(rent_increase=0.02,expense_increase=0.025,vac_rate=float(self.vacancy_rate_display.text()),extra_income=float(self.other_income_display.text()))
+        self.irr.expenses(repairs=float(self.repairs_display.text()),management=float(self.management_display.text()),tax=float(self.taxes_display.text()),insure=float(self.insurance_display.text()),payroll=float(self.wages_display.text()),utils=float(self.utilities_display.text()),gen_admin=float(self.gen_admin_display.text()),pro_fees=float(self.professional_fees_display.text()),ads=float(self.advertising_display.text()),cap_x=float(self.cap_x_display.text()),other_x=float(self.other_expense_display.text()))
+        interest_loan = self.irr.calc_interest(start=12, end=0)
+        self.irr.deal(percent_rightside=float(self.sponsor_percent_deal_slider.value()))
+        self.irr.offer()
+        self.irr.key_ratios()
+        self.irr.calc_future_unit_worth()
+        self.irr_display.setText('IRR: '+'{0:,.2f}'.format(self.irr.irr)+'%')
     def update_fields(self):
         '''get value from down_slider and set down_progressBar & down_display with value'''
         slider_value = self.down_Slider.value()
@@ -352,7 +362,7 @@ class Analysis(QtWidgets.QWidget):
         #~~~~~the~remaining~financing~fields~should~be~updated~~~~~>
         #~~~~~>
         seller_financing_amount = float(self.seller_carry_display.text().replace(',',''))
-        financing_amount = total_price-(down_amount+seller_financing_amount+float(self.closing_costs_display.text().replace(',','')))
+        financing_amount = total_price-(down_amount+seller_financing_amount)#-float(self.closing_costs_display.text().replace(',',''))
         self.financing_display.setText('{0:,.0f}'.format(financing_amount))
         #~~~progressbar~~~~~~~>
         ratio = financing_amount/total_price*100
@@ -372,6 +382,16 @@ class Analysis(QtWidgets.QWidget):
         #~~~update~payment~with~new~values~~~~>
         #~~>
         self.get_payment()
+        self.calculate_it()
+        #~~~~update~chart~as~well~~~~~~>
+        self.chart_widget.clear()
+        self.chart_widget.plot([float(self.investment_unit_display.text().replace(',','')),self.irr.year_5_cashflow_value/float(self.sqft.text()),self.irr.year_4_cashflow_value/float(self.sqft.text()),self.irr.year_3_cashflow_value/float(self.sqft.text()),self.irr.year_2_cashflow_value/float(self.sqft.text()),self.irr.year_1_cashflow_value/float(self.sqft.text())])
+        #~~~~cash~flows~too~~~~~~~~~~>
+        self.flow_1_display.setText('{0:,.2f}'.format(self.irr.year_1_cashflow_value))
+        self.flow_2_display.setText('{0:,.2f}'.format(self.irr.year_2_cashflow_value))
+        self.flow_3_display.setText('{0:,.2f}'.format(self.irr.year_3_cashflow_value))
+        self.flow_4_display.setText('{0:,.2f}'.format(self.irr.year_4_cashflow_value))
+        self.flow_5_display.setText('{0:,.2f}'.format(self.irr.year_5_cashflow_value))
     def investors_percent(self):
         value = float(self.sponsor_percent_deal_slider.value())
         equity_units = int(self.crypto_units_display.text().replace(',',''))
@@ -384,6 +404,18 @@ class Analysis(QtWidgets.QWidget):
         per_unit = float(self.capital_required.text().replace(',','').replace('$',''))/investors_portion
         self.investment_unit_display.setText('{0:,.2f}'.format(per_unit))
         self.sponsor_percent_deal_slider.setToolTip(str(value)+'%')
+        self.get_irr()
+        #~~~cash~flows~too~~~~~~~~>
+        #~~>
+        self.flow_1_display.setText('{0:,.2f}'.format(self.irr.year_1_cashflow_value))
+        self.flow_2_display.setText('{0:,.2f}'.format(self.irr.year_2_cashflow_value))
+        self.flow_3_display.setText('{0:,.2f}'.format(self.irr.year_3_cashflow_value))
+        self.flow_4_display.setText('{0:,.2f}'.format(self.irr.year_4_cashflow_value))
+        self.flow_5_display.setText('{0:,.2f}'.format(self.irr.year_5_cashflow_value))
+        #~~~~update~chart~~~~~~~~~~>
+        #~~~>
+        self.chart_widget.clear()
+        self.chart_widget.plot([float(self.investment_unit_display.text().replace(',','')),self.irr.year_5_cashflow_value/float(self.sqft.text()),self.irr.year_4_cashflow_value/float(self.sqft.text()),self.irr.year_3_cashflow_value/float(self.sqft.text()),self.irr.year_2_cashflow_value/float(self.sqft.text()),self.irr.year_1_cashflow_value/float(self.sqft.text())])
 class Asset(QtWidgets.QWidget):
     def __init__(self):
         super(Asset, self).__init__()
@@ -924,15 +956,17 @@ class MainWindow(QtWidgets.QMainWindow):
         analysis.total_expenses_progressBar.setValue(int(total_expenses/gross_income*100))
         analysis.noi_progressBar.setValue(int(noi/gross_income*100))
         #~~~~financing~~~~~~~~~~~~~~~>
-        purchase_price = float(res_details.json()['ask'].replace(',',''))
+        total = float(res_details.json()['ask'].replace(',',''))
+        closing = total*0.035
+        purchase_price = total
         analysis.total_purchase_display.setText('{0:,.0f}'.format(purchase_price))
         analysis.financing_display.setText('{0:,.0f}'.format(purchase_price*.7))
         analysis.seller_carry_display.setText('{0:,.0f}'.format(purchase_price*.1))
         #~~~~financing~progressbars~~~~~~~~~~~~>
         #~~~~~Task~1)~~~~~~~~~~~~~~~~~~>
         #~~~>
-        down = purchase_price*.035#FHA
-        closing_costs = purchase_price*.035
+        down = total*.035#FHA
+        closing_costs = total*.035
         analysis.down_display.setText('{0:,.0f}'.format(down))
         analysis.closing_costs_display.setText('{0:,.0f}'.format(closing_costs))
         down_pymt_percent = int(float(analysis.down_display.text().replace(',',''))/purchase_price*100)
@@ -954,7 +988,7 @@ class MainWindow(QtWidgets.QMainWindow):
         analysis.capital_required_display.setText('$'+'{0:,.2f}'.format(down+closing_costs))
         analysis.crypto_units_display.setText('{0:,.0f}'.format(float(res_details.json()['sqft'])))
         analysis.investor_units_display.setText('{0:,.0f}'.format(float(res_details.json()['sqft'])*(1-float(analysis.sponsor_percent_deal_slider.value())/100)))
-        per_unit_cost = float((down+closing_costs) / int(res_details.json()['sqft']))
+        per_unit_cost = float((down+closing_costs) / int(analysis.investor_units_display.text().replace(',','')))
         analysis.investment_unit_display.setText('{0:,.2f}'.format(per_unit_cost))
         analysis.calculate_it()
         analysis.flow_1_display.setText('{0:,.2f}'.format(analysis.irr.year_1_cashflow_value))

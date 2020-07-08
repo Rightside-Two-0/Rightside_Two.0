@@ -3,7 +3,7 @@ from tests import mortgage
 import datetime
 import numpy as np
 from itertools import islice
-from openpyxl import load_workbook
+# from openpyxl import load_workbook
 
 class calc_irr():
     def __init__(self):
@@ -182,7 +182,7 @@ class calc_irr():
         self.seller_financing_percent = seller_carry_per
         self.owners_equity_value = self.total_purchase * self.owners_equity_percent
         self.seller_financing_value = self.total_purchase * seller_carry_per
-        self.financing_amount = self.total_purchase - (self.owners_equity_value + self.seller_financing_value)
+        self.financing_amount = self.total_purchase - (self.owners_equity_value + self.seller_financing_value) - self.closing_costs
         self.interest_rate_yearly = interest_rate
         self.interest_rate_monthly = self.interest_rate_yearly / 12
         self.amort_period_yearly = amort_period
