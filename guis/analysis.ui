@@ -58,7 +58,7 @@
     </rect>
    </property>
    <property name="currentIndex">
-    <number>0</number>
+    <number>1</number>
    </property>
    <widget class="QWidget" name="opp_tab">
     <attribute name="title">
@@ -1427,22 +1427,6 @@
       </rect>
      </property>
     </widget>
-    <widget class="QLabel" name="investment_label">
-     <property name="geometry">
-      <rect>
-       <x>430</x>
-       <y>370</y>
-       <width>111</width>
-       <height>21</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:12pt;&quot;&gt;Investment:&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-     </property>
-     <property name="alignment">
-      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-     </property>
-    </widget>
     <widget class="QPushButton" name="submit_button">
      <property name="geometry">
       <rect>
@@ -1467,22 +1451,6 @@
      </property>
      <property name="text">
       <string>Verify</string>
-     </property>
-    </widget>
-    <widget class="QLabel" name="investment_display">
-     <property name="geometry">
-      <rect>
-       <x>550</x>
-       <y>370</y>
-       <width>131</width>
-       <height>21</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string/>
-     </property>
-     <property name="alignment">
-      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
      </property>
     </widget>
     <widget class="QLabel" name="investment_unit_display">
@@ -1768,7 +1736,7 @@
       </rect>
      </property>
      <property name="toolTip">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;% for investors&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      <string/>
      </property>
      <property name="maximum">
       <number>100</number>
@@ -1780,7 +1748,7 @@
       <enum>Qt::Horizontal</enum>
      </property>
     </widget>
-    <widget class="QLabel" name="sponsoring_units_display">
+    <widget class="QLabel" name="investor_units_display">
      <property name="geometry">
       <rect>
        <x>900</x>
@@ -1790,7 +1758,7 @@
       </rect>
      </property>
      <property name="text">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      <string/>
      </property>
      <property name="alignment">
       <set>Qt::AlignCenter</set>

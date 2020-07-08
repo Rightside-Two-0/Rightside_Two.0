@@ -223,6 +223,8 @@ class Analysis(QtWidgets.QWidget):
         self.sponsor_opp_button = self.findChild(QtWidgets.QCommandLinkButton, 'sponsor_commandLinkButton')
         self.join_opp_button.clicked.connect(self.join_opp)
         self.sponsor_opp_button.clicked.connect(self.sponsor_opp)
+        value = float(self.sponsor_percent_deal_slider.value())
+        self.sponsor_percent_deal_slider.setToolTip(str(value)+'%')
         #~~generic~data~for~testing~~~~~~~~~~~~~>
         #~~~~>
         self.chart_widget.plot([9.01,35.16,42.74,61.41,86.55])
@@ -288,7 +290,6 @@ class Analysis(QtWidgets.QWidget):
         self.irr.deal(percent_rightside=float(self.sponsor_percent_deal_slider.value()))
         self.irr.offer()
         self.irr.key_ratios()
-        self.investment_display.setText(str(float(self.asking.text())+float(self.closing_costs.text().replace(',',''))))
         self.irr_display.setText('IRR: '+'{0:,.2f}'.format(self.irr.irr)+'%')
         #~~~set~chart~values~~~~~~~>
         #~~~~>
@@ -357,6 +358,16 @@ class Analysis(QtWidgets.QWidget):
         self.financing_progressBar.setValue(int(ratio))
         carry_ratio = seller_financing_amount/total_price*100
         self.seller_carry_progressBar.setValue(int(carry_ratio))
+        #~~~update~required~capital~~~~~~~>
+        #~~>
+        required = float(self.down.text().replace(',',''))+float(self.closing_costs.text().replace(',',''))
+        self.capital_required_display.setText('{0:,.2f}'.format(required))
+        #~~~per~unit~~~>
+        if self.investor_units_display.text() == '':
+            self.investor_units_display.setText('1')
+        investor_units = float(self.investor_units_display.text().replace(',',''))        
+        per_unit = required/investor_units
+        self.investment_unit_display.setText('{0:,.2f}'.format(per_unit))
         #~~~update~payment~with~new~values~~~~>
         #~~>
         self.get_payment()
@@ -364,11 +375,12 @@ class Analysis(QtWidgets.QWidget):
         value = float(self.sponsor_percent_deal_slider.value())
         equity_units = int(self.crypto_units_display.text().replace(',',''))
         investors_portion = float(equity_units*value/100)
-        self.sponsoring_units_display.setText('{0:,.0f}'.format(investors_portion))
+        self.investor_units_display.setText('{0:,.0f}'.format(investors_portion))
         #~~~update~cost/unit~~~~~~~~>
         #~~~>
         per_unit = float(self.capital_required.text().replace(',','').replace('$',''))/investors_portion
         self.investment_unit_display.setText('{0:,.2f}'.format(per_unit))
+        self.sponsor_percent_deal_slider.setToolTip(str(value)+'%')
 class Asset(QtWidgets.QWidget):
     def __init__(self):
         super(Asset, self).__init__()
@@ -938,8 +950,7 @@ class MainWindow(QtWidgets.QMainWindow):
         #~>
         analysis.capital_required_display.setText('$'+'{0:,.2f}'.format(down+closing_costs))
         analysis.crypto_units_display.setText('{0:,.0f}'.format(float(res_details.json()['sqft'])))
-        analysis.sponsoring_units_display.setText('{0:,.0f}'.format(float(res_details.json()['sqft'])*(1-float(analysis.sponsor_percent_deal_slider.value())/100)))
-        analysis.investment_display.setText('{0:,.2f}'.format(int(down)+int(closing_costs)))
+        analysis.investor_units_display.setText('{0:,.0f}'.format(float(res_details.json()['sqft'])*(1-float(analysis.sponsor_percent_deal_slider.value())/100)))
         per_unit_cost = float((down+closing_costs) / int(res_details.json()['sqft']))
         analysis.investment_unit_display.setText('{0:,.2f}'.format(per_unit_cost))
         analysis.calculate_it()
