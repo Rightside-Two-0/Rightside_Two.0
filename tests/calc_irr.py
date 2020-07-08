@@ -344,4 +344,3 @@ class calc_irr():
         self.initial_investment = -self.contributing_value
         self.cashflows = [self.initial_investment, self.irr_pv_1yr, self.irr_pv_2yr, self.irr_pv_3yr, self.irr_pv_4yr, self.irr_pv_5yr, self.irr_cashout]
         self.irr = round(np.irr(self.cashflows),4)*100
-

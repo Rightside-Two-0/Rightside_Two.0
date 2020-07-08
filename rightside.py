@@ -283,7 +283,8 @@ class Analysis(QtWidgets.QWidget):
         #~~~integrate~irr.py~calculation~~~~~~~>
         self.irr = calc_irr()
         self.irr.cost_rev(asking=float(self.asking.text()),units=float(self.units.text()),average_rent=float(self.monthly_rent.text()),sqft=float(self.sqft.text()))
-        self.irr.financing_assumptions(equity_per=float(self.down_progressBar.value()),seller_carry_per=float(self.seller_carry_progressBar.value()),interest_rate=float(self.financing_rate_lineEdit.text()),amort_period=30,seller_carry_rate=float(self.seller_carry_rate_lineEdit.text()),seller_carry_term=float(self.seller_carry_term_lineEdit.text()))
+        self.irr.financing_assumptions(equity_per=float(self.down_progressBar.value()/100),seller_carry_per=float(self.seller_carry_progressBar.value()/100),interest_rate=float(self.financing_rate_lineEdit.text()),amort_period=30,seller_carry_rate=float(self.seller_carry_rate_lineEdit.text()),seller_carry_term=float(self.seller_carry_term_lineEdit.text()))
+        print('monthly pymt:' , self.irr.payment_monthly)
         self.irr.revenues(rent_increase=0.02,expense_increase=0.025,vac_rate=float(self.vacancy_rate_display.text()),extra_income=float(self.other_income_display.text()))
         self.irr.expenses(repairs=float(self.repairs_display.text()),management=float(self.management_display.text()),tax=float(self.taxes_display.text()),insure=float(self.insurance_display.text()),payroll=float(self.wages_display.text()),utils=float(self.utilities_display.text()),gen_admin=float(self.gen_admin_display.text()),pro_fees=float(self.professional_fees_display.text()),ads=float(self.advertising_display.text()),cap_x=float(self.cap_x_display.text()),other_x=float(self.other_expense_display.text()))
         interest_loan = self.irr.calc_interest(start=12, end=0)
@@ -378,6 +379,8 @@ class Analysis(QtWidgets.QWidget):
         self.investor_units_display.setText('{0:,.0f}'.format(investors_portion))
         #~~~update~cost/unit~~~~~~~~>
         #~~~>
+        if investors_portion == 0:
+            investors_portion = 1
         per_unit = float(self.capital_required.text().replace(',','').replace('$',''))/investors_portion
         self.investment_unit_display.setText('{0:,.2f}'.format(per_unit))
         self.sponsor_percent_deal_slider.setToolTip(str(value)+'%')
