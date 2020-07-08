@@ -277,6 +277,7 @@ class Analysis(QtWidgets.QWidget):
         self.noi_progressBar.setValue(int(noi/gross*100))
         #~~~~~>
         self.get_payment()
+        self.crypto_units_display.setText('{0:,.0f}'.format(float(self.sqft.text())))
         #~~~integrate~irr.py~calculation~~~~~~~>
         self.irr = calc_irr()
         self.irr.cost_rev(asking=float(self.asking.text()),units=float(self.units.text()),average_rent=float(self.monthly_rent.text()),sqft=float(self.sqft.text()))
@@ -364,6 +365,10 @@ class Analysis(QtWidgets.QWidget):
         equity_units = int(self.crypto_units_display.text().replace(',',''))
         investors_portion = float(equity_units*value/100)
         self.sponsoring_units_display.setText('{0:,.0f}'.format(investors_portion))
+        #~~~update~cost/unit~~~~~~~~>
+        #~~~>
+        per_unit = float(self.capital_required.text().replace(',','').replace('$',''))/investors_portion
+        self.investment_unit_display.setText('{0:,.2f}'.format(per_unit))
 class Asset(QtWidgets.QWidget):
     def __init__(self):
         super(Asset, self).__init__()
