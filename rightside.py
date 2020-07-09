@@ -244,7 +244,7 @@ class Analysis(QtWidgets.QWidget):
         self.sponsor_percent_deal_slider.valueChanged.connect(self.investors_percent)
     def calculate_it(self):
         gross = (float(self.units.text()) * float(self.monthly_rent.text())) * (1 - float(self.vacancy.text())) + float(self.other_income.text())
-        self.gross_income.setText('$'+'{0:,.2f}'.format(gross))
+        self.gross_income.setText('$'+'{0:,.2f}'.format(gross*12))
         #~~~~~~~~expenses~~~~~~~~>
         repairs_ = float(self.repairs.text())
         management_ = float(self.management.text())
@@ -258,10 +258,10 @@ class Analysis(QtWidgets.QWidget):
         capital_reserves_ = float(self.capital_reserves.text())
         other_ = float(self.other.text())
         total_expenses = repairs_+management_+taxes_+insurance_+salaries_wages_+utility_+gen_admin_+professional_fees_+advertising_+capital_reserves_+other_
-        self.total_expense.setText('$'+'{0:,.2f}'.format(total_expenses))
+        self.total_expense.setText('$'+'{0:,.2f}'.format(total_expenses*12))
         #~~~~~~~~NOI~~~~~~~~>
         noi = gross - total_expenses
-        self.noi.setText('$'+'{0:,.2f}'.format(noi))
+        self.noi.setText('$'+'{0:,.2f}'.format(noi*12))
         #~~~~~~~set~progressBars~~~~~~~~>
         #~~~~>
         self.repairsProgress.setValue(int(repairs_ / gross*100))
@@ -279,6 +279,12 @@ class Analysis(QtWidgets.QWidget):
         self.noi_progressBar.setValue(int(noi/gross*100))
         self.seller_carry_progressBar.setValue(int(self.seller_carry_display.text().replace(',','')))
         #~~~~~>
+        total = float(self.total_purchase_display.text().replace(',',''))
+        seller_carry = float(self.seller_carry_display.text().replace(',',''))
+        financing = total-(seller_carry+float(self.down_display.text().replace(',','')))
+        self.financing_display.setText('{0:,.0f}'.format(financing))
+        self.financing_progressBar.setValue(int(financing/total*100))
+        self.seller_carry_progressBar.setValue(int(seller_carry/total*100))
         self.get_payment()
         self.crypto_units_display.setText('{0:,.0f}'.format(float(self.sqft.text())))
         #~~~integrate~irr.py~calculation~~~~~~~>
@@ -341,6 +347,12 @@ class Analysis(QtWidgets.QWidget):
         interest_only = carry_amount*carry_rate
         self.seller_carry_payment_display.setText('{0:,.2f}'.format(interest_only/12))
     def get_irr(self):
+        #~~~cash~on~cash~~~~~>
+        needed = float(self.capital_required_display.text().replace(',','').replace('$',''))
+        before_tax = float(self.noi.text().replace(',','').replace('$',''))-(float(self.financing_payment_display.text().replace(',',''))*12)
+        coc = before_tax/needed*100
+        self.coc_display.setText('{0:,.2f}'.format(coc))
+        #~~~IRR~~~~~~>
         self.irr = calc_irr()
         self.irr.cost_rev(asking=float(self.asking.text()),units=float(self.units.text()),average_rent=float(self.monthly_rent.text()),sqft=float(self.sqft.text()))       
         self.irr.financing_assumptions(equity_per=float(self.down_progressBar.value()/100),seller_carry_per=float(self.seller_carry_progressBar.value()/100),interest_rate=float(self.financing_rate_lineEdit.text())*100,amort_period=30,seller_carry_rate=float(self.seller_carry_rate_lineEdit.text()),seller_carry_term=float(self.seller_carry_term_lineEdit.text()))
@@ -936,11 +948,11 @@ class MainWindow(QtWidgets.QMainWindow):
         #~~~>
         scheduled = float(res_details.json()['units'])*int(res_details.json()['ave_rent'])
         gross_income = scheduled-(float(res_details.json()['vacancy_rate'])*scheduled)+float(res_details.json()['other_income'])
-        analysis.gross_income_display.setText('{0:,.2f}'.format(gross_income))
+        analysis.gross_income_display.setText('{0:,.2f}'.format(gross_income*12))
         total_expenses = float(res_details.json()['repairs'])+float(res_details.json()['management'])+float(res_details.json()['taxes'])+float(res_details.json()['insurance'])+float(res_details.json()['wages'])+float(res_details.json()['utilities'])+float(res_details.json()['gen_admin'])+float(res_details.json()['professional_fees'])+float(res_details.json()['advertising'])+float(res_details.json()['cap_x'])+float(res_details.json()['other'])
-        analysis.total_expense_display.setText('{0:,.2f}'.format(total_expenses))
+        analysis.total_expense_display.setText('{0:,.2f}'.format(total_expenses*12))
         noi = gross_income - total_expenses
-        analysis.noi_display.setText('{0:,.2f}'.format(noi))
+        analysis.noi_display.setText('{0:,.2f}'.format(noi*12))
         #~~~~set~progressbars...~~~~~~~~~~~~~~~~~~~~~>
         analysis.repairsProgress.setValue(int(float(res_details.json()['repairs']) / gross_income*100))
         analysis.managementProgress.setValue(int(float(res_details.json()['management'])/gross_income*100))
@@ -991,6 +1003,9 @@ class MainWindow(QtWidgets.QMainWindow):
         per_unit_cost = float((down+closing_costs) / int(analysis.investor_units_display.text().replace(',','')))
         analysis.investment_unit_display.setText('{0:,.2f}'.format(per_unit_cost))
         analysis.calculate_it()
+        #~~~~these are incorrect~values~~~~~>
+        #~~~>
+
         analysis.flow_1_display.setText('{0:,.2f}'.format(analysis.irr.year_1_cashflow_value))
         analysis.flow_2_display.setText('{0:,.2f}'.format(analysis.irr.year_2_cashflow_value))
         analysis.flow_3_display.setText('{0:,.2f}'.format(analysis.irr.year_3_cashflow_value))

@@ -225,6 +225,8 @@ class calc_irr():
     def deal(self, percent_rightside):
         self.investors_percent = 1 - percent_rightside
         self.contributing_units = self.total_sqft * self.investors_percent
+        if self.contributing_units == 0:
+            self.contributing_units = 1
         self.investment_unit = (self.owners_equity_value+((self.total_purchase*0.035)+(self.total_purchase*0.01)))/self.contributing_units
         self.contributing_value = self.investment_unit * self.contributing_units
         self.opportunity_percent = percent_rightside
