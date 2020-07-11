@@ -895,7 +895,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.addItem_Assets(item['source']+' - '+item['notes'], '{0:,.0f}'.format(float(item['cost'])))
                 self.sum_assets += float(item['cost'])
                 if item['source'] == 'Savings':
-                    self.savings += float(item['cost'])
+                    self.savings = float(item['cost'])
         except Exception:
             traceback.print_exc()
     def load_exp(self):
@@ -939,7 +939,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.opp_coc.setText(res_details.json()['coc'])
         self.opp_irr.setText(res_details.json()['irr'])
         analysis.url_OM.setText(res_details.json()['url'])
-        #~~~~set~numbers~of~property~~~~~~>
+       #~~~~set~numbers~of~property~~~~~~>
         #~~~~>
         analysis.ask_display.setText(res_details.json()['ask'])
         analysis.sqft_display.setText(res_details.json()['sqft'])
@@ -1028,10 +1028,13 @@ class MainWindow(QtWidgets.QMainWindow):
         analysis.flow_5_display.setText('{0:,.2f}'.format(analysis.irr.year_5_cashflow_value))
         # analysis..setText(res_details.json()[])
         #~~~~~savings/down~~~~~~~~~~>
+        self.reload_assets()
+        print(self.savings)
+        print(res_details.json()['down'])
         qoutient = self.savings/float(res_details.json()['down'])
         if qoutient >= 1:
             qoutient = 100
-        self.commitments.setValue(int(qoutient))
+        self.commitment_progress.setValue(int(qoutient*100))
     def get_new_account(self):
         text, ok = QInputDialog.getText(self, 'Input Dialog', 'Enter Account:')
         if text and text != '':

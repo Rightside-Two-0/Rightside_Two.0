@@ -988,6 +988,9 @@
        <height>441</height>
       </rect>
      </property>
+     <property name="toolTip">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;% to close deal&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
      <property name="value">
       <number>0</number>
      </property>
