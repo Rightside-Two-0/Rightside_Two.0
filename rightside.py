@@ -579,7 +579,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def __init__(self):
         try:
             super(MainWindow, self).__init__()
-            uic.loadUi('guis/financial.ui', self)
+            uic.loadUi('guis/financial.ui', self)            
             #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             self.sum_passive = 0.0
             self.sum_salaries = 0.0
@@ -645,6 +645,7 @@ class MainWindow(QtWidgets.QMainWindow):
             self.opp_irr = self.findChild(QtWidgets.QLabel, 'irr_display')
             self.commitments = self.findChild(QtWidgets.QProgressBar, 'commitment_progress')
             #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~>
+            self.add_property_button.clicked.connect(self.analyze)
             self.set_model_income()
             self.set_model_expenses()
             self.set_model_assets()
@@ -1028,9 +1029,6 @@ class MainWindow(QtWidgets.QMainWindow):
         analysis.flow_5_display.setText('{0:,.2f}'.format(analysis.irr.year_5_cashflow_value))
         # analysis..setText(res_details.json()[])
         #~~~~~savings/down~~~~~~~~~~>
-        self.reload_assets()
-        print(self.savings)
-        print(res_details.json()['down'])
         qoutient = self.savings/float(res_details.json()['down'])
         if qoutient >= 1:
             qoutient = 100
