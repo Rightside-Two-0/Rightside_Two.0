@@ -1,8 +1,9 @@
 import sys, os
 import json, csv
 from PyQt5 import QtCore, QtGui, QtWidgets, uic
-from PyQt5.QtWidgets import QInputDialog, QLineEdit, QVBoxLayout, QTableWidgetItem, QFileDialog, QHeaderView
+from PyQt5.QtWidgets import QShortcut, QInputDialog, QLineEdit, QVBoxLayout, QTableWidgetItem, QFileDialog, QHeaderView
 from PyQt5.QtCore import Qt, QUrl
+from PyQt5.QtGui import QKeySequence
 from tests.calc_irr import mortgage
 from tests.calc_irr import calc_irr
 from tests import mortgage
@@ -226,8 +227,7 @@ class Analysis(QtWidgets.QWidget):
         value = float(self.sponsor_percent_deal_slider.value())
         self.sponsor_percent_deal_slider.setToolTip(str(value)+'%')
         #~~generic~data~for~testing~~~~~~~~~~~~~>
-        #~~~~>
-        
+        #~~~~>        
         #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~>
         self.getURLButton.clicked.connect(self.view_deal)
         self.financing_rate_lineEdit.setText('.05')
@@ -242,6 +242,8 @@ class Analysis(QtWidgets.QWidget):
         #~~~down~slider~~~~~>
         self.down_Slider.valueChanged.connect(self.update_fields)
         self.sponsor_percent_deal_slider.valueChanged.connect(self.investors_percent)
+        self.enter = QShortcut(QKeySequence(Qt.Key_Return), self)
+        self.enter.activated.connect(self.calculate_it)
     def calculate_it(self):
         gross = (float(self.units.text()) * float(self.monthly_rent.text())) * (1 - float(self.vacancy.text())) + float(self.other_income.text())
         self.gross_income.setText('$'+'{0:,.2f}'.format(gross*12))
@@ -262,6 +264,7 @@ class Analysis(QtWidgets.QWidget):
         #~~~~~~~~NOI~~~~~~~~>
         noi = gross - total_expenses
         self.noi.setText('$'+'{0:,.2f}'.format(noi*12))
+        self.noi_monthly_display.setText('{0:,.2f}'.format(noi))
         #~~~~~~~set~progressBars~~~~~~~~>
         #~~~~>
         self.repairsProgress.setValue(int(repairs_ / gross*100))
@@ -278,7 +281,16 @@ class Analysis(QtWidgets.QWidget):
         self.total_expenses_progressBar.setValue(int(total_expenses/gross*100))
         self.noi_progressBar.setValue(int(noi/gross*100))
         self.seller_carry_progressBar.setValue(int(self.seller_carry_display.text().replace(',','')))
-        #~~~~~>
+        #~~~~~>set~fields~values~~~~~~~>
+        new_ask = float(self.ask_display.text())
+        self.total_purchase_display.setText('{0:,.0f}'.format(new_ask))
+        self.financing_display.setText('{0:,.0f}'.format(new_ask*self.financing_progressBar.value()/100))
+        self.seller_carry_display.setText('{0:,.0f}'.format(new_ask*self.seller_carry_progressBar.value()/100))
+        down = new_ask*self.down_progressBar.value()/100
+        closing = new_ask*self.closing_costs_progressBar.value()/100
+        self.down_display.setText('{0:,.0f}'.format(down))
+        self.closing_costs_display.setText('{0:,.0f}'.format(closing))
+        #~~~~>
         total = float(self.total_purchase_display.text().replace(',',''))
         seller_carry = float(self.seller_carry_display.text().replace(',',''))
         financing = total-(seller_carry+float(self.down_display.text().replace(',','')))
@@ -299,7 +311,10 @@ class Analysis(QtWidgets.QWidget):
         #~~~~>
         self.chart_widget.clear()
         #~~needs~updating~to~real~values~~~>
-        units = float(self.investor_units_display.text().replace(',',''))
+        units = int(self.investor_units_display.text().replace(',',''))
+        #~~~~>
+        self.capital_required_display.setText('{0:,.0f}'.format(down+closing))
+        self.investment_unit_display.setText('{0:,.2f}'.format((down+closing)/units))
         self.chart_widget.plot([float(self.investment_unit_display.text().replace(',','')),self.irr.year_5_cashflow_value/units,self.irr.year_4_cashflow_value/units,self.irr.year_3_cashflow_value/units,self.irr.year_2_cashflow_value/units,self.irr.year_1_cashflow_value/units])
     def submit_it(self):
         url = 'http://localhost:8000/api/opportunity/'
