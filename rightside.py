@@ -245,20 +245,24 @@ class Analysis(QtWidgets.QWidget):
         self.enter = QShortcut(QKeySequence(Qt.Key_Return), self)
         self.enter.activated.connect(self.calculate_it)
     def calculate_it(self):
-        gross = (float(self.units.text()) * float(self.monthly_rent.text())) * (1 - float(self.vacancy.text())) + float(self.other_income.text())
+        units = float(self.units.text()) if self.units.text() != '' else 0
+        ave_rent = float(self.monthly_rent.text()) if self.monthly_rent.text() != '' else 0
+        vacancy = float(self.vacancy.text()) if self.vacancy.text() != '' else 0
+        other_in = float(self.other_income.text()) if self.other_income.text() != '' else 0
+        gross = (units * ave_rent) * (1 - vacancy) + other_in
         self.gross_income.setText('$'+'{0:,.2f}'.format(gross*12))
         #~~~~~~~~expenses~~~~~~~~>
-        repairs_ = float(self.repairs.text())
-        management_ = float(self.management.text())
-        taxes_ = float(self.taxes.text())
-        insurance_ = float(self.insurance.text())
-        salaries_wages_ = float(self.wages.text())
-        utility_ = float(self.utilities.text())
-        gen_admin_ = float(self.gen_admin.text())
-        professional_fees_ = float(self.professional_fees.text())
-        advertising_ = float(self.advertising.text())
-        capital_reserves_ = float(self.capital_reserves.text())
-        other_ = float(self.other.text())
+        repairs_ = float(self.repairs.text()) if self.repairs.text() != '' else 0
+        management_ = float(self.management.text()) if self.management.text() != '' else 0
+        taxes_ = float(self.taxes.text()) if self.taxes.text() != '' else 0
+        insurance_ = float(self.insurance.text()) if self.insurance.text() != '' else 0
+        salaries_wages_ = float(self.wages.text()) if self.wages.text()!= '' else 0
+        utility_ = float(self.utilities.text()) if self.utilities.text() !='' else 0
+        gen_admin_ = float(self.gen_admin.text()) if self.gen_admin.text() != '' else 0
+        professional_fees_ = float(self.professional_fees.text()) if self.professional_fees.text()!= '' else 0
+        advertising_ = float(self.advertising.text()) if self.advertising.text() != '' else 0
+        capital_reserves_ = float(self.capital_reserves.text()) if self.capital_reserves.text() != '' else 0
+        other_ = float(self.other.text()) if self.other.text() != '' else 0
         total_expenses = repairs_+management_+taxes_+insurance_+salaries_wages_+utility_+gen_admin_+professional_fees_+advertising_+capital_reserves_+other_
         self.total_expense.setText('$'+'{0:,.2f}'.format(total_expenses*12))
         #~~~~~~~~NOI~~~~~~~~>
@@ -266,7 +270,9 @@ class Analysis(QtWidgets.QWidget):
         self.noi.setText('$'+'{0:,.2f}'.format(noi*12))
         self.noi_monthly_display.setText('{0:,.2f}'.format(noi))
         #~~~~~~~set~progressBars~~~~~~~~>
-        #~~~~>
+        #~~~~>        
+        if gross == 0:
+            gross = 1
         self.repairsProgress.setValue(int(repairs_ / gross*100))
         self.managementProgress.setValue(int(management_/gross*100))
         self.taxesProgress.setValue(int(taxes_/gross*100))
@@ -280,9 +286,10 @@ class Analysis(QtWidgets.QWidget):
         self.otherProgress.setValue(int(other_/gross*100))
         self.total_expenses_progressBar.setValue(int(total_expenses/gross*100))
         self.noi_progressBar.setValue(int(noi/gross*100))
-        self.seller_carry_progressBar.setValue(int(self.seller_carry_display.text().replace(',','')))
+        seller_carry = float(self.seller_carry_display.text().replace(',','')) if self.seller_carry_display.text() != '' else 0
+        self.seller_carry_progressBar.setValue(int(seller_carry))
         #~~~~~>set~fields~values~~~~~~~>
-        new_ask = float(self.ask_display.text())
+        new_ask = float(self.ask_display.text()) if self.ask_display.text() != '' else 0
         self.total_purchase_display.setText('{0:,.0f}'.format(new_ask))
         self.financing_display.setText('{0:,.0f}'.format(new_ask*self.financing_progressBar.value()/100))
         self.seller_carry_display.setText('{0:,.0f}'.format(new_ask*self.seller_carry_progressBar.value()/100))
@@ -295,33 +302,118 @@ class Analysis(QtWidgets.QWidget):
         seller_carry = float(self.seller_carry_display.text().replace(',',''))
         financing = total-(seller_carry+float(self.down_display.text().replace(',','')))
         self.financing_display.setText('{0:,.0f}'.format(financing))
+        if total == 0:
+            total = 1
         self.financing_progressBar.setValue(int(financing/total*100))
         self.seller_carry_progressBar.setValue(int(seller_carry/total*100))
         self.get_payment()
-        self.crypto_units_display.setText('{0:,.0f}'.format(float(self.sqft.text())))
-        #~~~integrate~irr.py~calculation~~~~~~~>
-        self.get_irr()
-        #~~~~cash~flows~too~~~~~~~~~~>
-        self.flow_1_display.setText('{0:,.2f}'.format(self.irr.year_1_cashflow_value))
-        self.flow_2_display.setText('{0:,.2f}'.format(self.irr.year_2_cashflow_value))
-        self.flow_3_display.setText('{0:,.2f}'.format(self.irr.year_3_cashflow_value))
-        self.flow_4_display.setText('{0:,.2f}'.format(self.irr.year_4_cashflow_value))
-        self.flow_5_display.setText('{0:,.2f}'.format(self.irr.year_5_cashflow_value))
-        #~~~set~chart~values~~~~~~~>
-        #~~~~>
-        self.chart_widget.clear()
-        #~~needs~updating~to~real~values~~~>
-        units = int(self.investor_units_display.text().replace(',',''))
-        #~~~~>
+        sqft = float(self.sqft_display.text()) if self.sqft_display.text() != '' else 0
+        self.crypto_units_display.setText('{0:,.0f}'.format(sqft))
         self.capital_required_display.setText('{0:,.0f}'.format(down+closing))
-        self.investment_unit_display.setText('{0:,.2f}'.format((down+closing)/units))
-        self.chart_widget.plot([float(self.investment_unit_display.text().replace(',','')),self.irr.year_5_cashflow_value/units,self.irr.year_4_cashflow_value/units,self.irr.year_3_cashflow_value/units,self.irr.year_2_cashflow_value/units,self.irr.year_1_cashflow_value/units])
+        self.investor_units_display.setText('{0:,.0f}'.format(float(self.crypto_units_display.text().replace(',',''))*self.sponsor_percent_deal_slider.value()/100))
+        #~~~integrate~irr.py~calculation~~~~~~~>
+        if total != 1:
+            self.get_irr()
+            #~~~~cash~flows~too~~~~~~~~~~>
+            self.flow_1_display.setText('{0:,.2f}'.format(self.irr.year_1_cashflow_value))
+            self.flow_2_display.setText('{0:,.2f}'.format(self.irr.year_2_cashflow_value))
+            self.flow_3_display.setText('{0:,.2f}'.format(self.irr.year_3_cashflow_value))
+            self.flow_4_display.setText('{0:,.2f}'.format(self.irr.year_4_cashflow_value))
+            self.flow_5_display.setText('{0:,.2f}'.format(self.irr.year_5_cashflow_value))
+            #~~~set~chart~values~~~~~~~>
+            #~~~~>
+            self.chart_widget.clear()
+            #~~needs~updating~to~real~values~~~>
+            units = int(self.investor_units_display.text().replace(',',''))
+            #~~~~>
+            self.capital_required_display.setText('{0:,.0f}'.format(down+closing))
+            self.investment_unit_display.setText('{0:,.2f}'.format((down+closing)/units))
+            self.chart_widget.plot([float(self.investment_unit_display.text().replace(',','')),self.irr.year_5_cashflow_value/units,self.irr.year_4_cashflow_value/units,self.irr.year_3_cashflow_value/units,self.irr.year_2_cashflow_value/units,self.irr.year_1_cashflow_value/units])
     def submit_it(self):
+        '''adds a new property to network'''
         url = 'http://localhost:8000/api/opportunity/'
-        response = requests.get(url)
-        for item in list(response.json()):
-            if item['url'] == self.url_OM.text():
-                print(item['id'])
+        if item['url'] == self.url_OM.text():
+            print('id:', item['id'])
+        else:
+            ask = self.ask_display.text() if self.ask_display.text() != '' else '0'
+            sqft = self.sqft_display.text() if self.sqft_display.text() != '' else '0'
+            num_units = self.num_units_display.text() if self.num_units_display.text() != '' else '0'
+            ave_monthly_rent = self.ave_monthly_rent_display.text() if self.ave_monthly_rent_display.text() != '' else '0'
+            vacancy = self.vacancy_rate_display.text() if self.vacancy_rate_display.text() != '' else '0'
+            other_income = self.other_income_display.text() if self.other_income_display.text() != '' else '0'
+            gross = float(num_units)*float(ave_monthly_rent)
+            income = gross-(1-float(vacancy))+float(other_income)
+            #~~~~~~~~expenses~~~~~~~>
+            repairs = self.repairs_display.text() if self.repairs_display.text() != '' else '0'
+            management = self.management_display.text() if self.management_display.text() != '' else '0'
+            taxes = self.taxes_display.text() if self.taxes_display.text() != '' else '0'
+            insurance = self.insurance_display.text() if self.insurance_display.text() != '' else '0'
+            wages  = self.wages_display.text() if self.wages_display.text() != '' else '0'
+            utilities = self.utilities_display.text() if self.utilities_display.text() != '' else '0'
+            gen_admin = self.gen_admin_display.text() if self.gen_admin_display.text() != '' else '0'
+            professional_fees = self.professional_fees_display.text() if self.professional_fees_display.text() != '' else '0'
+            advertising = self.advertising_display.text() if self.advertising_display.text() != '' else '0'
+            cap_x = self.cap_x_display.text() if self.cap_x_display.text() != '' else '0'
+            other = self.other_expense_display.text() if self.other_expense_display.text() != '' else '0'
+            expenses = float(repairs)+float(management)+float(taxes)+float(insurance)+float(wages)+float(utilities)+float(gen_admin)+float(professional_fees)+float(advertising)+float(cap_x)+float(other)
+            #~~~~~~~~~~~>
+            heading, ok = QInputDialog.getText(self, 'Heading', 'Enter a heading for property:')
+            description, ok = QInputDialog.getText(self, 'Description', 'Enter description or summary:')
+            url = self.url_OM.text()
+            cost = float(ask)
+            down = ''
+            mortgage_ = ''
+            if int(num_units) >= 4:
+                down = '{0:,.2f}'.format(cost*0.1)
+                mortgage_ = '{0:,.2f}'.format(cost*0.9)
+            else:
+                #<=5 units
+                down = '{0:,.2f}'.format(cost*0.3)
+                mortgage_ = '{0:,.2f}'.format(cost*0.7)
+            #~~~~need~to~get~a~debt~payment~~~~~~~~~~~~~~~~>
+            #~~~~~>
+            pymt = mortgage.Mortgage(interest=0.05,  amount=float(mortgage_.replace(',','')), months=360)
+            debt_service = float(pymt.monthly_payment())
+            cashflow = income-expenses-debt_service
+            cash_flow = '{0:.2f}'.format(cashflow)
+            if down == '0.00':
+                down = '1'
+            coc = '{0:,.2f}'.format(cashflow*12/float(down.replace(',','')))
+            irr = '{0:,.2f}'.format(15.0)
+            if self.url_OM.text() != '':                    
+                headers = {"content-type": "application/json"}
+                data_dict = {
+                    'heading': heading,
+                    'description': description,
+                    'url': url,
+                    'cost': str(cost),
+                    'down': down,
+                    'mortgage': mortgage_,
+                    'cash_flow': cash_flow,
+                    'coc': coc, 
+                    'irr': irr,
+                    'ask': ask,
+                    'sqft': sqft,
+                    'units': num_units,
+                    'ave_rent': ave_monthly_rent,
+                    'vacancy_rate': vacancy,
+                    'other_income': other_income,
+                    'repairs': repairs ,
+                    'management': management,
+                    'taxes': taxes,
+                    'insurance': insurance,
+                    'wages': wages, 
+                    'utilities': utilities,
+                    'gen_admin': gen_admin,
+                    'professional_fees': professional_fees,
+                    'advertising': advertising,
+                    'cap_x': cap_x,
+                    'other': other
+                }                    
+                data = json.dumps(data_dict)
+                print(data)
+                response = requests.post(url=url,data=data,headers=headers)
+                print(response)
     def verify_it(self):
         print('hi from 227')
     def sponsor_opp(self):
@@ -368,11 +460,22 @@ class Analysis(QtWidgets.QWidget):
         coc = before_tax/needed*100
         self.coc_display.setText('{0:,.2f}'.format(coc))
         #~~~IRR~~~~~~>
+        repairs_ = float(self.repairs_display.text()) if self.repairs_display.text() != '' else 0.0
+        management_ = float(self.management_display.text()) if self.management_display.text() != '' else 0.0
+        taxes_ = float(self.taxes_display.text()) if self.taxes_display.text() != '' else 0.0
+        insurance_ = float(self.insurance_display.text()) if self.insurance_display.text() != '' else 0.0
+        wages_ = float(self.wages_display.text()) if self.wages_display.text() != '' else 0.0
+        utilities_  = float(self.utilities_display.text()) if self.utilities_display.text() != '' else 0.0
+        gen_admin_ = float(self.gen_admin_display.text()) if self.gen_admin_display.text() != '' else 0.0
+        professional_fees_ = float(self.professional_fees_display.text()) if self.professional_fees_display.text() != '' else 0.0
+        advertising_ = float(self.advertising_display.text()) if self.advertising_display.text() != '' else 0.0
+        cap_x_ = float(self.cap_x_display.text()) if self.cap_x_display.text() != '' else 0.0
+        other_ = float(self.other_expense_display.text()) if self.other_expense_display.text() != '' else 0.0
         self.irr = calc_irr()
         self.irr.cost_rev(asking=float(self.asking.text()),units=float(self.units.text()),average_rent=float(self.monthly_rent.text()),sqft=float(self.sqft.text()))       
         self.irr.financing_assumptions(equity_per=float(self.down_progressBar.value()/100),seller_carry_per=float(self.seller_carry_progressBar.value()/100),interest_rate=float(self.financing_rate_lineEdit.text())*100,amort_period=30,seller_carry_rate=float(self.seller_carry_rate_lineEdit.text()),seller_carry_term=float(self.seller_carry_term_lineEdit.text()))
         self.irr.revenues(rent_increase=0.02,expense_increase=0.025,vac_rate=float(self.vacancy_rate_display.text()),extra_income=float(self.other_income_display.text()))
-        self.irr.expenses(repairs=float(self.repairs_display.text()),management=float(self.management_display.text()),tax=float(self.taxes_display.text()),insure=float(self.insurance_display.text()),payroll=float(self.wages_display.text()),utils=float(self.utilities_display.text()),gen_admin=float(self.gen_admin_display.text()),pro_fees=float(self.professional_fees_display.text()),ads=float(self.advertising_display.text()),cap_x=float(self.cap_x_display.text()),other_x=float(self.other_expense_display.text()))
+        self.irr.expenses(repairs=repairs_,management=management_,tax=taxes_,insure=insurance_,payroll=wages_,utils=utilities_,gen_admin=gen_admin_,pro_fees=professional_fees_,ads=advertising_,cap_x=cap_x_,other_x=other_)
         interest_loan = self.irr.calc_interest(start=12, end=0)
         self.irr.deal(percent_rightside=float(self.sponsor_percent_deal_slider.value()))
         self.irr.offer()
