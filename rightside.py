@@ -377,13 +377,14 @@ class Analysis(QtWidgets.QWidget):
             down = '1'
         coc = '{0:,.2f}'.format(cashflow*12/float(down.replace(',','')))
         irr = '{0:,.2f}'.format(15.0)
-        if self.url_OM.text() != '':                    
+        url_ = self.url_OM.text()
+        if url_ != '':                    
             url = 'http://localhost:8000/api/opportunity/'
             headers = {"content-type": "application/json"}
             data_dict = {
                 'heading': heading,
                 'description': description,
-                'url': url,
+                'url': url_,
                 'cost': str(cost),
                 'down': down,
                 'mortgage': mortgage_,
@@ -414,6 +415,7 @@ class Analysis(QtWidgets.QWidget):
             #~~~~reload~opportunity~table~~~~>
             #~~~>
             window.reload_small_opps()
+            window.reload_big_opps()
     def verify_it(self):
         print('hi from 227')
     def sponsor_opp(self):
@@ -760,6 +762,7 @@ class MainWindow(QtWidgets.QMainWindow):
             self.load_assets()
             self.load_debts()
             self.load_small_opps()
+            self.load_big_opps()
         except Exception:
             traceback.print_exc()
     def update_display(self):
@@ -962,6 +965,11 @@ class MainWindow(QtWidgets.QMainWindow):
         second = QtGui.QStandardItem(value)
         second.setTextAlignment(QtCore.Qt.AlignRight)
         self.opp_small.model().appendRow([first, second])
+    def addItem_Big_Opps(self, key, value):
+        first = QtGui.QStandardItem(key)
+        second = QtGui.QStandardItem(value)
+        second.setTextAlignment(QtCore.Qt.AlignRight)
+        self.opp_big.model().appendRow([first, second])
     def reload_income(self):
         self.income.model().removeRows(0, self.income.model().rowCount())
         self.load()
@@ -977,12 +985,25 @@ class MainWindow(QtWidgets.QMainWindow):
     def reload_small_opps(self):
         self.opportunity_small.model().removeRows(0, self.opportunity_small.model().rowCount())
         self.load_small_opps() 
+    def reload_big_opps(self):
+        self.opportunity_big.model().removeRows(0, self.opportunity_big.model().rowCount())
+        self.load_big_opps()
+    def load_big_opps(self):
+        try:
+            url = 'http://localhost:8000/api/opportunity/'
+            response = requests.get(url)
+            for item in list(response.json()):
+                if int(item['units']) >= 5:
+                    self.addItem_Big_Opps(item['heading'], item['description'])
+        except Exception:
+            traceback.print_exc()
     def load_small_opps(self):
         try:
             url = 'http://localhost:8000/api/opportunity/'
             response = requests.get(url)
             for item in list(response.json()):
-                self.addItem_Opps(item['heading'], item['description'])
+                if int(item ['units']) <= 4:
+                    self.addItem_Opps(item['heading'], item['description'])
         except Exception:
             traceback.print_exc()
     def load_debts(self):
@@ -1028,8 +1049,14 @@ class MainWindow(QtWidgets.QMainWindow):
        except Exception:
            traceback.print_exc()
     def see_details(self):
+        sender = self.sender()
+        opps = []
+        if sender.objectName() == 'opportunity_small':
+            opps = self.opp_small.selectedIndexes()
+        else:
+            opps = self.opp_big.selectedIndexes()
         content = []
-        for ix in self.opp_small.selectedIndexes():
+        for ix in opps:
             content.append(ix.data()) # or ix.data()
         url = 'http://localhost:8000/api/opportunity/'
         response = requests.get(url)
@@ -1039,14 +1066,14 @@ class MainWindow(QtWidgets.QMainWindow):
                 res_details = requests.get(url+str(item['id']))
         self.opp_title.setText(res_details.json()['heading'])
         self.opp_body.setText(res_details.json()['description'])
-        self.opp_cost.setText('{0:,.0f}'.format(float(res_details.json()['cost'])))
-        self.opp_down.setText('{0:,.0f}'.format(float(res_details.json()['down'])))
-        self.opp_mortgage.setText('{0:,.0f}'.format(float(res_details.json()['mortgage'])))
+        self.opp_cost.setText('{0:,.0f}'.format(float(res_details.json()['cost'].replace(',',''))))
+        self.opp_down.setText('{0:,.0f}'.format(float(res_details.json()['down'].replace(',',''))))
+        self.opp_mortgage.setText('{0:,.0f}'.format(float(res_details.json()['mortgage'].replace(',',''))))
         self.opp_cash_flow.setText('{0:,.0f}'.format(float(res_details.json()['cash_flow'])))
         self.opp_coc.setText(res_details.json()['coc'])
         self.opp_irr.setText(res_details.json()['irr'])
         analysis.url_OM.setText(res_details.json()['url'])
-       #~~~~set~numbers~of~property~~~~~~>
+        #~~~~set~numbers~of~property~~~~~~>
         #~~~~>
         analysis.ask_display.setText(res_details.json()['ask'])
         analysis.sqft_display.setText(res_details.json()['sqft'])
@@ -1107,7 +1134,7 @@ class MainWindow(QtWidgets.QMainWindow):
         analysis.down_progressBar.setValue(down_pymt_percent)
         analysis.down_Slider.setValue(down_pymt_percent)        
         analysis.get_payment()
-        cap_rate = float(noi.display.text())/float(down+closing)*100
+        cap_rate = float(analysis.noi_display.text().replace(',','').replace('$',''))/float(down+closing)*100
         analysis.cap_rate_display.setText('{0:,.2}'.format(cap_rate)+'%')
         # carry_amount = 
         # analysis.seller_carry_progressBar.setValue(int(float(res_details.json()[''])/float(res_details.json()['ask'])))
@@ -1124,7 +1151,10 @@ class MainWindow(QtWidgets.QMainWindow):
         analysis.capital_required_display.setText('$'+'{0:,.2f}'.format(down+closing_costs))
         analysis.crypto_units_display.setText('{0:,.0f}'.format(float(res_details.json()['sqft'])))
         analysis.investor_units_display.setText('{0:,.0f}'.format(float(res_details.json()['sqft'])*(1-float(analysis.sponsor_percent_deal_slider.value())/100)))
-        per_unit_cost = float((down+closing_costs) / int(analysis.investor_units_display.text().replace(',','')))
+        investor_percent = int(analysis.investor_units_display.text().replace(',',''))
+        if investor_percent == 0:
+            investor_percent = 1
+        per_unit_cost = float((down+closing_costs) / investor_percent)
         analysis.investment_unit_display.setText('{0:,.2f}'.format(per_unit_cost))
         analysis.calculate_it()
         #~~~~these are incorrect~values~~~~~>
@@ -1137,7 +1167,7 @@ class MainWindow(QtWidgets.QMainWindow):
         analysis.flow_5_display.setText('{0:,.2f}'.format(analysis.irr.year_5_cashflow_value))
         # analysis..setText(res_details.json()[])
         #~~~~~savings/down~~~~~~~~~~>
-        qoutient = self.savings/float(res_details.json()['down'])
+        qoutient = self.savings/float(res_details.json()['down'].replace(',',''))
         if qoutient >= 1:
             qoutient = 100
         self.commitment_progress.setValue(int(qoutient*100))
