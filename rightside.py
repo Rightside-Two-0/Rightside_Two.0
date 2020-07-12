@@ -332,88 +332,85 @@ class Analysis(QtWidgets.QWidget):
     def submit_it(self):
         '''adds a new property to network'''
         url = 'http://localhost:8000/api/opportunity/'
-        if item['url'] == self.url_OM.text():
-            print('id:', item['id'])
+        ask = self.ask_display.text() if self.ask_display.text() != '' else '0'
+        sqft = self.sqft_display.text() if self.sqft_display.text() != '' else '0'
+        num_units = self.num_units_display.text() if self.num_units_display.text() != '' else '0'
+        ave_monthly_rent = self.ave_monthly_rent_display.text() if self.ave_monthly_rent_display.text() != '' else '0'
+        vacancy = self.vacancy_rate_display.text() if self.vacancy_rate_display.text() != '' else '0'
+        other_income = self.other_income_display.text() if self.other_income_display.text() != '' else '0'
+        gross = float(num_units)*float(ave_monthly_rent)
+        income = gross-(1-float(vacancy))+float(other_income)
+        #~~~~~~~~expenses~~~~~~~>
+        repairs = self.repairs_display.text() if self.repairs_display.text() != '' else '0'
+        management = self.management_display.text() if self.management_display.text() != '' else '0'
+        taxes = self.taxes_display.text() if self.taxes_display.text() != '' else '0'
+        insurance = self.insurance_display.text() if self.insurance_display.text() != '' else '0'
+        wages  = self.wages_display.text() if self.wages_display.text() != '' else '0'
+        utilities = self.utilities_display.text() if self.utilities_display.text() != '' else '0'
+        gen_admin = self.gen_admin_display.text() if self.gen_admin_display.text() != '' else '0'
+        professional_fees = self.professional_fees_display.text() if self.professional_fees_display.text() != '' else '0'
+        advertising = self.advertising_display.text() if self.advertising_display.text() != '' else '0'
+        cap_x = self.cap_x_display.text() if self.cap_x_display.text() != '' else '0'
+        other = self.other_expense_display.text() if self.other_expense_display.text() != '' else '0'
+        expenses = float(repairs)+float(management)+float(taxes)+float(insurance)+float(wages)+float(utilities)+float(gen_admin)+float(professional_fees)+float(advertising)+float(cap_x)+float(other)
+        #~~~~~~~~~~~>
+        heading, ok = QInputDialog.getText(self, 'Heading', 'Enter a heading for property:')
+        description, ok = QInputDialog.getText(self, 'Description', 'Enter description or summary:')
+        url = self.url_OM.text()
+        cost = float(ask)
+        down = ''
+        mortgage_ = ''
+        if int(num_units) >= 4:
+            down = '{0:,.2f}'.format(cost*0.1)
+            mortgage_ = '{0:,.2f}'.format(cost*0.9)
         else:
-            ask = self.ask_display.text() if self.ask_display.text() != '' else '0'
-            sqft = self.sqft_display.text() if self.sqft_display.text() != '' else '0'
-            num_units = self.num_units_display.text() if self.num_units_display.text() != '' else '0'
-            ave_monthly_rent = self.ave_monthly_rent_display.text() if self.ave_monthly_rent_display.text() != '' else '0'
-            vacancy = self.vacancy_rate_display.text() if self.vacancy_rate_display.text() != '' else '0'
-            other_income = self.other_income_display.text() if self.other_income_display.text() != '' else '0'
-            gross = float(num_units)*float(ave_monthly_rent)
-            income = gross-(1-float(vacancy))+float(other_income)
-            #~~~~~~~~expenses~~~~~~~>
-            repairs = self.repairs_display.text() if self.repairs_display.text() != '' else '0'
-            management = self.management_display.text() if self.management_display.text() != '' else '0'
-            taxes = self.taxes_display.text() if self.taxes_display.text() != '' else '0'
-            insurance = self.insurance_display.text() if self.insurance_display.text() != '' else '0'
-            wages  = self.wages_display.text() if self.wages_display.text() != '' else '0'
-            utilities = self.utilities_display.text() if self.utilities_display.text() != '' else '0'
-            gen_admin = self.gen_admin_display.text() if self.gen_admin_display.text() != '' else '0'
-            professional_fees = self.professional_fees_display.text() if self.professional_fees_display.text() != '' else '0'
-            advertising = self.advertising_display.text() if self.advertising_display.text() != '' else '0'
-            cap_x = self.cap_x_display.text() if self.cap_x_display.text() != '' else '0'
-            other = self.other_expense_display.text() if self.other_expense_display.text() != '' else '0'
-            expenses = float(repairs)+float(management)+float(taxes)+float(insurance)+float(wages)+float(utilities)+float(gen_admin)+float(professional_fees)+float(advertising)+float(cap_x)+float(other)
-            #~~~~~~~~~~~>
-            heading, ok = QInputDialog.getText(self, 'Heading', 'Enter a heading for property:')
-            description, ok = QInputDialog.getText(self, 'Description', 'Enter description or summary:')
-            url = self.url_OM.text()
-            cost = float(ask)
-            down = ''
-            mortgage_ = ''
-            if int(num_units) >= 4:
-                down = '{0:,.2f}'.format(cost*0.1)
-                mortgage_ = '{0:,.2f}'.format(cost*0.9)
-            else:
-                #<=5 units
-                down = '{0:,.2f}'.format(cost*0.3)
-                mortgage_ = '{0:,.2f}'.format(cost*0.7)
-            #~~~~need~to~get~a~debt~payment~~~~~~~~~~~~~~~~>
-            #~~~~~>
-            pymt = mortgage.Mortgage(interest=0.05,  amount=float(mortgage_.replace(',','')), months=360)
-            debt_service = float(pymt.monthly_payment())
-            cashflow = income-expenses-debt_service
-            cash_flow = '{0:.2f}'.format(cashflow)
-            if down == '0.00':
-                down = '1'
-            coc = '{0:,.2f}'.format(cashflow*12/float(down.replace(',','')))
-            irr = '{0:,.2f}'.format(15.0)
-            if self.url_OM.text() != '':                    
-                headers = {"content-type": "application/json"}
-                data_dict = {
-                    'heading': heading,
-                    'description': description,
-                    'url': url,
-                    'cost': str(cost),
-                    'down': down,
-                    'mortgage': mortgage_,
-                    'cash_flow': cash_flow,
-                    'coc': coc, 
-                    'irr': irr,
-                    'ask': ask,
-                    'sqft': sqft,
-                    'units': num_units,
-                    'ave_rent': ave_monthly_rent,
-                    'vacancy_rate': vacancy,
-                    'other_income': other_income,
-                    'repairs': repairs ,
-                    'management': management,
-                    'taxes': taxes,
-                    'insurance': insurance,
-                    'wages': wages, 
-                    'utilities': utilities,
-                    'gen_admin': gen_admin,
-                    'professional_fees': professional_fees,
-                    'advertising': advertising,
-                    'cap_x': cap_x,
-                    'other': other
-                }                    
-                data = json.dumps(data_dict)
-                print(data)
-                response = requests.post(url=url,data=data,headers=headers)
-                print(response)
+            #<=5 units
+            down = '{0:,.2f}'.format(cost*0.3)
+            mortgage_ = '{0:,.2f}'.format(cost*0.7)
+        #~~~~need~to~get~a~debt~payment~~~~~~~~~~~~~~~~>
+        #~~~~~>
+        pymt = mortgage.Mortgage(interest=0.05,  amount=float(mortgage_.replace(',','')), months=360)
+        debt_service = float(pymt.monthly_payment())
+        cashflow = income-expenses-debt_service
+        cash_flow = '{0:.2f}'.format(cashflow)
+        if down == '0.00':
+            down = '1'
+        coc = '{0:,.2f}'.format(cashflow*12/float(down.replace(',','')))
+        irr = '{0:,.2f}'.format(15.0)
+        if self.url_OM.text() != '':                    
+            headers = {"content-type": "application/json"}
+            data_dict = {
+                'heading': heading,
+                'description': description,
+                'url': url,
+                'cost': str(cost),
+                'down': down,
+                'mortgage': mortgage_,
+                'cash_flow': cash_flow,
+                'coc': coc, 
+                'irr': irr,
+                'ask': ask,
+                'sqft': sqft,
+                'units': num_units,
+                'ave_rent': ave_monthly_rent,
+                'vacancy_rate': vacancy,
+                'other_income': other_income,
+                'repairs': repairs ,
+                'management': management,
+                'taxes': taxes,
+                'insurance': insurance,
+                'wages': wages, 
+                'utilities': utilities,
+                'gen_admin': gen_admin,
+                'professional_fees': professional_fees,
+                'advertising': advertising,
+                'cap_x': cap_x,
+                'other': other
+            }                    
+            data = json.dumps(data_dict)
+            print(data)
+            response = requests.post(url=url, data=data, headers=headers)
+            print(response.status_code)
     def verify_it(self):
         print('hi from 227')
     def sponsor_opp(self):
