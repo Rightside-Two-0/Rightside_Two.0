@@ -409,7 +409,7 @@ class Analysis(QtWidgets.QWidget):
             }                    
             data = json.dumps(data_dict)
             print(data)
-            response = requests.post(url=url, data=data, headers=headers)
+            response = requests.post(url, data=data, headers=headers)
             print(response.status_code)
     def verify_it(self):
         print('hi from 227')
