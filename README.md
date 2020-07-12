@@ -1,5 +1,5 @@
 # Rightside_Two.0
-An online FREE investment club and study group built upon the philosophy of "Think &amp; Grow Rich".  
+An online FREE investment club and study group built upon the philosophy of "Think &amp; Grow Rich", and Robert Kyosaki's "Rich Dad Poor Dad".  
 
 This work is copyrighted (C) 2020 by Rightside Two.0. 
 This work has also been published with IP License found in the License page in this repo.
