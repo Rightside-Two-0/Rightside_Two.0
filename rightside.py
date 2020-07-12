@@ -251,6 +251,8 @@ class Analysis(QtWidgets.QWidget):
         other_in = float(self.other_income.text()) if self.other_income.text() != '' else 0
         gross = (units * ave_rent) * (1 - vacancy) + other_in
         self.gross_income.setText('$'+'{0:,.2f}'.format(gross*12))
+        if units >= 5:
+            self.down_Slider.setValue(int(25))
         #~~~~~~~~expenses~~~~~~~~>
         repairs_ = float(self.repairs.text()) if self.repairs.text() != '' else 0
         management_ = float(self.management.text()) if self.management.text() != '' else 0
@@ -293,10 +295,12 @@ class Analysis(QtWidgets.QWidget):
         self.total_purchase_display.setText('{0:,.0f}'.format(new_ask))
         self.financing_display.setText('{0:,.0f}'.format(new_ask*self.financing_progressBar.value()/100))
         self.seller_carry_display.setText('{0:,.0f}'.format(new_ask*self.seller_carry_progressBar.value()/100))
+        self.down_progressBar.setValue(int(self.down_Slider.value()))
         down = new_ask*self.down_progressBar.value()/100
         closing = new_ask*self.closing_costs_progressBar.value()/100
         self.down_display.setText('{0:,.0f}'.format(down))
         self.closing_costs_display.setText('{0:,.0f}'.format(closing))
+        self.cap_rate_display.setText('{0:,.2f}'.format(noi*12/down*100)+'%')
         #~~~~>
         total = float(self.total_purchase_display.text().replace(',',''))
         seller_carry = float(self.seller_carry_display.text().replace(',',''))
@@ -356,17 +360,12 @@ class Analysis(QtWidgets.QWidget):
         #~~~~~~~~~~~>
         heading, ok = QInputDialog.getText(self, 'Heading', 'Enter a heading for property:')
         description, ok = QInputDialog.getText(self, 'Description', 'Enter description or summary:')
-        url = self.url_OM.text()
+        url_ = self.url_OM.text()
         cost = float(ask)
         down = ''
         mortgage_ = ''
-        if int(num_units) >= 4:
-            down = '{0:,.2f}'.format(cost*0.1)
-            mortgage_ = '{0:,.2f}'.format(cost*0.9)
-        else:
-            #<=5 units
-            down = '{0:,.2f}'.format(cost*0.3)
-            mortgage_ = '{0:,.2f}'.format(cost*0.7)
+        down = '{0:,.2f}'.format(float(self.down_display.text().replace(',','')))
+        mortgage_ = '{0:,.2f}'.format(float(self.financing_display.text().replace(',','')))
         #~~~~need~to~get~a~debt~payment~~~~~~~~~~~~~~~~>
         #~~~~~>
         pymt = mortgage.Mortgage(interest=0.05,  amount=float(mortgage_.replace(',','')), months=360)
@@ -377,15 +376,14 @@ class Analysis(QtWidgets.QWidget):
             down = '1'
         coc = '{0:,.2f}'.format(cashflow*12/float(down.replace(',','')))
         irr = '{0:,.2f}'.format(15.0)
-        url_ = self.url_OM.text()
+        costs_ = str(cost)
         if url_ != '':                    
-            url = 'http://localhost:8000/api/opportunity/'
             headers = {"content-type": "application/json"}
             data_dict = {
                 'heading': heading,
                 'description': description,
                 'url': url_,
-                'cost': str(cost),
+                'cost': costs_,
                 'down': down,
                 'mortgage': mortgage_,
                 'cash_flow': cash_flow,
@@ -487,6 +485,7 @@ class Analysis(QtWidgets.QWidget):
     def update_fields(self):
         '''get value from down_slider and set down_progressBar & down_display with value'''
         slider_value = self.down_Slider.value()
+        self.total_purchase_display.setText('{0:,.0f}'.format(float(self.ask_display.text())))
         total_price = float(self.total_purchase_display.text().replace(',',''))
         down_amount = total_price * float(slider_value)/100
         self.down_progressBar.setValue(int(down_amount/total_price*100))
@@ -1126,7 +1125,7 @@ class MainWindow(QtWidgets.QMainWindow):
         #~~~~financing~progressbars~~~~~~~~~~~~>
         #~~~~~Task~1)~~~~~~~~~~~~~~~~~~>
         #~~~>
-        down = total*.035#FHA
+        down = float(res_details.json()['down'].replace(',',''))
         closing_costs = total*.035
         analysis.down_display.setText('{0:,.0f}'.format(down))
         analysis.closing_costs_display.setText('{0:,.0f}'.format(closing_costs))
@@ -1134,8 +1133,9 @@ class MainWindow(QtWidgets.QMainWindow):
         analysis.down_progressBar.setValue(down_pymt_percent)
         analysis.down_Slider.setValue(down_pymt_percent)        
         analysis.get_payment()
-        cap_rate = float(analysis.noi_display.text().replace(',','').replace('$',''))/float(down+closing)*100
-        analysis.cap_rate_display.setText('{0:,.2}'.format(cap_rate)+'%')
+        noi = float(analysis.noi_display.text().replace(',','').replace('$',''))
+        cap_rate = (noi/down)*100
+        analysis.cap_rate_display.setText('{0:,.2f}'.format(cap_rate)+'%')
         # carry_amount = 
         # analysis.seller_carry_progressBar.setValue(int(float(res_details.json()[''])/float(res_details.json()['ask'])))
         # analysis.financing_progressBar.setValue(int())
@@ -1186,11 +1186,84 @@ class MainWindow(QtWidgets.QMainWindow):
             ledger.move(415,150)
         except Exception as e:
             traceback.print_exc()
+    def clear_all(self):
+         analysis.urlBox.setText('')
+         analysis.ask_display.setText('')
+         analysis.sqft_display.setText('')
+         analysis.num_units_display.setText('')
+         analysis.ave_monthly_rent_display.setText('')
+         analysis.vacancy_rate_display.setText('')
+         analysis.other_income_display.setText('')
+         analysis.gross_income_display.setText('')
+         analysis.repairs_display.setText('')
+         analysis.management_display.setText('')
+         analysis.taxes_display.setText('')
+         analysis.insurance_display.setText('')
+         analysis.wages_display.setText('')
+         analysis.utilities_display.setText('')
+         analysis.gen_admin_display.setText('')
+         analysis.professional_fees_display.setText('')
+         analysis.advertising_display.setText('')
+         analysis.cap_x_display.setText('')
+         analysis.other_expense_display.setText('')
+         analysis.total_expense_display.setText('')
+         analysis.noi_display.setText('')
+         analysis.noi_monthly_display.setText('')
+         analysis.total_purchase_display.setText('')
+         analysis.financing_display.setText('')
+         analysis.seller_carry_display.setText('')
+         analysis.down_display.setText('')
+         analysis.closing_costs_display.setText('')
+         analysis.financing_rate_lineEdit.setText('')
+         analysis.financing_term_lineEdit.setText('')
+         analysis.seller_carry_rate_lineEdit.setText('')
+         analysis.seller_carry_term_lineEdit.setText('')
+         #~~~~progressbars~~~~~~~>
+         analysis.repairs_progressBar.setValue(int(0))
+         analysis.management_progressBar.setValue(int(0))
+         analysis.taxes_progressBar.setValue(int(0))
+         analysis.insurance_progressBar.setValue(int(0))
+         analysis.wages_progressBar.setValue(int(0))
+         analysis.utilities_progressBar.setValue(int(0))
+         analysis.gen_admin_progressBar.setValue(int(0))
+         analysis.professional_fees_progressBar.setValue(int(0))
+         analysis.advertising_progressBar.setValue(int(0))
+         analysis.cap_x_progressBar.setValue(int(0))
+         analysis.other_progressBar.setValue(int(0))
+         analysis.total_expenses_progressBar.setValue(int(0))
+         analysis.noi_progressBar.setValue(int(0))
+         analysis.financing_progressBar.setValue(int(0))
+         analysis.seller_carry_progressBar.setValue(int(0))
+         analysis.down_progressBar.setValue(int(0))
+         analysis.closing_costs_progressBar.setValue(int(0))
+         analysis.contributions_progressBar.setValue(int(0))
+         #~~~~~~~~~>
+         analysis.cap_rate_display.setText('')
+         analysis.financing_payment_display.setText('')
+         analysis.seller_carry_payment_display.setText('')
+         analysis.capital_required_display.setText('')
+         analysis.crypto_units_display.setText('')
+         analysis.investor_units_display.setText('')
+         analysis.sponsor_display.setText('')
+         analysis.flow_1_display.setText('')
+         analysis.flow_2_display.setText('')
+         analysis.flow_3_display.setText('')
+         analysis.flow_4_display.setText('')
+         analysis.flow_5_display.setText('')
+         analysis.coc_display.setText('')
+         analysis.irr_display.setText('')
+         analysis.investment_unit_display.setText('')
+         analysis.chart_widget.clear()
     def analyze(self):
         try:
             analysis.show()
             analysis.move(313,150)
-            analysis.view_deal()
+            sender = self.sender()
+            if sender.objectName() == 'add_property_button':
+                self.clear_all()
+                analysis.view_deal()
+            else:
+                analysis.view_deal()
         except Exception as e:
             traceback.print_exc()
     def getComboSelection(self):
