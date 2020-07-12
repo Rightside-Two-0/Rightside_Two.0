@@ -341,18 +341,18 @@ class Analysis(QtWidgets.QWidget):
         gross = float(num_units)*float(ave_monthly_rent)
         income = gross-(1-float(vacancy))+float(other_income)
         #~~~~~~~~expenses~~~~~~~>
-        repairs = self.repairs_display.text() if self.repairs_display.text() != '' else '0'
-        management = self.management_display.text() if self.management_display.text() != '' else '0'
-        taxes = self.taxes_display.text() if self.taxes_display.text() != '' else '0'
-        insurance = self.insurance_display.text() if self.insurance_display.text() != '' else '0'
-        wages  = self.wages_display.text() if self.wages_display.text() != '' else '0'
-        utilities = self.utilities_display.text() if self.utilities_display.text() != '' else '0'
-        gen_admin = self.gen_admin_display.text() if self.gen_admin_display.text() != '' else '0'
-        professional_fees = self.professional_fees_display.text() if self.professional_fees_display.text() != '' else '0'
-        advertising = self.advertising_display.text() if self.advertising_display.text() != '' else '0'
-        cap_x = self.cap_x_display.text() if self.cap_x_display.text() != '' else '0'
-        other = self.other_expense_display.text() if self.other_expense_display.text() != '' else '0'
-        expenses = float(repairs)+float(management)+float(taxes)+float(insurance)+float(wages)+float(utilities)+float(gen_admin)+float(professional_fees)+float(advertising)+float(cap_x)+float(other)
+        repairs_ = self.repairs_display.text() if self.repairs_display.text() != '' else '0'
+        management_ = self.management_display.text() if self.management_display.text() != '' else '0'
+        taxes_ = self.taxes_display.text() if self.taxes_display.text() != '' else '0'
+        insurance_ = self.insurance_display.text() if self.insurance_display.text() != '' else '0'
+        wages_  = self.wages_display.text() if self.wages_display.text() != '' else '0'
+        utilities_ = self.utilities_display.text() if self.utilities_display.text() != '' else '0'
+        gen_admin_ = self.gen_admin_display.text() if self.gen_admin_display.text() != '' else '0'
+        professional_fees_ = self.professional_fees_display.text() if self.professional_fees_display.text() != '' else '0'
+        advertising_ = self.advertising_display.text() if self.advertising_display.text() != '' else '0'
+        cap_x_ = self.cap_x_display.text() if self.cap_x_display.text() != '' else '0'
+        other_ = self.other_expense_display.text() if self.other_expense_display.text() != '' else '0'
+        expenses_ = float(repairs_)+float(management_)+float(taxes_)+float(insurance_)+float(wages_)+float(utilities_)+float(gen_admin_)+float(professional_fees_)+float(advertising_)+float(cap_x_)+float(other_)
         #~~~~~~~~~~~>
         heading, ok = QInputDialog.getText(self, 'Heading', 'Enter a heading for property:')
         description, ok = QInputDialog.getText(self, 'Description', 'Enter description or summary:')
@@ -371,13 +371,14 @@ class Analysis(QtWidgets.QWidget):
         #~~~~~>
         pymt = mortgage.Mortgage(interest=0.05,  amount=float(mortgage_.replace(',','')), months=360)
         debt_service = float(pymt.monthly_payment())
-        cashflow = income-expenses-debt_service
+        cashflow = income-expenses_-debt_service
         cash_flow = '{0:.2f}'.format(cashflow)
         if down == '0.00':
             down = '1'
         coc = '{0:,.2f}'.format(cashflow*12/float(down.replace(',','')))
         irr = '{0:,.2f}'.format(15.0)
         if self.url_OM.text() != '':                    
+            url = 'http://localhost:8000/api/opportunity/'
             headers = {"content-type": "application/json"}
             data_dict = {
                 'heading': heading,
@@ -395,22 +396,24 @@ class Analysis(QtWidgets.QWidget):
                 'ave_rent': ave_monthly_rent,
                 'vacancy_rate': vacancy,
                 'other_income': other_income,
-                'repairs': repairs ,
-                'management': management,
-                'taxes': taxes,
-                'insurance': insurance,
-                'wages': wages, 
-                'utilities': utilities,
-                'gen_admin': gen_admin,
-                'professional_fees': professional_fees,
-                'advertising': advertising,
-                'cap_x': cap_x,
-                'other': other
-            }                    
+                'repairs': repairs_,
+                'management': management_,
+                'taxes': taxes_,
+                'insurance': insurance_,
+                'wages': wages_, 
+                'utilities': utilities_,
+                'gen_admin': gen_admin_,
+                'professional_fees': professional_fees_,
+                'advertising': advertising_,
+                'cap_x': cap_x_,
+                'other': other_
+            }   
             data = json.dumps(data_dict)
-            print(data)
             response = requests.post(url, data=data, headers=headers)
-            print(response.status_code)
+            analysis.hide()
+            #~~~~reload~opportunity~table~~~~>
+            #~~~>
+            window.reload_small_opps()
     def verify_it(self):
         print('hi from 227')
     def sponsor_opp(self):
@@ -971,6 +974,9 @@ class MainWindow(QtWidgets.QMainWindow):
     def reload_liabilities(self):
         self.liabilities.model().removeRows(0, self.liabilities.model().rowCount())
         self.load_debts()
+    def reload_small_opps(self):
+        self.opportunity_small.model().removeRows(0, self.opportunity_small.model().rowCount())
+        self.load_small_opps() 
     def load_small_opps(self):
         try:
             url = 'http://localhost:8000/api/opportunity/'
@@ -1101,6 +1107,8 @@ class MainWindow(QtWidgets.QMainWindow):
         analysis.down_progressBar.setValue(down_pymt_percent)
         analysis.down_Slider.setValue(down_pymt_percent)        
         analysis.get_payment()
+        cap_rate = float(noi.display.text())/float(down+closing)*100
+        analysis.cap_rate_display.setText('{0:,.2}'.format(cap_rate)+'%')
         # carry_amount = 
         # analysis.seller_carry_progressBar.setValue(int(float(res_details.json()[''])/float(res_details.json()['ask'])))
         # analysis.financing_progressBar.setValue(int())
