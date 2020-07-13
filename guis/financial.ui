@@ -440,7 +440,7 @@ p, li { white-space: pre-wrap; }
      <set>Qt::AlignCenter</set>
     </property>
    </widget>
-   <widget class="QLabel" name="down_display">
+   <widget class="QLabel" name="down_display_pre">
     <property name="geometry">
      <rect>
       <x>760</x>

@@ -251,8 +251,6 @@ class Analysis(QtWidgets.QWidget):
         other_in = float(self.other_income.text()) if self.other_income.text() != '' else 0
         gross = (units * ave_rent) * (1 - vacancy) + other_in
         self.gross_income.setText('$'+'{0:,.2f}'.format(gross*12))
-        if units >= 5:
-            self.down_Slider.setValue(int(25))
         #~~~~~~~~expenses~~~~~~~~>
         repairs_ = float(self.repairs.text()) if self.repairs.text() != '' else 0
         management_ = float(self.management.text()) if self.management.text() != '' else 0
@@ -742,7 +740,7 @@ class MainWindow(QtWidgets.QMainWindow):
             self.opp_buy = self.findChild(QtWidgets.QPushButton, 'buy_button')
             self.opp_assign = self.findChild(QtWidgets.QPushButton, 'assign_button')
             self.opp_cost = self.findChild(QtWidgets.QLabel, 'cost_value')
-            self.opp_down = self.findChild(QtWidgets.QLabel, 'down_display')
+            self.opp_down = self.findChild(QtWidgets.QLabel, 'down_display_pre')
             self.opp_mortgage = self.findChild(QtWidgets.QLabel, 'mortgage_value')
             self.opp_cash_flow = self.findChild(QtWidgets.QLabel, 'cashflow_display')
             self.opp_coc = self.findChild(QtWidgets.QLabel, 'coc_display')
@@ -1134,20 +1132,9 @@ class MainWindow(QtWidgets.QMainWindow):
         analysis.down_Slider.setValue(down_pymt_percent)        
         analysis.get_payment()
         noi = float(analysis.noi_display.text().replace(',','').replace('$',''))
-        cap_rate = (noi/down)*100
+        cap_rate = (noi/down)
         analysis.cap_rate_display.setText('{0:,.2f}'.format(cap_rate)+'%')
-        # carry_amount = 
-        # analysis.seller_carry_progressBar.setValue(int(float(res_details.json()[''])/float(res_details.json()['ask'])))
-        # analysis.financing_progressBar.setValue(int())
-        #~~~~~~key~numbers~~~~~~~~~~~~~~~>
-        #~~~>        
-        #~~~~>Task~2)~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~>
-        #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~>
-        #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~>
-        #~~~~~~~~~~~~~~~~~~~~~~~~~~~>
-        #~~~~~~~~~~~~~~~>
         #~~~~~>
-        #~>
         analysis.capital_required_display.setText('$'+'{0:,.2f}'.format(down+closing_costs))
         analysis.crypto_units_display.setText('{0:,.0f}'.format(float(res_details.json()['sqft'])))
         analysis.investor_units_display.setText('{0:,.0f}'.format(float(res_details.json()['sqft'])*(1-float(analysis.sponsor_percent_deal_slider.value())/100)))
@@ -1254,6 +1241,10 @@ class MainWindow(QtWidgets.QMainWindow):
          analysis.irr_display.setText('')
          analysis.investment_unit_display.setText('')
          analysis.chart_widget.clear()
+         analysis.financing_rate_lineEdit.setText('0.05')
+         analysis.financing_term_lineEdit.setText('360')
+         analysis.seller_carry_rate_lineEdit.setText('0.08')
+         analysis.seller_carry_term_lineEdit.setText('60')
     def analyze(self):
         try:
             analysis.show()
