@@ -725,7 +725,7 @@ class MainWindow(QtWidgets.QMainWindow):
             self.total_passive.setText('{0:,.2f}'.format(self.get_total_income()[1]))
             self.total_expenses.setText('{0:,.2f}'.format(self.get_total_expenses()))
             self.total_cashflow.setText('{0:,.2f}'.format(self.get_total_income()[0]-self.get_total_expenses()))
-            self.percent = self.sum_passive/self.sum_expenses*100
+            self.percent = (self.get_total_income()[1])/self.get_total_expenses()*100
             if self.percent >= 100:
                 self.goal_percent.setValue(int(100))
                 self.statusBar().showMessage('YOU ARE FREE! FINANCIALLY FREE! GREAT JOB!!')
