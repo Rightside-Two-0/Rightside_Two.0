@@ -145,29 +145,9 @@ class calc_irr():
         self.npv_unit = 0
         self.irr = 0
         self.m = None
-        #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~>
-        #~~~~>
-        # global m, irr, interest_loan, interest_rate_yearly, financing_amount, amort_period_monthly
-        # self.cost_rev(asking=240000,improvements=0,units=12,average_rent=500,sqft=10000)
-        # self.financing_assumptions(equity_per=0.3,seller_carry_per=0,interest_rate=5.0,amort_period=30,seller_carry_rate=8.0,seller_carry_term=60)
-        # self.revenues(rent_increase=0.02,expense_increase=0.025,vac_rate=10.0,extra_income=0)
-        # self.expenses(repairs=60,management=0,tax=0,insure=0,payroll=0,utils=0,gen_admin=0,pro_fees=0,ads=0,cap_x=1850,other_x=30000)
-        # interest_loan = self.calc_interest(start=12, end=0)
-        # self.deal(percent_rightside=0.45)
-        # self.offer()
-        # self.key_ratios()
-        # print('IRR:', str(self.irr)+'%')
-        # if self.irr >= 15.00:
-        #     print('Initiall looks like it might be a good deal!')
-            # write values and then save
-            # Save the spreadsheet
-            # workbook.save(filename='deals/deal'+str(datetime.datetime.now().timestamp())+'.xlsx')
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    # workbook = load_workbook(filename='Template2.0.xlsx')
-    # sheet = workbook.active
-    def cost_rev(self, asking, units, average_rent, sqft):
+    def cost_rev(self, asking, improvements, units, average_rent, sqft):
         self.ask = asking
-        # self.improvements_cost = improvements
+        self.improvements_cost = improvements
         self.num_units = units
         self.ave_rent_monthly = average_rent
         self.land = self.ask * 0.2

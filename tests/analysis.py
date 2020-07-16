@@ -240,6 +240,7 @@ def key_ratios():
     gross_rent_multiplier = total_purchase / gross_income
     expense_unit = total_operating_expenses / num_units
     expense_sqft = total_operating_expenses / total_sqft
+    cash_on_cash = (net_income_before_taxes) / (investment_unit * contributing_units)*100
 def calc_future_unit_worth():
     global contributing_value, noi, gross_scheduled_income, rental_increase_projection, operating_expense_projection, total_operating_expenses, total_sqft, financing_amount, five_years_unit, ten_years_unit, twenty_years_unit, thirty_years_unit, five_years_total, ten_years_total, twenty_years_total, thirty_years_total, roi, roi_month, roi_yr, investors_percent_coc, first_yr_returns_investors, profits, cash_profits, percentage_5yr, net_income_before_taxes, expected_tax_bill, net_after_tax, irr
     gross_scheduled_income_2yr = (gross_scheduled_income * rental_increase_projection) + gross_scheduled_income
@@ -344,7 +345,12 @@ def main():
     deal(percent_rightside=0.45)
     offer()
     key_ratios()
+    print('coc:', cash_on_cash)
     print('IRR:', str(irr)+'%')
+    print('noi:', noi)
+    print('entry price', investment_unit)
+    print('5 year price', five_years_unit)
+    print('10 year price', ten_years_unit)
     if irr >= 15.00:
         print('Initiall looks like it might be a good deal!')
         # write values and then save

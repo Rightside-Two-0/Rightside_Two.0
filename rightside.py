@@ -471,8 +471,9 @@ class Analysis(QtWidgets.QWidget):
         other_ = float(self.other_expense_display.text())*12 if self.other_expense_display.text() != '' else 0.0
         #~~~~error~somewhere~~~~~~~~>
         #~~~>
+        improvements_ = float(self.improvements_display.text())*12 if self.improvements_display.text() != '' else 0.0
         self.irr = calc_irr()
-        self.irr.cost_rev(asking=float(self.asking.text()),units=float(self.units.text()),average_rent=float(self.monthly_rent.text()),sqft=float(self.sqft.text()))       
+        self.irr.cost_rev(asking=float(self.asking.text()),improvements=improvements_,units=float(self.units.text()),average_rent=float(self.monthly_rent.text()),sqft=float(self.sqft.text()))       
         self.irr.financing_assumptions(equity_per=float(self.down_progressBar.value()/100),seller_carry_per=float(self.seller_carry_progressBar.value()/100),interest_rate=float(self.financing_rate_lineEdit.text())*100,amort_period=30,seller_carry_rate=float(self.seller_carry_rate_lineEdit.text())*100,seller_carry_term=float(self.seller_carry_term_lineEdit.text()))
         self.irr.revenues(rent_increase=0.02,expense_increase=0.025,vac_rate=float(self.vacancy_rate_display.text()),extra_income=float(self.other_income_display.text()))
         self.irr.expenses(repairs=repairs_,management=management_,tax=taxes_,insure=insurance_,payroll=wages_,utils=utilities_,gen_admin=gen_admin_,pro_fees=professional_fees_,ads=advertising_,cap_x=cap_x_,other_x=other_)
@@ -480,7 +481,6 @@ class Analysis(QtWidgets.QWidget):
         self.irr.deal(percent_rightside=float(self.sponsor_percent_deal_slider.value()/100))
         self.irr.offer()
         self.irr.key_ratios()
-        self.irr.calc_future_unit_worth()
         self.irr_display.setText('IRR: '+'{0:,.2f}'.format(self.irr.irr)+'%')
     def update_fields(self):
         '''get value from down_slider and set down_progressBar & down_display with value'''
