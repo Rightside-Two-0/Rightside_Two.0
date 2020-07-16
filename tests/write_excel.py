@@ -2,7 +2,7 @@
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 from openpyxl import load_workbook
 from openpyxl.styles import PatternFill, colors
-import os
+import subprocess
 
 def write_excel(filename, url, asking, units, ave_rent, sqr_ft, vac_rate, other_in, \
 ex_1, ex_2, ex_3, ex_4, ex_5, ex_6, ex_7, ex_8, ex_9, ex_10, ex_11):
@@ -43,5 +43,5 @@ ex_1, ex_2, ex_3, ex_4, ex_5, ex_6, ex_7, ex_8, ex_9, ex_10, ex_11):
 #~~~~~~~~~~~~~~~~~current~~affairs~~~~~~~~~~~~~~~~~~~~~
 url = 'https://www.crexi.com/properties/317972/minnesota-241-w-lake-ave'
 write_excel('current_test.xlsx', url, 240000, 12,500,10000,.1,0,60,0,0,0,0,0,0,0,0,1850,30000)
-os.system('../deals/current_test.xlsx')
+subprocess.run(['open', '../deals/current_test.xlsx'])
 print('finished.')

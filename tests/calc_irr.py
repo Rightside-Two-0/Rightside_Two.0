@@ -3,7 +3,6 @@ from tests import mortgage
 import datetime
 import numpy as np
 from itertools import islice
-# from openpyxl import load_workbook
 
 class calc_irr():
     def __init__(self):
@@ -162,7 +161,7 @@ class calc_irr():
         self.seller_financing_percent = seller_carry_per
         self.owners_equity_value = self.total_purchase * self.owners_equity_percent
         self.seller_financing_value = self.total_purchase * seller_carry_per
-        self.financing_amount = self.total_purchase - (self.owners_equity_value + self.seller_financing_value) - self.closing_costs
+        self.financing_amount = self.total_purchase - (self.owners_equity_value + self.seller_financing_value)
         self.interest_rate_yearly = interest_rate
         self.interest_rate_monthly = self.interest_rate_yearly / 12
         self.amort_period_yearly = amort_period
@@ -175,7 +174,7 @@ class calc_irr():
     def revenues(self, rent_increase, expense_increase, vac_rate, extra_income):
         self.rental_increase_projection = rent_increase
         self.operating_expense_projection = expense_increase
-        self.vacancy_rate = vac_rate
+        self.vacancy_rate = vac_rate/100
         self.gross_scheduled_income = self.num_units * self.gross_rents
         self.vacancy_rate_value = self.gross_scheduled_income * self.vacancy_rate
         self.net_rental_income = self.gross_scheduled_income - self.vacancy_rate_value
@@ -211,8 +210,8 @@ class calc_irr():
         self.contributing_value = self.investment_unit * self.contributing_units
         self.opportunity_percent = percent_rightside
         self.opportunity_value = self.net_income_before_taxes * self.opportunity_percent
-        self.creating_units = self.investment_unit * (self.total_sqft - self.contributing_units)
-        self.creating_value = self.investment_unit * self.creating_units
+        self.creating_value = self.investment_unit * (self.total_sqft - self.contributing_units)
+        self.creating_units = self.total_sqft - self.contributing_units
         self.first_yr_returns_investors = self.net_income_before_taxes * self.investors_percent
         self.first_yr_returns_rightside = self.net_income_before_taxes * percent_rightside
         self.investors_percent_coc = self.first_yr_returns_investors / self.contributing_value
@@ -233,7 +232,7 @@ class calc_irr():
         self.gross_rent_multiplier = self.total_purchase / self.gross_income
         self.expense_unit = self.total_operating_expenses / self.num_units
         self.expense_sqft = self.total_operating_expenses / self.total_sqft
-    def calc_future_unit_worth(self):        
+    def calc_future_unit_worth(self):
         self.gross_scheduled_income_2yr = (self.gross_scheduled_income * self.rental_increase_projection) + self.gross_scheduled_income
         self.gross_scheduled_income_3yr = (self.gross_scheduled_income_2yr * self.rental_increase_projection) + self.gross_scheduled_income_2yr
         self.gross_scheduled_income_4yr = (self.gross_scheduled_income_3yr * self.rental_increase_projection) + self.gross_scheduled_income_3yr
@@ -243,10 +242,10 @@ class calc_irr():
         self.total_operating_expenses_4yr = (self.total_operating_expenses_3yr * self.operating_expense_projection) + self.total_operating_expenses_3yr
         self.total_operating_expenses_5yr = (self.total_operating_expenses_4yr * self.operating_expense_projection) + self.total_operating_expenses_4yr
         self.noi_1yr = self.noi
-        self.noi_2yr = self.gross_scheduled_income_2yr - self.total_operating_expenses_2yr
-        self.noi_3yr = self.gross_scheduled_income_3yr - self.total_operating_expenses_3yr
-        self.noi_4yr = self.gross_scheduled_income_4yr - self.total_operating_expenses_4yr
-        self.noi_5yr = self.gross_scheduled_income_5yr - self.total_operating_expenses_5yr
+        self.noi_2yr = self.gross_scheduled_income_2yr - self.total_operating_expenses_2yr - self.vacancy_rate_value
+        self.noi_3yr = self.gross_scheduled_income_3yr - self.total_operating_expenses_3yr - self.vacancy_rate_value
+        self.noi_4yr = self.gross_scheduled_income_4yr - self.total_operating_expenses_4yr - self.vacancy_rate_value
+        self.noi_5yr = self.gross_scheduled_income_5yr - self.total_operating_expenses_5yr - self.vacancy_rate_value
 
         self.interest_1yr = self.calc_interest(12, 0)
         self.interest_2yr = self.calc_interest(12, 24)
@@ -269,9 +268,9 @@ class calc_irr():
         self.ten_years_total = self.ten_years_unit * self.total_sqft
         self.twenty_years_total = self.twenty_years_unit * self.total_sqft
         self.thirty_years_toal = self.thirty_years_unit * self.total_sqft
-        self.roi = "{0:.2f}".format(self.thirty_years_toal / self.contributing_value)
+        self.roi = "{0:.2f}".format(self.thirty_years_toal*100 / self.contributing_value)
         self.roi_yr = "{0:.2f}".format(float(self.roi)*100 / 30)
-        self.roi_month = "{0:.2f}".format(float(self.roi)*100 / 360)
+        self.roi_month = "{0:.2f}".format(float(self.roi) / 360)
         
         #~~~~~~~~~5-year~~performance~~~~~~~~~~~~~~~~~
         self.year_1_cashflow_percent = self.investors_percent_coc
@@ -286,7 +285,7 @@ class calc_irr():
         self.year_4_cashflow_percent = (self.net_income_before_taxes_4yr / self.contributing_value) * self.investors_percent
         self.year_4_cashflow_value = self.net_income_before_taxes_4yr * self.investors_percent
         self.net_income_before_taxes_5yr = self.noi_5yr+(-float(self.payment_annual)+self.seller_financing_cost)
-        self.year_5_cashflow_percent = self.net_income_before_taxes_5yr * self.investors_percent
+        self.year_5_cashflow_percent = (self.net_income_before_taxes_5yr / self.contributing_value) * self.investors_percent
         self.year_5_cashflow_value = self.net_income_before_taxes_5yr * self.investors_percent
         self.refi_loan = (self.noi_5yr / 0.075) * 0.7
         self.payoff_amount = self.financing_amount-(self.total_principle_5yrs)+self.owners_equity_value
@@ -326,10 +325,3 @@ class calc_irr():
         self.initial_investment = -self.contributing_value
         self.cashflows = [self.initial_investment, self.irr_pv_1yr, self.irr_pv_2yr, self.irr_pv_3yr, self.irr_pv_4yr, self.irr_pv_5yr, self.irr_cashout]
         self.irr = round(np.irr(self.cashflows),4)*100
-        #~~~~~~~testing~~~~>
-        #~~~>
-        print('gross scheduled', self.gross_scheduled_income)
-        print('5 yr:', self.five_years_unit)
-        print('10 yr:', self.ten_years_unit)
-        print('20 yr:', self.twenty_years_unit)
-        print('30 yr:', self.thirty_years_unit)
