@@ -197,7 +197,7 @@ class calc_irr():
         self.operating_expense_projection = expense_increase
         self.vacancy_rate = vac_rate
         self.gross_scheduled_income = self.num_units * self.gross_rents
-        self.vacancy_rate_value = self.gross_scheduled_income * self.vacancy_rate/100
+        self.vacancy_rate_value = self.gross_scheduled_income * self.vacancy_rate
         self.net_rental_income = self.gross_scheduled_income - self.vacancy_rate_value
         self.other_income = extra_income
         self.gross_income = self.other_income + self.net_rental_income
@@ -253,7 +253,7 @@ class calc_irr():
         self.gross_rent_multiplier = self.total_purchase / self.gross_income
         self.expense_unit = self.total_operating_expenses / self.num_units
         self.expense_sqft = self.total_operating_expenses / self.total_sqft
-    def calc_future_unit_worth(self):
+    def calc_future_unit_worth(self):        
         self.gross_scheduled_income_2yr = (self.gross_scheduled_income * self.rental_increase_projection) + self.gross_scheduled_income
         self.gross_scheduled_income_3yr = (self.gross_scheduled_income_2yr * self.rental_increase_projection) + self.gross_scheduled_income_2yr
         self.gross_scheduled_income_4yr = (self.gross_scheduled_income_3yr * self.rental_increase_projection) + self.gross_scheduled_income_3yr
@@ -292,7 +292,7 @@ class calc_irr():
         self.roi = "{0:.2f}".format(self.thirty_years_toal / self.contributing_value)
         self.roi_yr = "{0:.2f}".format(float(self.roi)*100 / 30)
         self.roi_month = "{0:.2f}".format(float(self.roi)*100 / 360)
-
+        
         #~~~~~~~~~5-year~~performance~~~~~~~~~~~~~~~~~
         self.year_1_cashflow_percent = self.investors_percent_coc
         self.year_1_cashflow_value = self.first_yr_returns_investors
@@ -346,3 +346,10 @@ class calc_irr():
         self.initial_investment = -self.contributing_value
         self.cashflows = [self.initial_investment, self.irr_pv_1yr, self.irr_pv_2yr, self.irr_pv_3yr, self.irr_pv_4yr, self.irr_pv_5yr, self.irr_cashout]
         self.irr = round(np.irr(self.cashflows),4)*100
+        #~~~~~~~testing~~~~>
+        #~~~>
+        print('gross scheduled', self.gross_scheduled_income)
+        print('5 yr:', self.five_years_unit)
+        print('10 yr:', self.ten_years_unit)
+        print('20 yr:', self.twenty_years_unit)
+        print('30 yr:', self.thirty_years_unit)

@@ -317,11 +317,11 @@ class Analysis(QtWidgets.QWidget):
         if total != 1:
             self.get_irr()
             #~~~~cash~flows~too~~~~~~~~~~>
-            self.flow_1_display.setText('{0:,.2f}'.format(self.irr.year_1_cashflow_value))
-            self.flow_2_display.setText('{0:,.2f}'.format(self.irr.year_2_cashflow_value))
-            self.flow_3_display.setText('{0:,.2f}'.format(self.irr.year_3_cashflow_value))
-            self.flow_4_display.setText('{0:,.2f}'.format(self.irr.year_4_cashflow_value))
-            self.flow_5_display.setText('{0:,.2f}'.format(self.irr.year_5_cashflow_value))
+            self.flow_1_display.setText('{0:,.2f}'.format(self.irr.investment_unit))
+            self.flow_2_display.setText('{0:,.2f}'.format(self.irr.five_years_unit))
+            self.flow_3_display.setText('{0:,.2f}'.format(self.irr.ten_years_unit))
+            self.flow_4_display.setText('{0:,.2f}'.format(self.irr.twenty_years_unit))
+            self.flow_5_display.setText('{0:,.2f}'.format(self.irr.thirty_years_unit))
             #~~~set~chart~values~~~~~~~>
             #~~~~>
             self.chart_widget.clear()
@@ -458,24 +458,26 @@ class Analysis(QtWidgets.QWidget):
         coc = before_tax/needed*100
         self.coc_display.setText('{0:,.2f}'.format(coc))
         #~~~IRR~~~~~~>
-        repairs_ = float(self.repairs_display.text()) if self.repairs_display.text() != '' else 0.0
-        management_ = float(self.management_display.text()) if self.management_display.text() != '' else 0.0
-        taxes_ = float(self.taxes_display.text()) if self.taxes_display.text() != '' else 0.0
-        insurance_ = float(self.insurance_display.text()) if self.insurance_display.text() != '' else 0.0
-        wages_ = float(self.wages_display.text()) if self.wages_display.text() != '' else 0.0
-        utilities_  = float(self.utilities_display.text()) if self.utilities_display.text() != '' else 0.0
-        gen_admin_ = float(self.gen_admin_display.text()) if self.gen_admin_display.text() != '' else 0.0
-        professional_fees_ = float(self.professional_fees_display.text()) if self.professional_fees_display.text() != '' else 0.0
-        advertising_ = float(self.advertising_display.text()) if self.advertising_display.text() != '' else 0.0
-        cap_x_ = float(self.cap_x_display.text()) if self.cap_x_display.text() != '' else 0.0
-        other_ = float(self.other_expense_display.text()) if self.other_expense_display.text() != '' else 0.0
+        repairs_ = float(self.repairs_display.text())*12 if self.repairs_display.text() != '' else 0.0
+        management_ = float(self.management_display.text())*12 if self.management_display.text() != '' else 0.0
+        taxes_ = float(self.taxes_display.text())*12 if self.taxes_display.text() != '' else 0.0
+        insurance_ = float(self.insurance_display.text())*12 if self.insurance_display.text() != '' else 0.0
+        wages_ = float(self.wages_display.text())*12 if self.wages_display.text() != '' else 0.0
+        utilities_  = float(self.utilities_display.text())*12 if self.utilities_display.text() != '' else 0.0
+        gen_admin_ = float(self.gen_admin_display.text())*12 if self.gen_admin_display.text() != '' else 0.0
+        professional_fees_ = float(self.professional_fees_display.text())*12 if self.professional_fees_display.text() != '' else 0.0
+        advertising_ = float(self.advertising_display.text())*12 if self.advertising_display.text() != '' else 0.0
+        cap_x_ = float(self.cap_x_display.text())*12 if self.cap_x_display.text() != '' else 0.0
+        other_ = float(self.other_expense_display.text())*12 if self.other_expense_display.text() != '' else 0.0
+        #~~~~error~somewhere~~~~~~~~>
+        #~~~>
         self.irr = calc_irr()
         self.irr.cost_rev(asking=float(self.asking.text()),units=float(self.units.text()),average_rent=float(self.monthly_rent.text()),sqft=float(self.sqft.text()))       
-        self.irr.financing_assumptions(equity_per=float(self.down_progressBar.value()/100),seller_carry_per=float(self.seller_carry_progressBar.value()/100),interest_rate=float(self.financing_rate_lineEdit.text())*100,amort_period=30,seller_carry_rate=float(self.seller_carry_rate_lineEdit.text()),seller_carry_term=float(self.seller_carry_term_lineEdit.text()))
+        self.irr.financing_assumptions(equity_per=float(self.down_progressBar.value()/100),seller_carry_per=float(self.seller_carry_progressBar.value()/100),interest_rate=float(self.financing_rate_lineEdit.text())*100,amort_period=30,seller_carry_rate=float(self.seller_carry_rate_lineEdit.text())*100,seller_carry_term=float(self.seller_carry_term_lineEdit.text()))
         self.irr.revenues(rent_increase=0.02,expense_increase=0.025,vac_rate=float(self.vacancy_rate_display.text()),extra_income=float(self.other_income_display.text()))
         self.irr.expenses(repairs=repairs_,management=management_,tax=taxes_,insure=insurance_,payroll=wages_,utils=utilities_,gen_admin=gen_admin_,pro_fees=professional_fees_,ads=advertising_,cap_x=cap_x_,other_x=other_)
         interest_loan = self.irr.calc_interest(start=12, end=0)
-        self.irr.deal(percent_rightside=float(self.sponsor_percent_deal_slider.value()))
+        self.irr.deal(percent_rightside=float(self.sponsor_percent_deal_slider.value()/100))
         self.irr.offer()
         self.irr.key_ratios()
         self.irr.calc_future_unit_worth()
