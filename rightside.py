@@ -2,7 +2,7 @@ import sys, os
 import json, csv
 from PyQt5 import QtCore, QtGui, QtWidgets, uic
 from PyQt5.QtWidgets import QShortcut, QInputDialog, QLineEdit, QVBoxLayout, QTableWidgetItem, QFileDialog, QHeaderView
-from PyQt5.QtCore import Qt, QUrl
+from PyQt5.QtCore import Qt, QUrl, QThread, pyqtSignal
 from PyQt5.QtGui import QKeySequence
 from tests.calc_irr import mortgage
 from tests.calc_irr import calc_irr
@@ -11,7 +11,15 @@ import traceback
 import requests
 
 # import PyPDF4
-
+class ComputeThread(QThread):
+    signal = pyqtSignal('PyQt_PyObject')
+    def __init__(self):
+        QThread.__init__(self)
+    # run method gets called when we start the thread
+    def run(self):
+        print('testing thread # 21...')
+        # git clone done, now inform the main thread with the output
+        self.signal.emit('')
 class Ledger(QtWidgets.QWidget):
     def __init__(self):
         super(Ledger, self).__init__()
@@ -244,6 +252,12 @@ class Analysis(QtWidgets.QWidget):
         self.sponsor_percent_deal_slider.valueChanged.connect(self.investors_percent)
         self.enter = QShortcut(QKeySequence(Qt.Key_Return), self)
         self.enter.activated.connect(self.calculate_it)
+
+        #~~~~~~>
+        self.getURLButton.clicked.connect(self.view_deal)
+        self.computit_thread = ComputeThread()  # This is the thread object
+        # Connect the signal from the thread to the finished method
+        self.computit_thread.signal.connect(self.finished)
     def calculate_it(self):
         units = float(self.units.text()) if self.units.text() != '' else 0
         ave_rent = float(self.monthly_rent.text()) if self.monthly_rent.text() != '' else 0
@@ -420,8 +434,11 @@ class Analysis(QtWidgets.QWidget):
     def join_opp(self):
         print('hi from 231')
     def view_deal(self):
+        '''the idea here is to load an image of the logo (lions head)
+            maybe flashing until the webview loads with page data'''
         try:
-            self.webView.load(QUrl(self.urlBox.text()))
+            self.computit_thread.start()            
+            self.webView.load(QUrl(self.urlBox.text()))            
             #~~~~~~~~~~start~~analysis~~~~~~~~~~~~
             # self.find_data()
         except Exception as e:
@@ -470,16 +487,48 @@ class Analysis(QtWidgets.QWidget):
         #~~~>
         try:
             self.irr = calc_irr()
-            self.irr.cost_rev(asking=float(self.asking.text()),improvements=improvements_,units=float(self.units.text()),average_rent=float(self.monthly_rent.text()),sqft=float(self.sqft.text()))       
-            self.irr.financing_assumptions(equity_per=float(self.down_progressBar.value()/100),seller_carry_per=float(self.seller_carry_progressBar.value()/100),interest_rate=float(self.financing_rate_lineEdit.text()),amort_period=30,seller_carry_rate=float(self.seller_carry_rate_lineEdit.text())*100,seller_carry_term=float(self.seller_carry_term_lineEdit.text()))
-            self.irr.revenues(rent_increase=0.02,expense_increase=0.025,vac_rate=float(self.vacancy_rate_display.text()),extra_income=float(self.other_income_display.text()))
-            self.irr.expenses(repairs=repairs_,management=management_,tax=taxes_,insure=insurance_,payroll=wages_,utils=utilities_,gen_admin=gen_admin_,pro_fees=professional_fees_,ads=advertising_,cap_x=cap_x_,other_x=other_)
-            print(float(self.irr.net_income_before_taxes))
+            print('Testing in progress...~~~~~~~~~~~~~~~~>')
+            print('asking',self.asking.text())
+            print('improvements',improvements_)
+            print('units',self.units.text())
+            print('ave_monthly rent',self.monthly_rent.text())
+            print('Sqft',self.sqft.text())
+            print('down %',self.down_progressBar.value()/100)
+            print('carry %',self.seller_carry_progressBar.value()/100)
+            print('financing rate',float(self.financing_rate_lineEdit.text())*100)
+            print('seller carry rate',float(self.seller_carry_rate_lineEdit.text())*100)
+            print('seller carry term',self.seller_carry_term_lineEdit.text())
+            print('vacancy rate',float(self.vacancy_rate_display.text())*100)
+            print('other income',self.other_income_display.text())
+            print('',repairs_)
+            print('',management_)
+            print('',taxes_)
+            print('',insurance_)
+            print('',wages_)
+            print('',gen_admin_)
+            print('',professional_fees_)
+            print('',advertising_)
+            print('',cap_x_)
+            print('',other_)
+            #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~>
+            #~~this~one~works~~~>
+            self.irr.cost_rev(asking=149900,improvements=0,units=3,average_rent=750,sqft=10000)
+            self.irr.financing_assumptions(equity_per=0.03,seller_carry_per=0,interest_rate=5.0,amort_period=30,seller_carry_rate=8.0,seller_carry_term=60)
+            self.irr.revenues(rent_increase=0.02,expense_increase=0.025,vac_rate=10.0,extra_income=0)
+            self.irr.expenses(repairs=60,management=0,tax=0,insure=0,payroll=0,utils=0,gen_admin=0,pro_fees=0,ads=0,cap_x=1850,other_x=8000)
+            interest = self.irr.calc_interest(start=12, end=0)
+            self.irr.deal(percent_rightside=0.45)
+            self.irr.offer()
+            print(self.irr.irr)
+            #~~~but~this~one~does~not~~~~~~~>
+            # self.irr.cost_rev(asking=float(self.asking.text()),improvements=improvements_,units=float(self.units.text()),average_rent=float(self.monthly_rent.text()),sqft=float(self.sqft.text()))       
+            # self.irr.financing_assumptions(equity_per=float(self.down_progressBar.value()/100),seller_carry_per=float(self.seller_carry_progressBar.value()/100),interest_rate=float(self.financing_rate_lineEdit.text())*100,amort_period=30,seller_carry_rate=float(self.seller_carry_rate_lineEdit.text())*100,seller_carry_term=float(self.seller_carry_term_lineEdit.text()))
+            # self.irr.revenues(rent_increase=0.02,expense_increase=0.025,vac_rate=float(self.vacancy_rate_display.text())*100,extra_income=float(self.other_income_display.text()))
+            # self.irr.expenses(repairs=repairs_,management=management_,tax=taxes_,insure=insurance_,payroll=wages_,utils=utilities_,gen_admin=gen_admin_,pro_fees=professional_fees_,ads=advertising_,cap_x=cap_x_,other_x=other_)
             # interest_loan = self.irr.calc_interest(start=12, end=0)
             # self.irr.deal(percent_rightside=float(self.sponsor_percent_deal_slider.value()/100))
             # self.irr.offer()
             # self.irr.key_ratios()
-            # print('testing...#:485', self.irr.cash_on_cash)
             # self.irr_display.setText('IRR: '+'{0:,.2f}'.format(self.irr.irr)+'%')
         
         except:
@@ -555,6 +604,8 @@ class Analysis(QtWidgets.QWidget):
         #~~~>
         self.chart_widget.clear()
         self.chart_widget.plot([float(self.investment_unit_display.text().replace(',','')),self.irr.year_5_cashflow_value/float(self.sqft.text()),self.irr.year_4_cashflow_value/float(self.sqft.text()),self.irr.year_3_cashflow_value/float(self.sqft.text()),self.irr.year_2_cashflow_value/float(self.sqft.text()),self.irr.year_1_cashflow_value/float(self.sqft.text())])
+    def finished(self):
+        pass
 class Asset(QtWidgets.QWidget):
     def __init__(self):
         super(Asset, self).__init__()
@@ -691,7 +742,8 @@ class MainWindow(QtWidgets.QMainWindow):
     def __init__(self):
         try:
             super(MainWindow, self).__init__()
-            uic.loadUi('guis/financial.ui', self)            
+            uic.loadUi('guis/financial.ui', self)   
+
             #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             self.sum_passive = 0.0
             self.sum_salaries = 0.0
@@ -770,6 +822,7 @@ class MainWindow(QtWidgets.QMainWindow):
             self.load_debts()
             self.load_small_opps()
             self.load_big_opps()
+            
         except Exception:
             traceback.print_exc()
     def update_display(self):
