@@ -904,6 +904,7 @@ class MainWindow(QtWidgets.QMainWindow):
             }
             data = json.dumps(data_dict)
             response = requests.post(url, data=data, headers=headers)
+            print(response.json())
             self.reload_liabilities()
             self.update_display()
     def remove_debt(self):
