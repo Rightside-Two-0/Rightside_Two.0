@@ -435,7 +435,7 @@ class Analysis(QtWidgets.QWidget):
         print('hi from 229')
     def join_opp(self):
         print('hi from 231')
-    def view_deal(self):
+    def view_deal(self):        #
         '''the idea here is to load an image of the logo (lions head)
             maybe flashing until the webview loads with page data'''
         try:
@@ -684,8 +684,9 @@ class Asset(QtWidgets.QWidget):
                 "source" : 'RE Debt Service',
                 "amount" : f'{updated}'
             }
-            data4 = json.dumps(dict4)
-            response4 = requests.put(url4+str(id), data=data4, headers=headers)
+            if id != 0:
+                data4 = json.dumps(dict4)
+                response4 = requests.put(url4+str(id), data=data4, headers=headers)
             #~~~~~~~~~~~~why~not~just~get(url)~~~~~>
             #~~~~~~~~~>I think this is not best...
             #should call post api then get all
