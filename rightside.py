@@ -791,13 +791,14 @@ class MainWindow(QtWidgets.QMainWindow):
             self.goal_percent = self.findChild(QtWidgets.QProgressBar, 'goal_percent')
             self.worth = self.findChild(QtWidgets.QLabel, 'networth_label')
             #create variable to hold income & expenses so as not to make 2 calls to api
-            self.total_income = self.get_total_income()[0]
-            self.passive = self.total_income[1]
-            self.sum_salaries = self.total_income[0] - self.passive
+            income = self.get_total_income()
+            self.total_income.setText('{0:,.2f}'.format(income[0]))
+            self.total_passive.setText('{0:,.2f}'.format(income[1]))
+            self.sum_salaries = income[0] - income[1]
             self.sum_expenses = self.get_total_expenses()
-            self.total_passive.setText('{0:,.2f}'.format(self.passive))
+            self.total_passive.setText('{0:,.2f}'.format(income[1]))
             self.total_expenses.setText('{0:,.2f}'.format(self.sum_expenses))
-            self.total_cashflow.setText('{0:,.2f}'.format(self.total_income[0]-self.sum_expenses))
+            self.total_cashflow.setText('{0:,.2f}'.format(income[1]-self.sum_expenses))
             self.percent = 0.0
             if self.sum_expenses != 0:
                 self.percent = (self.get_total_income()[1])/self.get_total_expenses()*100
@@ -1076,7 +1077,7 @@ class MainWindow(QtWidgets.QMainWindow):
             response = requests.get(url)
             for item in list(response.json()):
                 if int(item ['units']) <= 4:
-                    self.addItem_Opps(item['heading'], item['description'])
+                    self.addItem_Opps(item['title'], item['description'])
         except Exception:
             traceback.print_exc()
     def load_debts(self):
@@ -1108,7 +1109,14 @@ class MainWindow(QtWidgets.QMainWindow):
         except Exception:
             traceback.print_exc()
     def load(self):
-       self.total_income.setText('{0:,.2f}'.format(float(self.get_total_income()[0])))
+        try:
+            url = 'http://two-0.org:8080/api/incomes/'
+            response = requests.get(url)
+            for item in list(response.json()):
+                self.addItem_income(item['source'], '{0:,.0f}'.format(float(item['amount'])))
+        except Exception:
+            traceback.print_exc()
+        self.total_income.setText('{0:,.2f}'.format(float(self.get_total_income()[0])))
     def see_details(self):
         sender = self.sender()
         opps = []
@@ -1123,7 +1131,7 @@ class MainWindow(QtWidgets.QMainWindow):
         response = requests.get(url)
         res_details = []
         for item in list(response.json()):
-            if item['heading'] == content[0] and item['description'] == content[1]:
+            if item['title'] == content[0] and item['description'] == content[1]:
                 res_details = requests.get(url+str(item['id']))
         self.opp_title.setText(res_details.json()['heading'])
         self.opp_body.setText(res_details.json()['description'])
