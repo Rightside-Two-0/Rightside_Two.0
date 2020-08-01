@@ -7,11 +7,14 @@
     <x>0</x>
     <y>0</y>
     <width>1037</width>
-    <height>833</height>
+    <height>0</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Form</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">background-color: #5B5956;</string>
   </property>
   <widget class="QLineEdit" name="urlBox">
    <property name="geometry">
@@ -57,6 +60,9 @@
      <height>761</height>
     </rect>
    </property>
+   <property name="styleSheet">
+    <string notr="true"/>
+   </property>
    <property name="currentIndex">
     <number>1</number>
    </property>
@@ -64,21 +70,6 @@
     <attribute name="title">
      <string>Opportunity</string>
     </attribute>
-    <widget class="QWebView" name="webView">
-     <property name="geometry">
-      <rect>
-       <x>10</x>
-       <y>10</y>
-       <width>1001</width>
-       <height>711</height>
-      </rect>
-     </property>
-     <property name="url">
-      <url>
-       <string>about:blank</string>
-      </url>
-     </property>
-    </widget>
    </widget>
    <widget class="QWidget" name="analysis_tab">
     <attribute name="title">
@@ -2694,11 +2685,6 @@
   </widget>
  </widget>
  <customwidgets>
-  <customwidget>
-   <class>QWebView</class>
-   <extends>QWidget</extends>
-   <header>QtWebKitWidgets/QWebView</header>
-  </customwidget>
   <customwidget>
    <class>PlotWidget</class>
    <extends>QWidget</extends>

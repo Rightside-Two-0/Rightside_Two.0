@@ -124,7 +124,7 @@ class Ledger(QtWidgets.QWidget):
                     }
                     data_post = json.dumps(dict_to_post)
                     response_post = requests.put(url_to+str(id), data=data_post, headers=headers)
-            window.reload_expenses()
+            window.re_expenses()
             window.reload_assets()
             window.update_display()
             self.hide()
@@ -144,8 +144,7 @@ class Ledger(QtWidgets.QWidget):
     def read_in_table(self):
         try:
             date_, to_, from_, amount_, notes_ = '', '', '', '', ''
-            url = 'http://two-0.org:8080/api/ledger/'
-            response = requests.get(url)
+            response = requests.get(self.base_url)
             for item in list(response.json()):
                 date_ = item['date']
                 from_ = item['from_account']
@@ -435,7 +434,7 @@ class Analysis(QtWidgets.QWidget):
         print('hi from 229')
     def join_opp(self):
         print('hi from 231')
-    def view_deal(self):        #
+    def view_deal(self):
         '''the idea here is to load an image of the logo (lions head)
             maybe flashing until the webview loads with page data'''
         try:
@@ -444,7 +443,7 @@ class Analysis(QtWidgets.QWidget):
             # QWebEngineViewによるWebページ表示
             browser = QWebEngineView()
             browser.load(QUrl(self.urlBox.text()))
-            self.addWidget(browser)
+            browser.show()
             #~~~~~~~~~~start~~analysis~~~~~~~~~~~~
             # self.find_data()
         except Exception as e:
@@ -639,8 +638,8 @@ class Asset(QtWidgets.QWidget):
             headers = {"content-type": "application/json"}
             dict = {
                 "source" : f'{type}',
-                "down" : f'{down}',
                 "cost" : f'{cost}',
+                "down" : f'{down}',
                 "notes" : f'{note}'
             }
             data = json.dumps(dict)
@@ -682,7 +681,8 @@ class Asset(QtWidgets.QWidget):
             updated = float(pymt) + float(prev_amount)
             dict4 = {
                 "source" : 'RE Debt Service',
-                "amount" : f'{updated}'
+                "amount" : f'{updated}',
+                "notes": f'{note}'
             }
             if id != 0:
                 data4 = json.dumps(dict4)
@@ -750,7 +750,6 @@ class MainWindow(QtWidgets.QMainWindow):
         try:
             super(MainWindow, self).__init__()
             uic.loadUi('guis/financial.ui', self)
-
             #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             self.sum_passive = 0.0
             self.sum_salaries = 0.0
@@ -791,10 +790,17 @@ class MainWindow(QtWidgets.QMainWindow):
             self.total_cashflow = self.findChild(QtWidgets.QLabel, 'total_cashflow')
             self.goal_percent = self.findChild(QtWidgets.QProgressBar, 'goal_percent')
             self.worth = self.findChild(QtWidgets.QLabel, 'networth_label')
-            self.total_passive.setText('{0:,.2f}'.format(self.get_total_income()[1]))
-            self.total_expenses.setText('{0:,.2f}'.format(self.get_total_expenses()))
-            self.total_cashflow.setText('{0:,.2f}'.format(self.get_total_income()[0]-self.get_total_expenses()))
-            self.percent = (self.get_total_income()[1])/self.get_total_expenses()*100
+            #create variable to hold income & expenses so as not to make 2 calls to api
+            self.total_income = self.get_total_income()[0]
+            self.passive = self.total_income[1]
+            self.sum_salaries = self.total_income[0] - self.passive
+            self.sum_expenses = self.get_total_expenses()
+            self.total_passive.setText('{0:,.2f}'.format(self.passive))
+            self.total_expenses.setText('{0:,.2f}'.format(self.sum_expenses))
+            self.total_cashflow.setText('{0:,.2f}'.format(self.total_income[0]-self.sum_expenses))
+            self.percent = 0.0
+            if self.sum_expenses != 0:
+                self.percent = (self.get_total_income()[1])/self.get_total_expenses()*100
             if self.percent >= 100:
                 self.goal_percent.setValue(int(100))
                 self.statusBar().showMessage('YOU ARE FREE! FINANCIALLY FREE! GREAT JOB!!')
@@ -829,7 +835,6 @@ class MainWindow(QtWidgets.QMainWindow):
             self.load_debts()
             self.load_small_opps()
             self.load_big_opps()
-
         except Exception:
             traceback.print_exc()
     def update_display(self):
@@ -1100,22 +1105,10 @@ class MainWindow(QtWidgets.QMainWindow):
             response = requests.get(url)
             for item in list(response.json()):
                 self.addItem_Expenses(item['source'], '{0:,.0f}'.format(float(item['amount'])))
-                self.sum_expenses += float(item['amount'])
         except Exception:
             traceback.print_exc()
     def load(self):
-       try:
-           url = 'http://two-0.org:8080/api/incomes/'
-           response = requests.get(url)
-           for item in list(response.json()):
-               self.addItem_income(item['source']+' - '+item['notes'],  '{0:,.0f}'.format(float(item['amount'])))
-               if item['source'] == 'Salary/Wages':
-                   self.sum_salaries += float(item['amount'])
-               if item['source'] != 'Salary/Wages':
-                   self.sum_passive += float(item['amount'])
-           self.total_income.setText('{0:,.2f}'.format(float(self.get_total_income()[0])))
-       except Exception:
-           traceback.print_exc()
+       self.total_income.setText('{0:,.2f}'.format(float(self.get_total_income()[0])))
     def see_details(self):
         sender = self.sender()
         opps = []
@@ -1384,7 +1377,7 @@ class MainWindow(QtWidgets.QMainWindow):
         id = 0
         for item_ in list(response_id.json()):
             if item_['source'] == exp_account:
-                id = item_['id']
+                id = item_['url'][35:-1]
                 return id
         return id
     def sum_exp_accounts(self):
