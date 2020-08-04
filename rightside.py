@@ -11,8 +11,7 @@ from tests.calc_irr import calc_irr
 from tests import mortgage
 import traceback
 import requests
-
-# import PyPDF4
+import PyPDF4
 class ComputeThread(QThread):
     signal = pyqtSignal('PyQt_PyObject')
     def __init__(self):
