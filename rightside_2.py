@@ -134,10 +134,10 @@ class SellAsset(QtWidgets.QWidget):
     def sell(self):
         asset_note = self.asset_combobox.currentText()
         price = self.price_sold.text()
-        # self.remove('income', asset_note)
-        # # self.remove('expense', '')
-        # self.remove('asset', asset_note)
-        # self.remove('liability', asset_note)
+        self.remove('incomes', asset_note)
+        # self.remove('expenses', '')
+        self.remove('assets', asset_note)
+        self.remove('liabilities', asset_note)
         #~~~~~>
         # window.reload_income()
         # window.reload_assets()
