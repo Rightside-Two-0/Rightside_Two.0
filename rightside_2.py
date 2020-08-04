@@ -130,7 +130,7 @@ class SellAsset(QtWidgets.QWidget):
         content = []
         for item in list(response.json()):
             content.append(item['notes'])
-        # self.asset.addItems(content)
+        self.asset_combobox.addItems(content)
     def sell(self):
         asset_note = self.asset.currentText()
         price = self.price.text()
