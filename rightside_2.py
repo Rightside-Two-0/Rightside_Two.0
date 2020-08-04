@@ -126,10 +126,10 @@ class SellAsset(QtWidgets.QWidget):
         uic.loadUi('guis/sell_asset.ui', self)
         self.sell_button.clicked.connect(self.sell)
         self.cancel_button.clicked.connect(self.cancel)
-        # response = requests.get('http://two-0.org:8080/api/assets/')
-        # content = []
-        # for item in list(response.json()):
-        #     content.append(item['notes'])
+        response = requests.get('http://two-0.org:8080/api/assets/')
+        content = []
+        for item in list(response.json()):
+            content.append(item['notes'])
         # self.asset.addItems(content)
     def sell(self):
         asset_note = self.asset.currentText()
