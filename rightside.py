@@ -750,45 +750,45 @@ class MainWindow(QtWidgets.QMainWindow):
             super(MainWindow, self).__init__()
             uic.loadUi('guis/financial.ui', self)
             #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-            self.sum_passive = 0.0
-            self.sum_salaries = 0.0
-            self.sum_expenses = 1.0
-            self.sum_assets = 0.0
-            self.sum_debts = 0.0
+            # self.sum_passive = 0.0
+            # self.sum_salaries = 0.0
+            # self.sum_expenses = 1.0
+            # self.sum_assets = 0.0
+            # self.sum_debts = 0.0
             self.savings = 0.0
             #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             #setting popup action to add new account to ledger to or from accoutns
-            self.new_account = self.findChild(QtWidgets.QAction, 'account_mentu_item')
-            self.income = self.findChild(QtWidgets.QTreeView, 'income_view')
-            self.expenses = self.findChild(QtWidgets.QTreeView, 'expenses_view')
-            self.assets = self.findChild(QtWidgets.QTreeView, 'assets_view')
-            self.liabilities = self.findChild(QtWidgets.QTreeView, 'liabilities_view')
-            self.opp_small = self.findChild(QtWidgets.QTreeView, 'opportunity_small')
-            self.opp_big = self.findChild(QtWidgets.QTreeView, 'opportunity_big')
+            # self.new_account = self.findChild(QtWidgets.QAction, 'account_mentu_item')
+            # self.income = self.findChild(QtWidgets.QTreeView, 'income_view')
+            # self.expenses = self.findChild(QtWidgets.QTreeView, 'expenses_view')
+            # self.assets = self.findChild(QtWidgets.QTreeView, 'assets_view')
+            # self.liabilities = self.findChild(QtWidgets.QTreeView, 'liabilities_view')
+            # self.opp_small = self.findChild(QtWidgets.QTreeView, 'opportunity_small')
+            # self.opp_big = self.findChild(QtWidgets.QTreeView, 'opportunity_big')
             #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             #connect button actions
-            self.asset = self.findChild(QtWidgets.QPushButton, 'add_asset')
+            # self.asset = self.findChild(QtWidgets.QPushButton, 'add_asset')
             self.asset.clicked.connect(self.addAsset)
-            self.sell_a_asset = self.findChild(QtWidgets.QPushButton, 'liquidate_asset')
+            # self.sell_a_asset = self.findChild(QtWidgets.QPushButton, 'liquidate_asset')
             self.sell_a_asset.clicked.connect(self.sellit)
-            self.debt = self.findChild(QtWidgets.QPushButton, 'add_liability')
+            # self.debt = self.findChild(QtWidgets.QPushButton, 'add_liability')
             self.debt.clicked.connect(self.add_debt)
-            self.remove_debts = self.findChild(QtWidgets.QPushButton, 'remove_liability')
+            # self.remove_debts = self.findChild(QtWidgets.QPushButton, 'remove_liability')
             self.remove_debts.clicked.connect(self.remove_debt)
-            self.paycheck = self.findChild(QtWidgets.QPushButton, 'paycheck_button')
+            # self.paycheck = self.findChild(QtWidgets.QPushButton, 'paycheck_button')
             self.paycheck.clicked.connect(self.add_pay)
-            self.analyze_it_ = self.findChild(QtWidgets.QPushButton, 'analyze_button')
+            # self.analyze_it_ = self.findChild(QtWidgets.QPushButton, 'analyze_button')
             self.analyze_it_.clicked.connect(self.analyze)
-            self.add_transaction = self.findChild(QtWidgets.QPushButton, 'add_transaction')
+            # self.add_transaction = self.findChild(QtWidgets.QPushButton, 'add_transaction')
             self.add_transaction.clicked.connect(self.addTransaction)
             #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             #add up passive incomes
-            self.total_passive = self.findChild(QtWidgets.QLabel, 'total_passive')
-            self.total_income = self.findChild(QtWidgets.QLabel, 'total_income')
-            self.total_expenses = self.findChild(QtWidgets.QLabel, 'total_expenses')
-            self.total_cashflow = self.findChild(QtWidgets.QLabel, 'total_cashflow')
-            self.goal_percent = self.findChild(QtWidgets.QProgressBar, 'goal_percent')
-            self.worth = self.findChild(QtWidgets.QLabel, 'networth_label')
+            # self.total_passive = self.findChild(QtWidgets.QLabel, 'total_passive')
+            # self.total_income = self.findChild(QtWidgets.QLabel, 'total_income')
+            # self.total_expenses = self.findChild(QtWidgets.QLabel, 'total_expenses')
+            # self.total_cashflow = self.findChild(QtWidgets.QLabel, 'total_cashflow')
+            # self.goal_percent = self.findChild(QtWidgets.QProgressBar, 'goal_percent')
+            # self.worth = self.findChild(QtWidgets.QLabel, 'networth_label')
             #create variable to hold income & expenses so as not to make 2 calls to api
             income = self.get_total_income()
             self.total_income.setText('{0:,.2f}'.format(income[0]))

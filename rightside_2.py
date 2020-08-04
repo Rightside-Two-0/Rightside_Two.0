@@ -120,12 +120,55 @@ class Asset(QtWidgets.QWidget):
         self.hide()
     def cancel(self):
         self.hide()
+class SellAsset(QtWidgets.QWidget):
+    def __init__(self):
+        super(SellAsset, self).__init__()
+        uic.loadUi('guis/sell_asset.ui', self)
+        self.sell_button.clicked.connect(self.sell)
+        self.cancel_button.clicked.connect(self.cancel)
+        # response = requests.get('http://two-0.org:8080/api/assets/')
+        # content = []
+        # for item in list(response.json()):
+        #     content.append(item['notes'])
+        # self.asset.addItems(content)
+    def sell(self):
+        asset_note = self.asset.currentText()
+        price = self.price.text()
+        self.remove('income', asset_note)
+        # self.remove('expense', '')
+        self.remove('asset', asset_note)
+        self.remove('liability', asset_note)
+        #~~~~~>
+        window.reload_income()
+        window.reload_assets()
+        # window.reload_expenses()
+        window.reload_liabilities()
+        window.update_display()
+        #~~~~~~~~~~clean~up~fields~~~~~>
+        self.price_sold.setText('')
+        self.hide()
+    def cancel(self):
+        self.hide()
+    def remove(self, account, notes):
+        url = 'http://two-0.org:8080/api/'+account+'/'
+        response = requests.get(url)
+        id = ''
+        for item in list(response.json()):
+            if item['notes'] == notes:
+                id = str(item['id'])
+        response_del = requests.delete(url+id)
 class MainWindow(QtWidgets.QMainWindow):
     def __init__(self):
         super(MainWindow, self).__init__()
         uic.loadUi('guis/financial.ui', self)
+        self.savings = 0.0
         self.add_asset.clicked.connect(self.addAsset)
+        self.liquidate_asset.clicked.connect(self.sellit)
     def addAsset(self):
         self.asset = Asset()
         self.asset.move(675,150)
         self.asset.show()
+    def sellit(self):
+        self.selling = SellAsset()
+        self.selling.move(675,150)
+        self.selling.show()
