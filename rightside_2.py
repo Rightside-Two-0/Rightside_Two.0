@@ -132,21 +132,21 @@ class SellAsset(QtWidgets.QWidget):
             content.append(item['notes'])
         self.asset_combobox.addItems(content)
     def sell(self):
-        asset_note = self.asset.currentText()
-        price = self.price.text()
-        self.remove('income', asset_note)
-        # self.remove('expense', '')
-        self.remove('asset', asset_note)
-        self.remove('liability', asset_note)
+        asset_note = self.asset_combobox.currentText()
+        price = self.price_sold.text()
+        # self.remove('income', asset_note)
+        # # self.remove('expense', '')
+        # self.remove('asset', asset_note)
+        # self.remove('liability', asset_note)
         #~~~~~>
-        window.reload_income()
-        window.reload_assets()
-        # window.reload_expenses()
-        window.reload_liabilities()
-        window.update_display()
+        # window.reload_income()
+        # window.reload_assets()
+        # # window.reload_expenses()
+        # window.reload_liabilities()
+        # window.update_display()
         #~~~~~~~~~~clean~up~fields~~~~~>
         self.price_sold.setText('')
-        self.hide()
+        self.close()
     def cancel(self):
         self.hide()
     def remove(self, account, notes):
