@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-import rightside_2, sys
+import rightside_2, sys, json, requests
 # def test___init__():
 #     '''testing main window'''
 #     app = rightside_2.QtWidgets.QApplication(sys.argv)
@@ -26,14 +26,25 @@ import rightside_2, sys
 #     rightside.show()
 #     app.exec_()
 #     assert widget != None
-w
-def test_remove():
-    '''testing remove function'''
+# def test_remove():
+#     '''testing remove function'''
+#     app = rightside_2.QtWidgets.QApplication(sys.argv)
+#     rightside = rightside_2.MainWindow()
+#     rightside.move(300,750)
+#     widget = rightside_2.SellAsset()
+#     rightside.show()
+#     app.exec_()
+#     widget.sell()
+#     assert widget.price_sold.text() == ''
+def test_add_liability():
+    '''testing add liability function'''
     app = rightside_2.QtWidgets.QApplication(sys.argv)
     rightside = rightside_2.MainWindow()
     rightside.move(300,750)
-    widget = rightside_2.SellAsset()
     rightside.show()
     app.exec_()
-    widget.sell()
-    assert widget.price_sold.text() == ''
+    url = 'http://two-0.org:8080/api/liabilities/'
+    response = requests.get(url)
+    for item in response.json():
+        if item['notes'] == 'Debts - Initially':
+            assert item['notes'] == 'Debts - Initially'

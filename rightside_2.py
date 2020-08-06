@@ -164,6 +164,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.savings = 0.0
         self.add_asset.clicked.connect(self.addAsset)
         self.liquidate_asset.clicked.connect(self.sellit)
+        self.add_liability.clicked.connect(self.add_debt)
     def addAsset(self):
         self.asset = Asset()
         self.asset.move(675,150)
@@ -172,3 +173,21 @@ class MainWindow(QtWidgets.QMainWindow):
         self.selling = SellAsset()
         self.selling.move(675,150)
         self.selling.show()
+    def add_debt(self):
+        debt, ok = QInputDialog.getText(self, 'Debts - (use a comma(,) to seperate)', 'Enter the Account, Remaing Balance Amount: ')
+        if ok:
+            parts = debt.split(',')
+            account = parts[0]
+            amount = parts[1]
+            url = 'http://two-0.org:8080/api/liabilities/'
+            headers = {"content-type": "application/json"}
+            data_dict = {
+                "source": account,
+                "amount": amount,
+                "notes": 'Debts - Initially'
+            }
+            data = json.dumps(data_dict)
+            response = requests.post(url, data=data, headers=headers)
+            print(response.json())
+            # self.reload_liabilities()
+            # self.update_display()
