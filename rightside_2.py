@@ -165,6 +165,19 @@ class MainWindow(QtWidgets.QMainWindow):
         self.add_asset.clicked.connect(self.addAsset)
         self.liquidate_asset.clicked.connect(self.sellit)
         self.add_liability.clicked.connect(self.add_debt)
+        self.remove_liability.clicked.connect(self.remove_debt)
+    def update_display(self):
+        self.total_expenses.setText('{0:,.2f}'.format(self.get_total_expenses()))
+        self.total_cashflow.setText('{0:,.2f}'.format(self.get_total_income()[0]-self.get_total_expenses()))
+        self.total_passive.setText('{0:,.2f}'.format(self.get_total_income()[1]))
+        self.total_income.setText('{0:,.2f}'.format(self.get_total_income()[0]))
+        self.percent = self.get_total_income()[1]/self.get_total_expenses()*100
+        if self.percent >= 100:
+            self.goal_percent.setValue(int(100))
+            self.statusBar().showMessage('YOU ARE FREE! FINANCIALLY FREE! GREAT JOB!!')
+        else:
+            self.goal_percent.setValue(int(self.percent))
+        self.worth.setText(' $'+'{0:,.0f}'.format(self.get_total_assets()-self.get_total_liabilities()))
     def addAsset(self):
         self.asset = Asset()
         self.asset.move(675,150)
@@ -179,7 +192,6 @@ class MainWindow(QtWidgets.QMainWindow):
             parts = debt.split(',')
             account = parts[0]
             amount = parts[1]
-            url = 'http://two-0.org:8080/api/liabilities/'
             headers = {"content-type": "application/json"}
             data_dict = {
                 "source": account,
@@ -187,7 +199,29 @@ class MainWindow(QtWidgets.QMainWindow):
                 "notes": 'Debts - Initially'
             }
             data = json.dumps(data_dict)
-            response = requests.post(url, data=data, headers=headers)
+            response = requests.post(url_liabilities, data=data, headers=headers)
             print(response.json())
-            # self.reload_liabilities()
-            # self.update_display()
+            self.reload_liabilities()
+            self.update_display()
+    def remove_debt(self):
+        account, ok = QInputDialog.getText(self, 'Debts', 'Enter the Account: ')
+        if ok:
+            response = requests.get(url_liabilities)
+            id = 0
+            for item in list(response.json()):
+                if item['source'] == account:
+                    id = item['id']
+                    res_remove = requests.delete(url+str(id))
+                    self.reload_liabilities()
+                    self.update_display()
+    def load_debts(self):
+        try:
+            response = requests.get(url_liabilities)
+            for item in list(response.json()):
+                self.addItem_Liabilities(item['source']+' - '+item['notes'],  '{0:,.0f}'.format(float(item['amount'])))
+                self.sum_debts += float(item['amount'])
+        except Exception:
+            traceback.print_exc()
+    def reload_liabilities(self):
+        self.liabilities.model().removeRows(0, self.liabilities.model().rowCount())
+        self.load_debts()

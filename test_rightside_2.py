@@ -36,8 +36,20 @@ import rightside_2, sys, json, requests
 #     app.exec_()
 #     widget.sell()
 #     assert widget.price_sold.text() == ''
-def test_add_liability():
-    '''testing add liability function'''
+# def test_add_liability():
+#     '''testing add liability function'''
+#     app = rightside_2.QtWidgets.QApplication(sys.argv)
+#     rightside = rightside_2.MainWindow()
+#     rightside.move(300,750)
+#     rightside.show()
+#     app.exec_()
+#     url = 'http://two-0.org:8080/api/liabilities/'
+#     response = requests.get(url)
+#     for item in response.json():
+#         if item['notes'] == 'Debts - Initially':
+#             assert item['notes'] == 'Debts - Initially'
+def test_remove_liability():
+    '''testing remove liability function'''
     app = rightside_2.QtWidgets.QApplication(sys.argv)
     rightside = rightside_2.MainWindow()
     rightside.move(300,750)
@@ -47,4 +59,4 @@ def test_add_liability():
     response = requests.get(url)
     for item in response.json():
         if item['notes'] == 'Debts - Initially':
-            assert item['notes'] == 'Debts - Initially'
+            assert item['notes'] != 'Debts - Initially'
