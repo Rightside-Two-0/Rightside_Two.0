@@ -48,15 +48,27 @@ import rightside_2, sys, json, requests
 #     for item in response.json():
 #         if item['notes'] == 'Debts - Initially':
 #             assert item['notes'] == 'Debts - Initially'
-def test_remove_liability():
-    '''testing remove liability function'''
+# def test_remove_liability():
+#     '''testing remove liability function'''
+#     app = rightside_2.QtWidgets.QApplication(sys.argv)
+#     rightside = rightside_2.MainWindow()
+#     rightside.move(300,750)
+#     rightside.show()
+#     app.exec_()
+#     url = 'http://two-0.org:8080/api/liabilities/'
+#     response = requests.get(url)
+#     for item in response.json():
+#         if item['notes'] == 'Debts - Initially':
+#             assert item['notes'] != 'Debts - Initially'
+def test_add_pay():
+    '''testing add pay function'''
     app = rightside_2.QtWidgets.QApplication(sys.argv)
     rightside = rightside_2.MainWindow()
     rightside.move(300,750)
     rightside.show()
     app.exec_()
-    url = 'http://two-0.org:8080/api/liabilities/'
+    url = 'http://two-0.org:8080/api/incomes/'
     response = requests.get(url)
     for item in response.json():
-        if item['notes'] == 'Debts - Initially':
-            assert item['notes'] != 'Debts - Initially'
+        if item['notes'] != 'Paycheck':
+            assert item['notes'] == 'Paycheck' or 'paycheck'
