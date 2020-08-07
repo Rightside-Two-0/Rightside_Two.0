@@ -730,6 +730,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.load_debts()
     def analyze(self):
         try:
+            analysis = Analysis()
             analysis.show()
             analysis.move(313,150)
             sender = self.sender()
