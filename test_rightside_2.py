@@ -98,11 +98,12 @@ import rightside_2, sys, json, requests
 #     rightside.show()
 #     app.exec_()
 #     assert rightside.income != 0.0
-def test_():
-    '''testing  function'''
+def test_see_details():
+    '''testing see details function'''
     app = rightside_2.QtWidgets.QApplication(sys.argv)
     rightside = rightside_2.MainWindow()
     rightside.move(300,750)
     rightside.show()
     app.exec_()
-    assert rightside.income != 0.0
+    widget = rightside_2.Analysis()
+    assert widget.commitment_progress.value() != None

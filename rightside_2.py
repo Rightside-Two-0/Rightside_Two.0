@@ -12,6 +12,7 @@ from tests import mortgage
 import traceback
 import requests
 import PyPDF2
+
 url_income = 'http://two-0.org:8080/api/incomes/'
 url_expeneses = 'http://two-0.org:8080/api/expenses/'
 url_assets = 'http://two-0.org:8080/api/assets/'
@@ -774,9 +775,24 @@ class MainWindow(QtWidgets.QMainWindow):
             self.statusBar().showMessage('YOU ARE FREE! FINANCIALLY FREE! GREAT JOB!!')
         else:
             self.goal_percent.setValue(int(self.percent))
-ss        self.networth_label.setText(' $'+'{0:,.0f}'.format(self.get_total_assets()-self.get_total_liabilities()))
+        self.networth_label.setText(' $'+'{0:,.0f}'.format(self.get_total_assets()-self.get_total_liabilities()))
+        #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~>
+        self.opportunity_small.clicked.connect(self.see_details)
+        self.opportunity_big.clicked.connect(self.see_details)
+        self.opp_title = self.findChild(QtWidgets.QLabel, 'label')
+        self.opp_body = self.findChild(QtWidgets.QTextEdit, 'card_details')
+        self.opp_buy = self.findChild(QtWidgets.QPushButton, 'buy_button')
+        self.opp_assign = self.findChild(QtWidgets.QPushButton, 'assign_button')
+        self.opp_cost = self.findChild(QtWidgets.QLabel, 'cost_value')
+        self.opp_down = self.findChild(QtWidgets.QLabel, 'down_display_pre')
+        self.opp_mortgage = self.findChild(QtWidgets.QLabel, 'mortgage_value')
+        self.opp_cash_flow = self.findChild(QtWidgets.QLabel, 'cashflow_display')
+        self.opp_coc = self.findChild(QtWidgets.QLabel, 'coc_display')
+        self.opp_irr = self.findChild(QtWidgets.QLabel, 'irr_display')
+        self.commitments = self.findChild(QtWidgets.QProgressBar, 'commitment_progress')
     def addTransaction(self):
         try:
+            ledger = Ledger()
             ledger.show()
             ledger.move(415,150)
         except Exception as e:
@@ -931,3 +947,114 @@ ss        self.networth_label.setText(' $'+'{0:,.0f}'.format(self.get_total_asse
         for item in list(response.json()):
             liabilities += float(item['amount'])
         return liabilities
+    def see_details(self):
+        sender = self.sender()
+        opps = []
+        if sender.objectName() == 'opportunity_small':
+            opps = self.opportunity_small.selectedIndexes()
+        else:
+            opps = self.opportunity_big.selectedIndexes()
+        content = []
+        for ix in opps:
+            content.append(ix.data()) # or ix.data()
+        response = requests.get(url_opportunities)
+        res_details = []
+        for item in list(response.json()):
+            if item['title'] == content[0] and item['description'] == content[1]:
+                res_details = requests.get(url_opportunities+str(item['id']))
+        self.opp_title.setText(res_details.json()['heading'])
+        self.opp_body.setText(res_details.json()['description'])
+        self.opp_cost.setText('{0:,.0f}'.format(float(res_details.json()['cost'].replace(',',''))))
+        self.opp_down.setText('{0:,.0f}'.format(float(res_details.json()['down'].replace(',',''))))
+        self.opp_mortgage.setText('{0:,.0f}'.format(float(res_details.json()['mortgage'].replace(',',''))))
+        self.opp_cash_flow.setText('{0:,.0f}'.format(float(res_details.json()['cash_flow'])))
+        self.opp_coc.setText(res_details.json()['coc'])
+        self.opp_irr.setText(res_details.json()['irr'])
+        analysis.url_OM.setText(res_details.json()['url'])
+        #~~~~set~numbers~of~property~~~~~~>
+        #~~~~>
+        analysis.ask_display.setText(res_details.json()['ask'])
+        analysis.sqft_display.setText(res_details.json()['sqft'])
+        analysis.num_units_display.setText(res_details.json()['units'])
+        analysis.ave_monthly_rent_display.setText(res_details.json()['ave_rent'])
+        analysis.vacancy_rate_display.setText(res_details.json()['vacancy_rate'])
+        analysis.other_income_display.setText(res_details.json()['other_income'])
+        #~~~~expenses~~~~~~~~~~~~~>
+        analysis.repairs_display.setText(res_details.json()['repairs'])
+        analysis.management_display.setText(res_details.json()['management'])
+        analysis.taxes_display.setText(res_details.json()['taxes'])
+        analysis.insurance_display.setText(res_details.json()['insurance'])
+        analysis.wages_display.setText(res_details.json()['wages'])
+        analysis.utilities_display.setText(res_details.json()['utilities'])
+        analysis.gen_admin_display.setText(res_details.json()['gen_admin'])
+        analysis.professional_fees_display.setText(res_details.json()['professional_fees'])
+        analysis.advertising_display.setText(res_details.json()['advertising'])
+        analysis.cap_x_display.setText(res_details.json()['cap_x'])
+        analysis.other_expense_display.setText(res_details.json()['other'])
+        #~~~~~~calculate~totals~~~~~~~~~~~~~~~~~>
+        #~~~>
+        scheduled = float(res_details.json()['units'])*int(res_details.json()['ave_rent'])
+        gross_income = scheduled-(float(res_details.json()['vacancy_rate'])*scheduled)+float(res_details.json()['other_income'])
+        analysis.gross_income_display.setText('{0:,.2f}'.format(gross_income*12))
+        total_expenses = float(res_details.json()['repairs'])+float(res_details.json()['management'])+float(res_details.json()['taxes'])+float(res_details.json()['insurance'])+float(res_details.json()['wages'])+float(res_details.json()['utilities'])+float(res_details.json()['gen_admin'])+float(res_details.json()['professional_fees'])+float(res_details.json()['advertising'])+float(res_details.json()['cap_x'])+float(res_details.json()['other'])
+        analysis.total_expense_display.setText('{0:,.2f}'.format(total_expenses*12))
+        noi = gross_income - total_expenses
+        analysis.noi_display.setText('{0:,.2f}'.format(noi*12))
+        #~~~~set~progressbars...~~~~~~~~~~~~~~~~~~~~~>
+        analysis.repairsProgress.setValue(int(float(res_details.json()['repairs']) / gross_income*100))
+        analysis.managementProgress.setValue(int(float(res_details.json()['management'])/gross_income*100))
+        analysis.taxesProgress.setValue(int(float(res_details.json()['taxes'])/gross_income*100))
+        analysis.insuranceProgress.setValue(int(float(res_details.json()['insurance'])/gross_income*100))
+        analysis.wagesProgress.setValue(int(float(res_details.json()['wages'])/gross_income*100))
+        analysis.utilitiesProgress.setValue(int(float(res_details.json()['utilities'])/gross_income*100))
+        analysis.gen_adminProgress.setValue(int(float(res_details.json()['gen_admin'])/gross_income*100))
+        analysis.professional_feesProgress.setValue(int(float(res_details.json()['professional_fees'])/total_expenses*100))
+        analysis.advertisingProgress.setValue(int(float(res_details.json()['advertising'])/gross_income*100))
+        analysis.capital_reservesProgress.setValue(int(float(res_details.json()['cap_x'])/gross_income*100))
+        analysis.otherProgress.setValue(int(float(res_details.json()['other'])/gross_income*100))
+        analysis.total_expenses_progressBar.setValue(int(total_expenses/gross_income*100))
+        analysis.noi_progressBar.setValue(int(noi/gross_income*100))
+        #~~~~financing~~~~~~~~~~~~~~~>
+        total = float(res_details.json()['ask'].replace(',',''))
+        closing = total*0.035
+        purchase_price = total
+        analysis.total_purchase_display.setText('{0:,.0f}'.format(purchase_price))
+        analysis.financing_display.setText('{0:,.0f}'.format(purchase_price*.7))
+        analysis.seller_carry_display.setText('{0:,.0f}'.format(purchase_price*.1))
+        #~~~~financing~progressbars~~~~~~~~~~~~>
+        #~~~~~Task~1)~~~~~~~~~~~~~~~~~~>
+        #~~~>
+        down = float(res_details.json()['down'].replace(',',''))
+        closing_costs = total*.035
+        analysis.down_display.setText('{0:,.0f}'.format(down))
+        analysis.closing_costs_display.setText('{0:,.0f}'.format(closing_costs))
+        down_pymt_percent = int(float(analysis.down_display.text().replace(',',''))/purchase_price*100)
+        analysis.down_progressBar.setValue(down_pymt_percent)
+        analysis.down_Slider.setValue(down_pymt_percent)
+        analysis.get_payment()
+        noi = float(analysis.noi_display.text().replace(',','').replace('$',''))
+        cap_rate = (noi/down)
+        analysis.cap_rate_display.setText('{0:,.2f}'.format(cap_rate)+'%')
+        #~~~~~>
+        analysis.capital_required_display.setText('$'+'{0:,.2f}'.format(down+closing_costs))
+        analysis.crypto_units_display.setText('{0:,.0f}'.format(float(res_details.json()['sqft'])))
+        analysis.investor_units_display.setText('{0:,.0f}'.format(float(res_details.json()['sqft'])*(1-float(analysis.sponsor_percent_deal_slider.value())/100)))
+        investor_percent = int(analysis.investor_units_display.text().replace(',',''))
+        if investor_percent == 0:
+            investor_percent = 1
+        per_unit_cost = float((down+closing_costs) / investor_percent)
+        analysis.investment_unit_display.setText('{0:,.2f}'.format(per_unit_cost))
+        analysis.calculate_it()
+        #~~~~these are incorrect~values~~~~~>
+        #~~~>
+        analysis.flow_1_display.setText('{0:,.2f}'.format(analysis.irr.investment_unit))
+        analysis.flow_2_display.setText('{0:,.2f}'.format(analysis.irr.five_years_unit))
+        analysis.flow_3_display.setText('{0:,.2f}'.format(analysis.irr.ten_years_unit))
+        analysis.flow_4_display.setText('{0:,.2f}'.format(analysis.irr.twenty_years_unit))
+        analysis.flow_5_display.setText('{0:,.2f}'.format(analysis.irr.thirty_years_unit))
+        # analysis..setText(res_details.json()[])
+        #~~~~~savings/down~~~~~~~~~~>
+        qoutient = self.savings/float(res_details.json()['down'].replace(',',''))
+        if qoutient >= 1:
+            qoutient = 100
+        self.commitment_progress.setValue(int(qoutient*100))
