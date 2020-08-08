@@ -27,6 +27,138 @@ class ComputeThread(QThread):
         print('testing thread # 21...')
         # git clone done, now inform the main thread with the output
         self.signal.emit('')
+class Ledger(QtWidgets.QWidget):
+    def __init__(self):
+        super(Ledger, self).__init__()
+        uic.loadUi('guis/ledger.ui', self)
+        self.base_url = 'http://two-0.org:8080/api/ledger/'
+        #set from_accounts = list of expenses read in
+        self.date = self.findChild(QtWidgets.QDateEdit, 'date_box')
+        self.to_account = self.findChild(QtWidgets.QComboBox, 'to_account')
+        self.from_account = self.findChild(QtWidgets.QComboBox, 'from_account')
+        self.amount = self.findChild(QtWidgets.QLineEdit, 'amount_box')
+        self.notes = self.findChild(QtWidgets.QLineEdit, 'notes_box')
+        self.display_table = self.findChild(QtWidgets.QTableView, 'transaction_view')
+        self.add_button = self.findChild(QtWidgets.QPushButton, 'add_button')
+        self.add_button.clicked.connect(self.addItem)
+        self.set_table_model()
+        self.read_in_table()
+        self.hide()
+    def addItem_parms(self, date_of, from_, to_, amount_, notes_):
+        row = self.display_table.rowCount()
+        self.display_table.setRowCount(row+1)
+        row_data = []
+        row_data.append(date_of)
+        row_data.append(from_)
+        row_data.append(to_)
+        row_data.append(amount_)
+        row_data.append(notes_)
+        col = 0
+        for item in row_data:
+            cell = QTableWidgetItem(str(item))
+            self.display_table.setItem(row, col, cell)
+            col += 1
+    def addItem(self):
+        #~~~~POST~~~~~
+        date_ = self.date.date().toPyDate()
+        from_ = self.from_account.currentText()
+        to_ = self.to_account.currentText()
+        amount_ = self.amount.text()
+        notes_ = self.notes.text()
+        try:
+            headers = {"content-type": "application/json"}
+            dict = {
+                "date": f'{date_}',
+                "from_account": f'{from_}',
+                "to_account": f'{to_}',
+                "amount": f'{amount_}',
+                "notes": f'{notes_}'
+            }
+            data = json.dumps(dict)
+            response = requests.post(self.base_url, data=data, headers=headers)
+            # #~~~~~GET~~~~~
+            response2 = requests.get(self.base_url)
+            json_response = list(response2.json())
+            for item in json_response:
+                date_of = item['date']
+                from_ = item['from_account']
+                to_ = item['to_account']
+                amount_ = item['amount']
+                notes_ = item['notes']
+            row = self.display_table.rowCount()
+            self.display_table.setRowCount(row+1)
+            row_data = []
+            row_data.append(date_of)
+            row_data.append(from_)
+            row_data.append(to_)
+            row_data.append(amount_)
+            row_data.append(notes_)
+            col = 0
+            for item in row_data:
+                cell = QTableWidgetItem(str(item))
+                self.display_table.setItem(row, col, cell)
+                col += 1
+            #~~~~~update~expense~~~~~>
+            #~~~~> 2 accounts from_ & to_
+            url_from = 'http://two-0.org:8080/api/asset/'
+            url_to = 'http://two-0.org:8080/api/expense/'
+            response_from = requests.get(url_from)
+            response_to = requests.get(url_to)
+            for item in list(response_from.json()):
+                if item['source'] == from_:
+                    id = item['id']
+                    prev_amount = item['cost']
+                    old_note = item['notes']
+                    update = str(float(prev_amount) - float(amount_))
+                    dict_from_post = {
+                        "source": from_,
+                        "down": update,
+                        "cost": update,
+                        "notes": old_note
+                    }
+                    data_post = json.dumps(dict_from_post)
+                    response_post = requests.put(url_from+str(id), data=data_post, headers=headers)
+            for item in list(response_to.json()):
+                if item['source'] == to_:
+                    id = item['id']
+                    prev_amount = item['amount']
+                    update = str(float(prev_amount) + float(amount_))
+                    dict_to_post = {
+                        "source": to_,
+                        "amount" : update
+                    }
+                    data_post = json.dumps(dict_to_post)
+                    response_post = requests.put(url_to+str(id), data=data_post, headers=headers)
+            window.re_expenses()
+            window.reload_assets()
+            window.update_display()
+            self.hide()
+        except Exception:
+            traceback.print_exc()
+        # # self.date.setDate()
+        # # self.from_account.setItemText('')
+        # # self.to_account.setItemText('')
+        self.amount.setText('')
+        self.notes.setText('')
+    def set_table_model(self):
+        self.display_table.setColumnCount(5)
+        header = self.display_table.horizontalHeader()
+        header.setSectionResizeMode(QHeaderView.Stretch)
+        self.display_table.setHorizontalHeaderLabels(['Date','From','To','Amount','Notes'])
+        self.display_table.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
+    def read_in_table(self):
+        try:
+            date_, to_, from_, amount_, notes_ = '', '', '', '', ''
+            response = requests.get(self.base_url)
+            for item in list(response.json()):
+                date_ = item['date']
+                from_ = item['from_account']
+                to_ = item['to_account']
+                amount_ = item['amount']
+                notes_ = item['notes']
+                self.addItem_parms(date_, from_, to_, amount_, notes_)
+        except Exception:
+            traceback.print_exc()
 class Analysis(QtWidgets.QWidget):
     def __init__(self):
         super(Analysis, self).__init__()
@@ -625,6 +757,13 @@ class MainWindow(QtWidgets.QMainWindow):
         self.remove_liability.clicked.connect(self.remove_debt)
         self.paycheck_button.clicked.connect(self.add_pay)
         self.analyze_button.clicked.connect(self.analyze)
+        self.add_transaction.clicked.connect(self.addTransaction)
+    def addTransaction(self):
+        try:
+            ledger.show()
+            ledger.move(415,150)
+        except Exception as e:
+            traceback.print_exc()
     def update_display(self):
         self.total_expenses.setText('{0:,.2f}'.format(self.get_total_expenses()))
         self.total_cashflow.setText('{0:,.2f}'.format(self.get_total_income()[0]-self.get_total_expenses()))

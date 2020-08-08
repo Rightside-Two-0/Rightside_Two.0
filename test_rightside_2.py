@@ -72,12 +72,21 @@ import rightside_2, sys, json, requests
 #     for item in response.json():
 #         if item['notes'] != 'Paycheck':
 #             assert item['notes'] == 'Paycheck' or 'paycheck'
-def test_analyze():
-        '''testing add pay function'''
+# def test_analyze():
+#         '''testing add pay function'''
+#         app = rightside_2.QtWidgets.QApplication(sys.argv)
+#         rightside = rightside_2.MainWindow()
+#         rightside.move(300,750)
+#         rightside.show()
+#         app.exec_()
+#         widget = rightside_2.Analysis()
+#         assert widget != None
+def test_ledger():
+        '''testing add ledger function'''
         app = rightside_2.QtWidgets.QApplication(sys.argv)
         rightside = rightside_2.MainWindow()
         rightside.move(300,750)
         rightside.show()
         app.exec_()
-        widget = rightside_2.Analysis()
+        widget = rightside_2.Ledger()
         assert widget != None
