@@ -774,7 +774,7 @@ class MainWindow(QtWidgets.QMainWindow):
             self.statusBar().showMessage('YOU ARE FREE! FINANCIALLY FREE! GREAT JOB!!')
         else:
             self.goal_percent.setValue(int(self.percent))
-        self.networth_label.setText(' $'+'{0:,.0f}'.format(self.get_total_assets()-self.get_total_liabilities()))
+ss        self.networth_label.setText(' $'+'{0:,.0f}'.format(self.get_total_assets()-self.get_total_liabilities()))
     def addTransaction(self):
         try:
             ledger.show()

@@ -90,8 +90,16 @@ import rightside_2, sys, json, requests
 #         app.exec_()
 #         widget = rightside_2.Ledger()
 #         assert widget != None
-def test_get_total_income():
-    '''testing total income function'''
+# def test_get_total_income():
+#     '''testing total income function'''
+#     app = rightside_2.QtWidgets.QApplication(sys.argv)
+#     rightside = rightside_2.MainWindow()
+#     rightside.move(300,750)
+#     rightside.show()
+#     app.exec_()
+#     assert rightside.income != 0.0
+def test_():
+    '''testing  function'''
     app = rightside_2.QtWidgets.QApplication(sys.argv)
     rightside = rightside_2.MainWindow()
     rightside.move(300,750)
