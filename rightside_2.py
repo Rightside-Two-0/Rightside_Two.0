@@ -758,6 +758,23 @@ class MainWindow(QtWidgets.QMainWindow):
         self.paycheck_button.clicked.connect(self.add_pay)
         self.analyze_button.clicked.connect(self.analyze)
         self.add_transaction.clicked.connect(self.addTransaction)
+        self.income = self.get_total_income()
+        self.total_income.setText('{0:,.2f}'.format(self.income[0]))
+        self.total_passive.setText('{0:,.2f}'.format(self.income[1]))
+        self.sum_salaries = self.income[0] - self.income[1]
+        self.sum_expenses = self.get_total_expenses()
+        self.total_passive.setText('{0:,.2f}'.format(self.income[1]))
+        self.total_expenses.setText('{0:,.2f}'.format(self.sum_expenses))
+        self.total_cashflow.setText('{0:,.2f}'.format(self.income[1]-self.sum_expenses))
+        self.percent = 0.0
+        if self.sum_expenses != 0:
+            self.percent = (self.income[1]/self.sum_expenses*100)
+        if self.percent >= 100:
+            self.goal_percent.setValue(int(100))
+            self.statusBar().showMessage('YOU ARE FREE! FINANCIALLY FREE! GREAT JOB!!')
+        else:
+            self.goal_percent.setValue(int(self.percent))
+        self.networth_label.setText(' $'+'{0:,.0f}'.format(self.get_total_assets()-self.get_total_liabilities()))
     def addTransaction(self):
         try:
             ledger.show()
@@ -880,3 +897,37 @@ class MainWindow(QtWidgets.QMainWindow):
                 analysis.view_deal()
         except Exception as e:
             traceback.print_exc()
+    def get_total_income(self):
+        '''returns a tuple with total income & passive'''
+        income = 0.0
+        passive = 0.0
+        response = requests.get(url_income)
+        for item in list(response.json()):
+            income += float(item['amount'])
+            if item['source'] != 'Salary/Wages':
+                passive += int(item['amount'])
+        return (income, passive)
+    def get_total_expenses(self):
+        '''returns an int value of the sum total of expenses'''
+        expense = 0
+        url = 'http://two-0.org:8080/api/expenses/'
+        response = requests.get(url)
+        for item in list(response.json()):
+            expense += int(float(item['amount']))
+        return expense
+    def get_total_assets(self):
+        '''returns an int value of the sum total of assets'''
+        assets = 0.0
+        url = 'http://two-0.org:8080/api/assets/'
+        response = requests.get(url)
+        for item in list(response.json()):
+            assets += float(item['cost'])
+        return assets
+    def get_total_liabilities(self):
+        '''returns an int value of the sum total of liabilities'''
+        liabilities = 0.0
+        url = 'http://two-0.org:8080/api/liabilities/'
+        response = requests.get(url)
+        for item in list(response.json()):
+            liabilities += float(item['amount'])
+        return liabilities
